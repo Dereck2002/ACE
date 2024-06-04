@@ -37,3 +37,52 @@
 ion-row:nth-child(even) {
   background-color: rgba(240, 240, 240, 0.5); // Fondo alternado para filas pares
 }
+.icon-space {
+  margin-right: 8px; /* Ajusta el valor según el espacio que desees */
+}
+
+
+.floating-button {
+  position: top;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100;
+  animation: float 3s infinite ease-in-out;
+}
+
+/* Archivo: src/app/costos-lista/costos-lista.page.scss */
+.transparent-grid {
+  --ion-grid-padding: 0;
+}
+
+.custom-table {
+  width: 100%;
+}
+
+.header-row {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.data-row:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.header, .data {
+  padding: 8px;
+  text-align: center;
+}
+
+.actions .action-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.actions .action-buttons ion-button {
+  margin-bottom: 5px;
+}
+
+ion-searchbar {
+  margin: 10px;
+}

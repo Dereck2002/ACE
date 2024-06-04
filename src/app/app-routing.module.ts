@@ -34,6 +34,11 @@ const routes: Routes = [
     loadChildren: () => import('./pages/public/recuperer_c/recuperer_c.module').then( m => m.PasswordResetPageModule),
     // canActivate: [PublicGuard] // Prevent for signed in users
   },
+{
+  path: 'password-form',
+  loadChildren: () => import('./pages/public/password-form/password-form.module').then( m => m.PasswordFormPageModule)
+},
+
 ];
 @NgModule({
   imports: [

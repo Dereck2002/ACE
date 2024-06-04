@@ -1,11 +1,7 @@
-<!-- Archivo: src/app/costos-lista/costos-lista.page.html -->
 <ion-header collapse="fade" [translucent]="true">
   <ion-toolbar color="dark">
     <ion-title color="light">Lista Costos</ion-title>
     <ion-buttons slot="primary">
-      <ion-button color="light" routerLink="/charts">
-        <ion-icon name="add-outline"></ion-icon> Nuevo Producto
-      </ion-button>
       <ion-button color="light" routerLink="/ajustes">
         <ion-icon slot="icon-only" name="cog"></ion-icon>
       </ion-button>
@@ -15,7 +11,12 @@
 
 <ion-content>
   <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="filterProductos($event)" placeholder="Buscar producto"></ion-searchbar>
-  
+
+  <ion-button color="tertiary" routerLink="/charts" class="floating-button">
+    <ion-icon color="dark" name="duplicate-outline" class="icon-space"></ion-icon>
+    Nuevo Producto
+  </ion-button>
+
   <ion-grid class="transparent-grid custom-table">
     <ion-row class="header-row">
       <ion-col class="header">N°</ion-col>
@@ -24,13 +25,13 @@
       <ion-col class="header">Acciones</ion-col>
     </ion-row>
 
-    <ion-row *ngFor="let producto of productos; let i = index" class="data-row">
+    <ion-row *ngFor="let producto of Productos; let i = index" class="data-row">
       <ion-col class="data">{{ i + 1 }}</ion-col>
       <ion-col class="data">{{ producto.nombre }}</ion-col>
       <ion-col class="data">{{ producto.pvp }}</ion-col>
       <ion-col class="data actions">
         <div class="action-buttons">
-          <ion-button size="small" fill="clear" color="tertiary" (click)="editarProducto(producto)">
+          <ion-button size="small" fill="clear" color="tertiary" routerLink="/editproducto" >
             <ion-icon slot="icon-only" name="create-outline"></ion-icon>
           </ion-button>
           <ion-button size="small" fill="clear" color="danger" (click)="eliminarProducto(producto.id)">

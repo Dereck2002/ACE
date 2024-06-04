@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 03-06-2024 a las 15:55:55
+-- Tiempo de generación: 04-06-2024 a las 16:52:44
 -- Versión del servidor: 10.4.27-MariaDB
 -- Versión de PHP: 8.2.0
 
@@ -308,6 +308,26 @@ INSERT INTO `ciudades` (`cod_ciudad`, `nombre_ciudad`, `cod_ciudad_provincia`) V
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `contrasenia_reset`
+--
+
+CREATE TABLE `contrasenia_reset` (
+  `correo_persona` varchar(255) NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `contrasenia_reset`
+--
+
+INSERT INTO `contrasenia_reset` (`correo_persona`, `token`, `created_at`) VALUES
+('steevenflores2019@gmail.com', '03466b364c45f7ed777f4fc5e471bae48c18e800b1508629f959fb3980b9f6178bad2efd83a942888559719b0f4fbaf4018b', '2024-06-01 00:26:42'),
+('jaramilloderek13@gmail.com', '011252114561b41bf6dd9ce6e7c0246fb2fff9ac2084fdb26bed87c8264e9c58b2bbbd48766d26e52e71b84c446b77553d03', '2024-06-01 04:32:00');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `costos_indirectos`
 --
 
@@ -326,7 +346,16 @@ INSERT INTO `costos_indirectos` (`id`, `producto_id`, `nombre`, `costo`) VALUES
 (15, 15, 'vbnbv', '3.00'),
 (16, 16, 'XVBCV', '1.00'),
 (18, 18, 'raspadora', '0.09'),
-(26, 26, 'wdwef', '0.90');
+(26, 26, 'wdwef', '0.90'),
+(33, 33, '', '1.00'),
+(38, 38, '', '0.00'),
+(40, 40, '', '0.00'),
+(41, 41, '', '0.00'),
+(42, 42, '', '0.00'),
+(43, 43, '', '0.00'),
+(45, 45, '', '0.00'),
+(46, 46, '', '0.00'),
+(47, 47, '', '0.00');
 
 -- --------------------------------------------------------
 
@@ -348,7 +377,16 @@ CREATE TABLE `mano_de_obra` (
 INSERT INTO `mano_de_obra` (`id`, `producto_id`, `nombre`, `costo`) VALUES
 (18, 18, 'mezclar', '0.25'),
 (19, 18, '', '0.00'),
-(27, 26, 'wqdw', '0.10');
+(27, 26, 'wqdw', '0.10'),
+(34, 33, '', '1.00'),
+(39, 38, '', '1.00'),
+(41, 40, '', '1.00'),
+(42, 41, '', '1.00'),
+(43, 42, '', '0.00'),
+(44, 43, '', '0.00'),
+(46, 45, '', '0.00'),
+(47, 46, '', '1.00'),
+(48, 47, '', '0.00');
 
 -- --------------------------------------------------------
 
@@ -372,7 +410,16 @@ INSERT INTO `materias_primas` (`id`, `producto_id`, `nombre`, `costo`) VALUES
 (16, 16, 'DGDFH', '1.00'),
 (18, 18, 'Agua', '0.10'),
 (19, 18, 'clorantes', '0.01'),
-(27, 26, 'sfsd', '0.10');
+(27, 26, 'sfsd', '0.10'),
+(34, 33, '', '0.00'),
+(39, 38, '', '0.00'),
+(41, 40, '', '0.00'),
+(42, 41, '', '0.00'),
+(43, 42, '', '1.00'),
+(44, 43, '', '1.00'),
+(46, 45, 'hy', '1.00'),
+(47, 46, '', '1.00'),
+(48, 47, '', '1.00');
 
 -- --------------------------------------------------------
 
@@ -599,7 +646,16 @@ INSERT INTO `otros_gastos` (`id`, `producto_id`, `nombre`, `costo`) VALUES
 (2, 15, 'vnvbn', '4.00'),
 (3, 16, 'CBCVB', '1.00'),
 (5, 18, '', '0.06'),
-(13, 26, 'wqdwe', '0.09');
+(13, 26, 'wqdwe', '0.09'),
+(20, 33, '', '1.00'),
+(25, 38, '', '0.00'),
+(27, 40, '', '0.00'),
+(28, 41, '', '0.00'),
+(29, 42, '', '2.00'),
+(30, 43, '', '0.00'),
+(32, 45, '', '0.00'),
+(33, 46, '', '0.00'),
+(34, 47, '', '1.00');
 
 -- --------------------------------------------------------
 
@@ -673,7 +729,16 @@ CREATE TABLE `productos` (
 
 INSERT INTO `productos` (`id`, `id_persona`, `nombre`, `margen_beneficio`, `impuestos`, `costo_produccion`, `costo_fabrica`, `costo_distribucion`, `pvp`) VALUES
 (18, 105, 'Raspado de Hielo', '35.00', '15.00', '0.51', '0.68', '1.06', '1.65'),
-(26, 210, 'Papas', '35.00', '15.00', '1.19', '1.61', '2.49', '3.87');
+(26, 210, 'Papas', '35.00', '15.00', '1.19', '1.61', '2.49', '3.87'),
+(33, 105, 'hola', '35.00', '15.00', '3.00', '4.05', '6.29', '9.76'),
+(38, 105, 'fgfc', '35.00', '15.00', '1.00', '1.35', '2.10', '3.25'),
+(40, 105, 'dcfvgbhj', '5.00', '5.00', '1.00', '1.05', '1.16', '1.28'),
+(41, 105, 'dcfvgbhj', '5.00', '5.00', '1.00', '1.05', '1.16', '1.28'),
+(42, 105, 'fdyhf', '35.00', '15.00', '3.00', '4.05', '6.29', '9.76'),
+(43, 105, 'zdgxf', '35.00', '15.00', '1.00', '1.35', '2.10', '3.25'),
+(45, 105, 'gj', '1.00', '1.00', '1.00', '1.01', '1.03', '1.05'),
+(46, 105, 'fg', '1.00', '1.00', '2.00', '2.02', '2.06', '2.10'),
+(47, 105, 'dg', '1.00', '1.00', '2.00', '2.02', '2.06', '2.10');
 
 -- --------------------------------------------------------
 
@@ -851,19 +916,19 @@ ALTER TABLE `ciudades`
 -- AUTO_INCREMENT de la tabla `costos_indirectos`
 --
 ALTER TABLE `costos_indirectos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
 -- AUTO_INCREMENT de la tabla `mano_de_obra`
 --
 ALTER TABLE `mano_de_obra`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT de la tabla `materias_primas`
 --
 ALTER TABLE `materias_primas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT de la tabla `nacionalidades`
@@ -875,7 +940,7 @@ ALTER TABLE `nacionalidades`
 -- AUTO_INCREMENT de la tabla `otros_gastos`
 --
 ALTER TABLE `otros_gastos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT de la tabla `persona`
@@ -887,7 +952,7 @@ ALTER TABLE `persona`
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
 -- AUTO_INCREMENT de la tabla `provincias`

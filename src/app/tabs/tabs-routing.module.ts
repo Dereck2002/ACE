@@ -32,6 +32,11 @@ const routes: Routes = [
         path: 'styleguide',
         loadChildren: () => import('../pages/secure/styleguide/styleguide.module').then(m => m.StyleguidePageModule)
       },
+      {
+        path: 'editproducto',
+        loadChildren: () => import('../pages/secure/editproducto/editproducto.module').then(m => m.EditproductoPageModule)
+      },
+      
     ]
   }
 ];

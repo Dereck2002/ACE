@@ -105,7 +105,7 @@ export class AuthService {
   }
 
   public showToast2(message: string) {
-    this.toastQueue.push({ message, duration: 500, position: 'top', color: 'success' });
+    this.toastQueue.push({ message, duration: 800, position: 'top', color: 'success' });
     this.processQueue();
   }
 }

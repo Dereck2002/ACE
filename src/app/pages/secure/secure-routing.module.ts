@@ -25,6 +25,10 @@ const routes: Routes = [
   {
     path: 'listacostos',
     loadChildren: () => import('./listacostos/listacostos.module').then( m => m.ListacostosPageModule)
+  },
+  {
+    path: 'editproducto',
+    loadChildren: () => import('./editproducto/editproducto.module').then( m => m.EditproductoPageModule)
   }
 ];
 

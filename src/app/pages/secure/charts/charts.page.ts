@@ -263,7 +263,7 @@ export class ChartsPage implements OnInit {
 
       // Método 1: Navegar a la misma página (actualiza el componente)
       this.router.navigate(['/listacostos']).then(() => {
-        window.location.reload(); // Refresca completamente la página
+        //window.location.reload(); // Refresca completamente la página
       });
 
       // Método 2: Recargar la página completamente
@@ -278,7 +278,7 @@ export class ChartsPage implements OnInit {
 }
 
 async mostrarMensajeRegistroExitoso() {
-  const toast = await this.toastService.presentToast('Éxito', '¡Datos registrados correctamente!', 'top', 'success', 3000);
+  this.authService.showToast2('Éxito, Datos registrados correctamente');
 }
 
 }

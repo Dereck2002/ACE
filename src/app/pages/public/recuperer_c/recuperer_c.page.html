@@ -1,45 +1,41 @@
 <ion-header [translucent]="true">
   <ion-toolbar color="dark">
     <ion-buttons slot="start">
-      <ion-back-button text="Sign in" color="light" defaultHref="/login"></ion-back-button>
+      <ion-back-button text="Sign in" color="light" defaultHref="/password-form"></ion-back-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-
   <div class="ion-padding ion-full-height ion-flex ion-flex-center">
-
     <div class="logo-container">
       <h1 class="animate__animated animate__fadeInUp">
-        <ion-text color="light">Forgot Password?</ion-text>
+        <ion-text color="light">¿Olvidaste tu contraseña?</ion-text>
       </h1>
       <p class="animate__animated animate__fadeInUp">
-        <ion-text color="secondary">Reset your password.</ion-text>
-
+        <ion-text color="secondary">Ingresa tu cédula para recuperar tu contraseña.</ion-text>
       </p>
     </div>
 
-    <form class="form-default" [formGroup]="reset_form">
+    <form class="form-default" [formGroup]="reset_form" (ngSubmit)="resetPassword()">
       <ion-item color="dark" class="animate__animated animate__fadeInUp">
         <ion-label position="floating">
-          <ion-icon name="mail" item-start></ion-icon>
-          Email
+          <ion-icon name="person" slot="start"></ion-icon>
+          Cédula
         </ion-label>
-        <ion-input color="secondary" type="email" formControlName="email"></ion-input>
+        <ion-input color="secondary" type="text" formControlName="cedula"></ion-input>
       </ion-item>
 
-      <ion-button expand="block" size="large" color="danger" class="ion-margin-top" routerLink="/login">
+      <ion-button expand="block" size="large" color="danger" class="ion-margin-top" type="submit" [disabled]="reset_form.invalid">
         Recuperar Contraseña
       </ion-button>
     </form>
 
     <div class="ion-text-center ion-margin-top">
       <ion-text color="medium">
-        <small>&copy;{{current_year}} Firmino.dev</small>
+        <small>&copy;{{current_year}} TuEmpresa</small>
       </ion-text>
     </div>
-
   </div>
-
 </ion-content>
+
