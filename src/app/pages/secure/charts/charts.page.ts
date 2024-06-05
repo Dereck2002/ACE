@@ -15,10 +15,10 @@ import { Router } from '@angular/router';
 })
 export class ChartsPage implements OnInit {
   codigo: string="";
-  materiasPrimas: { nombre: string, costo: number }[] = [{ nombre: '', costo: 0 }];
+  materiasPrimas: { nombre: string, costo: number, unidad: string, cantidad: number  }[] = [{ nombre: '', costo: 0, unidad: '', cantidad: 0 }];
   manoDeObraList: { nombre: string, costo: number }[] = [{ nombre: '', costo: 0 }];
   costosIndirectosList: { nombre: string, costo: number }[] = [{ nombre: '', costo: 0 }];
-  otrosCostosList: { nombre: string, costo: number }[] = [{ nombre: '', costo: 0 }];
+  otrosGastoList: { nombre: string, costo: number }[] = [{ nombre: '', costo: 0 }];
   margenBeneficio: number = 0;
   impuestos: number = 0;
   costoProduccion: number | null = null;
@@ -151,26 +151,45 @@ export class ChartsPage implements OnInit {
   }
 
   agregarMateriaPrima() {
-    this.materiasPrimas.push({ nombre: '', costo: 0 });
+    this.materiasPrimas.push({ nombre: '', costo: 0, unidad: '', cantidad: 0 });
+  }
+  quitarMateriaPrima() {
+    if (this.materiasPrimas.length > 1) {
+      this.materiasPrimas.splice(this.materiasPrimas.length - 1, 1);
+    }
   }
 
   agregarManoDeObra() {
     this.manoDeObraList.push({ nombre: '', costo: 0 });
   }
-
-  agregarCostosIndirectos() {
-    this.costosIndirectosList.push({ nombre: '', costo: 0 });
+  quitarManoDeObra() {
+    if (this.manoDeObraList.length > 1) {
+      this.manoDeObraList.splice(this.manoDeObraList.length - 1, 1);
+    }
   }
 
-  agregarOtrosCostos() {
-    this.otrosCostosList.push({ nombre: '', costo: 0 });
+  agregarCostosIndirectos() {
+    this.costosIndirectosList.push({ nombre: '', costo: 0  });
+  }
+  quitarCostosIndirectos() {
+    if (this.costosIndirectosList.length > 1) {
+      this.costosIndirectosList.splice(this.costosIndirectosList.length - 1, 1);
+    }
+  }
+  agregarGasto() {
+    this.otrosGastoList.push({ nombre: '', costo: 0 });
+  }
+  quitarGasto() {
+    if (this.otrosGastoList.length > 1) {
+      this.otrosGastoList.splice(this.otrosGastoList.length - 1, 1);
+    }
   }
 
   calcular() {
     const costoMateriasPrimas = this.materiasPrimas.reduce((total, materia) => total + (materia.costo || 0), 0);
     const totalManoDeObra = this.manoDeObraList.reduce((total, mano) => total + (mano.costo || 0), 0);
     const totalCostosIndirectos = this.costosIndirectosList.reduce((total, costo) => total + (costo.costo || 0), 0);
-    const totalOtrosCostos = this.otrosCostosList.reduce((total, costo) => total + (costo.costo || 0), 0);
+    const totalOtrosCostos = this.otrosGastoList.reduce((total, costo) => total + (costo.costo || 0), 0);
     const totalOtrosGastos = totalManoDeObra + totalCostosIndirectos + totalOtrosCostos;
 
     this.costoProduccion = costoMateriasPrimas + totalOtrosGastos;
@@ -234,7 +253,7 @@ export class ChartsPage implements OnInit {
   // Validar datos antes de enviarlos
   if (!this.txt_producto || !this.margenBeneficio || !this.impuestos || !this.costoProduccion || 
       !this.costoFabrica || !this.costoDistribucion || !this.pvp || !this.materiasPrimas.length || 
-      !this.manoDeObraList.length || !this.costosIndirectosList.length || !this.otrosCostosList.length) {
+      !this.manoDeObraList.length || !this.costosIndirectosList.length || !this.otrosGastoList.length) {
     this.authService.showToast('Por favor, completa todos los campos antes de guardar.');
     return;
   }
@@ -252,7 +271,7 @@ export class ChartsPage implements OnInit {
     materiasPrimas: this.materiasPrimas,
     manoDeObraList: this.manoDeObraList,
     costosIndirectosList: this.costosIndirectosList,
-    otrosCostosList: this.otrosCostosList
+    otrosGastoList: this.otrosGastoList
   };
 
   try {
@@ -263,7 +282,7 @@ export class ChartsPage implements OnInit {
 
       // Método 1: Navegar a la misma página (actualiza el componente)
       this.router.navigate(['/listacostos']).then(() => {
-        //window.location.reload(); // Refresca completamente la página
+        window.location.reload(); // Refresca completamente la página
       });
 
       // Método 2: Recargar la página completamente
@@ -278,7 +297,7 @@ export class ChartsPage implements OnInit {
 }
 
 async mostrarMensajeRegistroExitoso() {
-  this.authService.showToast2('Éxito, Datos registrados correctamente');
+  const toast = await this.toastService.presentToast('Éxito', '¡Datos registrados correctamente!', 'top', 'success', 3000);
 }
 
 }

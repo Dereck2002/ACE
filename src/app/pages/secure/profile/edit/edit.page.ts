@@ -112,37 +112,38 @@ export class EditPage implements OnInit {
   }
 
   // Update profile picture
-  async updateProfilePicture() {
-    const actionSheet = await this.actionSheetController.create({
-      header: 'Elija una foto existente o tome una nueva',
-      cssClass: 'custom-action-sheet',
-      buttons: [
-        {
-          text: 'Elegir de la galería',
-          icon: 'images',
-          handler: () => {
-            const inputElement = document.createElement('input');
-            inputElement.type = 'file';
-            inputElement.accept = 'image/*';
-            inputElement.click();
+ async updateProfilePicture() {
+  const actionSheet = await this.actionSheetController.create({
+    header: 'Elija una foto existente o tome una nueva',
+    cssClass: 'custom-action-sheet',
+    buttons: [
+      {
+        text: 'Elegir de la galería',
+        icon: 'images',
+        handler: () => {
+          const inputElement = document.createElement('input');
+          inputElement.type = 'file';
+          inputElement.accept = 'image/*';
+          inputElement.click();
 
-            inputElement.addEventListener('change', async (event: any) => {
-              const file = event.target.files[0];
-              this.img = event.target.files[0];
-              if (file) {
-                const reader = new FileReader();
-                reader.onload = async (e: any) => {
-                  this.imgUrl = e.target.result;
-                };
-                reader.readAsDataURL(file);
-              }
-            });
-          },
+          inputElement.addEventListener('change', async (event: any) => {
+            const file = event.target.files[0];
+            this.img = file;
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = async (e: any) => {
+                this.imgUrl = e.target.result;
+              };
+              reader.readAsDataURL(file);
+            }
+          });
         },
-        {
-          text: 'Tomar foto',
-          icon: 'camera',
-          handler: async () => {
+      },
+      {
+        text: 'Tomar foto',
+        icon: 'camera',
+        handler: async () => {
+          try {
             const image = await Camera.getPhoto({
               quality: 90,
               allowEditing: true,
@@ -150,19 +151,23 @@ export class EditPage implements OnInit {
               source: CameraSource.Camera,
             });
             this.imgUrl = image.dataUrl;
-            this.img = this.dataURLtoBlob(image.dataUrl); // Convert data URL to Blob
+            this.img = this.dataURLtoBlob(image.dataUrl);
             console.log(image);
-          },
+          } catch (error) {
+            console.error('Error tomando foto:', error);
+            this.toastService.presentToast('Error', 'No se pudo tomar la foto. Intente de nuevo.', 'top', 'danger', 2000);
+          }
         },
-        {
-          text: 'Cancelar',
-          icon: 'close',
-          role: 'cancel',
-        },
-      ],
-    });
-    await actionSheet.present();
-  }
+      },
+      {
+        text: 'Cancelar',
+        icon: 'close',
+        role: 'cancel',
+      },
+    ],
+  });
+  await actionSheet.present();
+}
 
   dataURLtoBlob(dataurl: string) {
     const arr = dataurl.split(',');

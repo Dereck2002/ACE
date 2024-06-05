@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 04-06-2024 a las 16:52:44
+-- Tiempo de generación: 05-06-2024 a las 15:59:00
 -- Versión del servidor: 10.4.27-MariaDB
 -- Versión de PHP: 8.2.0
 
@@ -323,7 +323,7 @@ CREATE TABLE `contrasenia_reset` (
 
 INSERT INTO `contrasenia_reset` (`correo_persona`, `token`, `created_at`) VALUES
 ('steevenflores2019@gmail.com', '03466b364c45f7ed777f4fc5e471bae48c18e800b1508629f959fb3980b9f6178bad2efd83a942888559719b0f4fbaf4018b', '2024-06-01 00:26:42'),
-('jaramilloderek13@gmail.com', '011252114561b41bf6dd9ce6e7c0246fb2fff9ac2084fdb26bed87c8264e9c58b2bbbd48766d26e52e71b84c446b77553d03', '2024-06-01 04:32:00');
+('andrescarlos988@gmail.com', '5b8da529b09f34f4bbc08668957e9db77504c8731af2c0dc712853af9d17e0ac890ebd87ed5034043b37e099dba745369cdd', '2024-06-05 13:57:49');
 
 -- --------------------------------------------------------
 
@@ -699,8 +699,8 @@ CREATE TABLE `persona` (
 --
 
 INSERT INTO `persona` (`cod_persona`, `ci_persona`, `cod_tipoced_persona`, `nom_persona`, `ape_persona`, `fecha_nacimiento`, `edad_persona`, `ecivil_persona`, `etnia_persona`, `dis_persona`, `tipo_dis_persona`, `porcentaje_dis_persona`, `ncarnet_dis_persona`, `ocupacion_persona`, `cod_nacionalidad_persona`, `cod_ciudad_persona`, `cod_provincia_persona`, `parroquia_persona`, `barrio_persona`, `calle1_persona`, `calle2_persona`, `neducacion_persona`, `genero_persona`, `clave_persona`, `correo_persona`, `telefono_persona`, `cod_rol_persona`, `img_perfil`) VALUES
-(105, '1005037492', 1, 'Dereck', 'Jaramillo', '2024-05-12', 21, 'soltero', 'Afro Ecuatoriana', '', '', '', '', 'Estudiante', 51, 15, 11, 'El sagrario', 'bariio 10 de agosto', 'esfdv', 'sdfsd', 'dsfdgvdx', 'masculino', 'e10adc3949ba59abbe56e057f20f883e', 'jaramilloderek13@gmail.com', '0983288443', 1, ''),
-(106, '1050243920', 1, 'Carlos', 'Guevara', '2024-05-15', 21, 'divorciado', 'Mestiza', '', '', '', '', 'Jubilado', 51, 15, 11, 'El sagrario', 'El Vergel', 'Padre Raimundo de Santacruz 3-30', 'Cristóbal Colón', 'Secundaria', 'masculino', 'e10adc3949ba59abbe56e057f20f883e', 'andrescarlos988@gmail.com', '0968569654', 2, ''),
+(105, '1005037492', 1, 'Dereck', 'Jaramillo', '2024-05-12', 21, 'soltero', 'Afro Ecuatoriana', '', '', '', '', 'Estudiante', 51, 15, 11, 'El sagrario', 'bariio 10 de agosto', 'esfdv', 'sdfsd', 'dsfdgvdx', 'masculino', 'e10adc3949ba59abbe56e057f20f883e', 'jaramilloderek13@gmail.com', '0983288443', 1, 'http://localhost/ACE/WsMunicipioIonic/uploads/avatar_user_1005037492.jpg'),
+(106, '1050243920', 1, 'Carlos', 'Guevara', '2024-05-15', 21, 'divorciado', 'Mestiza', '', '', '', '', 'Jubilado', 51, 15, 11, 'El sagrario', 'El Vergel', 'Padre Raimundo de Santacruz 3-30', 'Cristóbal Colón', 'Secundaria', 'masculino', 'e10adc3949ba59abbe56e057f20f883e', 'andrescarlos988@gmail.com', '0968569654', 2, 'http://localhost/ACE/WsMunicipioIonic/uploads/avatar_user_1050243920.jpg'),
 (208, '1002219895', 1, 'Silvana', 'Linto', '1979-06-08', 44, 'soltero', 'Mestiza', 'Si', 'Visual', '70%', '235764352', 'Servidor Público', 51, 15, 11, 'zxvxc', 'vcvb', 'cvbcvb', 'xcvcb', 'Cuarto Nivel', 'femenino', '25d55ad283aa400af464c76d713c07ad', 'john.doe23@mail.com', '0997179693', 2, ''),
 (209, '1050225018', 2, 'wqarsef', 'sdfdsg', '2024-05-06', 0, 'casado', 'cv nfnvbnvbn', 'Si', 'nvbnvbnv', 'vbnvbnvb', 'vbnvbnvbn', 'vbnvbnvbnvbn', 51, 15, 11, 'vbnvbn', 'nvbnvbnvbn', 'vbnvbnvb', 'vbnvbnvbn', 'Ninguno', 'vbnvbnvbn', '25d55ad283aa400af464c76d713c07ad', 'swdasfsd2@mail.com', '0987654321', 2, ''),
 (210, '0401404512', 1, 'Widinson', 'Pabon', '2004-04-24', 20, 'casado', 'Afro Ecuatoriana', 'No', '', '', '', 'asfsd', 51, 15, 11, 'sdfsdf', 'sdfsd', 'sdfsd', 'sdfs', 'Bachillerato', 'masculino', '25d55ad283aa400af464c76d713c07ad', 'john.doe23@mail.com', '0987654321', 2, '');

@@ -8,16 +8,13 @@
     <ion-title color="light" style="text-align: center; flex: 1;">Costos de Producción</ion-title>
     <ion-buttons slot="start">
       <ion-button color="light" routerLink="/listacostos">
-        <ion-icon name="arrow-back-outline"></ion-icon> 
+        <ion-icon name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-
 <ion-content [fullscreen]="true">
-  
-
   <div class="ion-padding">
     <ion-card color="medium">
       <ion-card-header>
@@ -40,56 +37,142 @@
       </ion-card-header>
       <ion-card-content>
         <!-- Registro de materias primas -->
-        <div *ngFor="let materiaPrima of materiasPrimas; let i = index">
-          <ion-item>
-            <ion-label position="floating">Nombre de Materia Prima</ion-label>
-            <ion-input [(ngModel)]="materiasPrimas[i].nombre" (ionChange)="calcular()"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-label position="floating">Costo</ion-label>
-            <ion-input [(ngModel)]="materiasPrimas[i].costo" type="number" (ionChange)="calcular()"></ion-input>
-          </ion-item>
-        </div>
-        <ion-button color="tertiary" expand="full" (click)="agregarMateriaPrima()">Agregar Materia Prima</ion-button>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Materias Primas</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div *ngFor="let materiaPrima of materiasPrimas; let i = index">
+              <ion-item>
+                <ion-label position="floating">Nombre de Materia Prima</ion-label>
+                <ion-input [(ngModel)]="materiasPrimas[i].nombre" (ionChange)="calcular()"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="floating">Costo</ion-label>
+                <ion-input [(ngModel)]="materiasPrimas[i].costo" type="number" (ionChange)="calcular()"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="floating">Unidad de Medida</ion-label>
+                <ion-select [(ngModel)]="materiasPrimas[i].unidad" (ionChange)="calcular()">
+                  <ion-select-option value="unid">Unidades (unid)</ion-select-option>
+                  <ion-select-option value="pcs">Piezas (pcs)</ion-select-option>
+                  <ion-select-option value="pk">Paquetes (pk)</ion-select-option>
+                  <ion-select-option value="dz">Docenas (dz)</ion-select-option>
+                  <ion-select-option value="kg">Kilogramos (kg)</ion-select-option>
+                  <ion-select-option value="g">Gramos (g)</ion-select-option>
+                  <ion-select-option value="t">Toneladas (t)</ion-select-option>
+                  <ion-select-option value="lb">Libras (lb)</ion-select-option>
+                  <ion-select-option value="oz">Onzas (oz)</ion-select-option>
+                  <ion-select-option value="L">Litros (L)</ion-select-option>
+                  <ion-select-option value="mL">Mililitros (mL)</ion-select-option>
+                  <ion-select-option value="gal">Galones (gal)</ion-select-option>
+                  <ion-select-option value="bbl">Barriles (bbl)</ion-select-option>
+                  <ion-select-option value="m³">Metros cúbicos (m³)</ion-select-option>
+                  <ion-select-option value="m">Metros (m)</ion-select-option>
+                  <ion-select-option value="cm">Centímetros (cm)</ion-select-option>
+                  <ion-select-option value="mm">Milímetros (mm)</ion-select-option>
+                  <ion-select-option value="in">Pulgadas (in)</ion-select-option>
+                  <ion-select-option value="ft">Pies (ft)</ion-select-option>
+                  <ion-select-option value="m²">Metros cuadrados (m²)</ion-select-option>
+                  <ion-select-option value="ft²">Pies cuadrados (ft²)</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <ion-item *ngIf="materiasPrimas[i].unidad">
+                <ion-label position="floating">Cantidad Utilizada</ion-label>
+                <ion-input [(ngModel)]="materiasPrimas[i].cantidad" type="number" (ionChange)="calcular()"></ion-input>
+              </ion-item>
+            </div>
+            <div class="button-container">
+              <ion-button color="tertiary" expand="small" (click)="agregarMateriaPrima()">
+                <ion-icon style="margin-right: 5px;" name="add-circle-outline"></ion-icon>Agregar
+              </ion-button>
+              <ion-button color="warning" expand="small" (click)="quitarMateriaPrima()">
+                <ion-icon style="margin-right: 5px;" name="close-circle-outline"></ion-icon>Quitar
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
 
         <!-- Mano de Obra -->
-        <div *ngFor="let manoDeObra of manoDeObraList; let i = index">
-          <ion-item>
-            <ion-label position="floating">Nombre de Mano de Obra</ion-label>
-            <ion-input [(ngModel)]="manoDeObraList[i].nombre" (ionChange)="calcular()"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-label position="floating">Costo</ion-label>
-            <ion-input [(ngModel)]="manoDeObraList[i].costo" type="number" (ionChange)="calcular()"></ion-input>
-          </ion-item>
-        </div>
-        <ion-button color="tertiary" expand="full" (click)="agregarManoDeObra()">Agregar Mano de Obra</ion-button>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Mano de Obra</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div *ngFor="let manoDeObra of manoDeObraList; let i = index">
+              <ion-item>
+                <ion-label position="floating">Nombre de Mano de Obra</ion-label>
+                <ion-input [(ngModel)]="manoDeObraList[i].nombre" (ionChange)="calcular()"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="floating">Costo</ion-label>
+                <ion-input [(ngModel)]="manoDeObraList[i].costo" type="number" (ionChange)="calcular()"></ion-input>
+              </ion-item>
+            </div>
+            <div class="button-container">
+              <ion-button color="tertiary" expand="small" (click)="agregarManoDeObra()">
+                <ion-icon style="margin-right: 5px;" name="add-circle-outline"></ion-icon>Agregar
+              </ion-button>
+              <ion-button color="warning" expand="small" (click)="quitarManoDeObra()">
+                <ion-icon style="margin-right: 5px;" name="close-circle-outline"></ion-icon>Quitar
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
 
-        <!-- Costos Indirectos de Fabricacion -->
-        <div *ngFor="let costoIndirecto of costosIndirectosList; let i = index">
-          <ion-item>
-            <ion-label position="floating">Nombre del Costo Indirecto</ion-label>
-            <ion-input [(ngModel)]="costosIndirectosList[i].nombre" (ionChange)="calcular()"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-label position="floating">Costo</ion-label>
-            <ion-input [(ngModel)]="costosIndirectosList[i].costo" type="number" (ionChange)="calcular()"></ion-input>
-          </ion-item>
-        </div>
-        <ion-button color="tertiary" expand="full" (click)="agregarCostosIndirectos()">Agregar Costo Indirecto</ion-button>
+        <!-- Costos Indirectos de Fabricación -->
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Costos Indirectos de Fabricación</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div *ngFor="let costoIndirecto of costosIndirectosList; let i = index">
+              <ion-item>
+                <ion-label position="floating">Nombre del Costo Indirecto</ion-label>
+                <ion-input [(ngModel)]="costosIndirectosList[i].nombre" (ionChange)="calcular()"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="floating">Costo</ion-label>
+                <ion-input [(ngModel)]="costosIndirectosList[i].costo" type="number" (ionChange)="calcular()"></ion-input>
+              </ion-item>
+            </div>
+            <div class="button-container">
+              <ion-button color="tertiary" expand="small" (click)="agregarCostosIndirectos()">
+                <ion-icon style="margin-right: 5px;" name="add-circle-outline"></ion-icon>Agregar
+              </ion-button>
+              <ion-button color="warning" expand="small" (click)="quitarCostosIndirectos()">
+                <ion-icon style="margin-right: 5px;" name="close-circle-outline"></ion-icon>Quitar
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
 
         <!-- Otros Costos -->
-        <div *ngFor="let otroCosto of otrosCostosList; let i = index">
-          <ion-item>
-            <ion-label position="floating">Nombre de Costos Generales</ion-label>
-            <ion-input [(ngModel)]="otrosCostosList[i].nombre" (ionChange)="calcular()"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-label position="floating">Costo</ion-label>
-            <ion-input [(ngModel)]="otrosCostosList[i].costo" type="number" (ionChange)="calcular()"></ion-input>
-          </ion-item>
-        </div>
-        <ion-button color="tertiary" expand="full" (click)="agregarOtrosCostos()">Agregar Otro Costo</ion-button>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Otros Costos</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div *ngFor="let otroCosto of otrosGastoList; let i = index">
+              <ion-item>
+                <ion-label position="floating">Nombre de Gastos Generales</ion-label>
+                <ion-input [(ngModel)]="otrosGastoList[i].nombre" (ionChange)="calcular()"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="floating">Costo</ion-label>
+                <ion-input [(ngModel)]="otrosGastoList[i].costo" type="number" (ionChange)="calcular()"></ion-input>
+              </ion-item>
+            </div>
+            <div class="button-container">
+              <ion-button color="tertiary" expand="small" (click)="agregarGasto()">
+                <ion-icon style="margin-right: 5px;" name="add-circle-outline"></ion-icon>Agregar
+              </ion-button>
+              <ion-button color="warning" expand="small" (click)="quitarGasto()">
+                <ion-icon style="margin-right: 5px;" name="close-circle-outline"></ion-icon>Quitar
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
 
         <!-- Márgenes y impuestos -->
         <ion-item>
@@ -118,14 +201,9 @@
           <ion-label>PVP</ion-label>
           <ion-badge color="success" slot="end">{{ pvp | currency }}</ion-badge>
         </ion-item>
-        
       </ion-card-content>
-      
-        <ion-button class="button-container" color="danger" expand="small" (click)="guardarDatos()">Guardar</ion-button>
+
+      <ion-button class="button-container" color="danger" expand="small" (click)="guardarDatos()">Guardar</ion-button>
     </ion-card>
-    
   </div>
-   <!-- Botón de Guardar -->
-   
-   
 </ion-content>
