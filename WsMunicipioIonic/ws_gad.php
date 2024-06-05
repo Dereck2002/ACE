@@ -27,6 +27,7 @@ if(isset($post['accion'])) {
                     'nombre' => $row['nom_persona'],
                     'apellido' => $row['ape_persona'],
                     'correo' => $row['correo_persona'],
+                    'img_perfil' => $row['img_perfil'],
                 );
                 $respuesta = json_encode(array('estado' => true, 'persona' => $datos));
             } else {
@@ -267,18 +268,15 @@ if($post['accion']=='lproductos')
     echo $respuesta;
 }
 
-if ($post['accion']=='actnombre'){
-    $sentencia=sprintf("UPDATE persona SET nom_persona = '%s', ape_persona = '%s'  WHERE ci_persona ='%s'",$post['nombre'],$post['apellido'],$post['cedula']);
-    $rs=mysqli_query($mysqli,$sentencia);
-    
-    if($rs)
-    {
-        $respuesta = json_encode(array('estado'=>true, 'mensaje2'=>'Se actualizaron los datos.'));
-    }
-    else
-    {
-        $error=$mysqli->error;
-        $respuesta=json_encode(array('estado'=>false, 'mensaje'=>'Error al actualizar los datos.'));
+if ($post['accion'] == 'actnombre') {
+    $sentencia = sprintf("UPDATE persona SET nom_persona = '%s', ape_persona = '%s', img_perfil = '%s'  WHERE ci_persona ='%s'", $post['nombre'], $post['apellido'], $post['imgUrl'], $post['cedula']);
+    $rs = mysqli_query($mysqli, $sentencia);
+
+    if ($rs) {
+        $respuesta = json_encode(array('estado' => true, 'mensaje2' => 'Se actualizaron los datos.'));
+    } else {
+        $error = $mysqli->error;
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al actualizar los datos.'));
     }
     echo $respuesta;
 }

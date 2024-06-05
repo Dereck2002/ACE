@@ -27,6 +27,10 @@ export class AuthService {
     return this.http.post(this.server, JSON.stringify(body), options);
   }
 
+  public uploadIMG(formData: FormData) {
+    return this.http.post(`http://localhost/ACE/WsMunicipioIonic/ws_img.php`, formData);
+  }
+
   async creatSession(id: string, valor: string) {
     await Storage.set({
       key: id,
@@ -105,7 +109,7 @@ export class AuthService {
   }
 
   public showToast2(message: string) {
-    this.toastQueue.push({ message, duration: 800, position: 'top', color: 'success' });
+    this.toastQueue.push({ message, duration: 500, position: 'top', color: 'success' });
     this.processQueue();
   }
 }

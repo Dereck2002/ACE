@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 export class AjustesPage implements OnInit {
   nombre: string="";
   correo: string="";
+  imgUrl: any;
 
   constructor(
     private authService: AuthService,
@@ -28,6 +29,10 @@ export class AjustesPage implements OnInit {
     this.authService.getSession('correo').then((res:any)=>{
         this.correo=res;
         
+        });
+
+        this.authService.getSession("imgUrl").then((res: any) => {
+          this.imgUrl = res;
         });
       
       

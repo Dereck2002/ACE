@@ -90,6 +90,7 @@ export class LoginPage implements OnInit {
       this.authService.creatSession('apellido', res.persona[0].apellido);
       this.authService.creatSession('cedula', res.persona[0].cedula);
       this.authService.creatSession('correo', res.persona[0].correo);
+      this.authService.creatSession("imgUrl", res.persona[0].img_perfil);
       this.authService.showToast2('Bienvenido');
       this.router.navigate(['/home']);
     }
