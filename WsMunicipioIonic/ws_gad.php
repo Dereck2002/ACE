@@ -91,7 +91,7 @@ if(isset($post['accion'])) {
     echo $respuesta;
 }
 
-//Nueva acción para recuperación de contraseña
+// Nueva acción para recuperación de contraseña
 if ($post['accion'] == 'recuperar_contrasena') {
     if (isset($post['cedula']) && !empty($post['cedula'])) {
         $cedula = mysqli_real_escape_string($mysqli, $post['cedula']);
@@ -106,11 +106,12 @@ if ($post['accion'] == 'recuperar_contrasena') {
             $email = $row['correo_persona'];
             $token = bin2hex(random_bytes(50)); // Genera un token único
 
-            // Ajuste de la consulta para usar la columna correcta
+            // Eliminar cualquier token previo para este correo
             $stmt = $mysqli->prepare("DELETE FROM contrasenia_reset WHERE correo_persona = ?");
             $stmt->bind_param('s', $email);
             $stmt->execute();
 
+            // Insertar el nuevo token en la base de datos
             $stmt = $mysqli->prepare("INSERT INTO contrasenia_reset (correo_persona, token) VALUES (?, ?)");
             $stmt->bind_param('ss', $email, $token);
             $stmt->execute();
@@ -127,75 +128,75 @@ if ($post['accion'] == 'recuperar_contrasena') {
                 $mail->Password = 'njctmhjncngjvwui'; // Reemplaza esto por una contraseña de aplicación de Gmail
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                 $mail->Port = 587;
-            
+
                 // Habilita el modo de depuración
                 $mail->SMTPDebug = 2; // 0 = off (producción), 1 = mensajes del cliente, 2 = mensajes del cliente y del servidor
                 $mail->Debugoutput = 'html'; // Formato de salida de la depuración
-            
+
                 $mail->setFrom('flowltm@gmail.com', 'CAAAAAA');
                 $mail->addAddress($email);
-            
-                $mail->isHTML(true);
-$mail->Subject = 'Solicitud de Restablecimiento de Contraseña';
 
-$mail->Body = "
-<!DOCTYPE html>
-<html lang='es'>
-<head>
-    <meta charset='UTF-8'>
-    <style>
-        .container {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            padding: 20px;
-            text-align: center;
-        }
-        .header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 0;
-        }
-        .content {
-            background-color: white;
-            padding: 20px;
-            margin-top: 10px;
-        }
-        .button {
-            background-color: #000000; /* Color negro */
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            display: inline-block;
-            margin-top: 20px;
-        }
-        .footer {
-            color: #777;
-            margin-top: 20px;
-        }
-    </style>
-</head>
-<body>
-    <div class='container'>
-        <div class='header'>
-            <h1>Solicitud de Restablecimiento de Contraseña</h1>
-        </div>
-        <div class='content'>
-            <p>Hola,</p>
-            <p>Recibimos una solicitud para restablecer tu contraseña. Si no realizaste esta solicitud, puedes ignorar este correo.</p>
-            <p>Para restablecer tu contraseña, haz clic en el siguiente enlace:</p>
-            <a href='$resetLink' class='button'>Restablecer Contraseña</a>
-            <p>Este enlace expirará en 1 hora.</p>
-        </div>
-        <div class='footer'>
-            <p>Gracias por confiar en nosotros.</p>
-            <p>El equipo de Soporte</p>
-        </div>
-    </div>
-</body>
-</html>
-";
-            
+                $mail->isHTML(true);
+                $mail->Subject = 'Solicitud de Restablecimiento de Contraseña';
+
+                $mail->Body = "
+                <!DOCTYPE html>
+                <html lang='es'>
+                <head>
+                    <meta charset='UTF-8'>
+                    <style>
+                        .container {
+                            font-family: Arial, sans-serif;
+                            background-color: #f2f2f2;
+                            padding: 20px;
+                            text-align: center;
+                        }
+                        .header {
+                            background-color: #4CAF50;
+                            color: white;
+                            padding: 10px 0;
+                        }
+                        .content {
+                            background-color: white;
+                            padding: 20px;
+                            margin-top: 10px;
+                        }
+                        .button {
+                            background-color: #000000; /* Color negro */
+                            color: white;
+                            padding: 10px 20px;
+                            text-decoration: none;
+                            border-radius: 5px;
+                            display: inline-block;
+                            margin-top: 20px;
+                        }
+                        .footer {
+                            color: #777;
+                            margin-top: 20px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class='container'>
+                        <div class='header'>
+                            <h1>Solicitud de Restablecimiento de Contraseña</h1>
+                        </div>
+                        <div class='content'>
+                            <p>Hola,</p>
+                            <p>Recibimos una solicitud para restablecer tu contraseña. Si no realizaste esta solicitud, puedes ignorar este correo.</p>
+                            <p>Para restablecer tu contraseña, haz clic en el siguiente enlace:</p>
+                            <a href='$resetLink' class='button'>Restablecer Contraseña</a>
+                            <p>Este enlace expirará en 1 hora.</p>
+                        </div>
+                        <div class='footer'>
+                            <p>Gracias por confiar en nosotros.</p>
+                            <p>El equipo de Soporte</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                ";
+
                 $mail->send();
                 $respuesta = json_encode(array('estado' => true, 'mensaje' => "Se ha enviado un enlace de recuperación de contraseña a su correo electrónico."));
             } catch (Exception $e) {
@@ -244,6 +245,7 @@ if ($post['accion'] == 'nueva_contrasena') {
     }
     echo $respuesta;
 }
+
 
 if($post['accion']=='lproductos')
 {
