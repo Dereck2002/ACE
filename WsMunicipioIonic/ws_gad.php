@@ -376,11 +376,15 @@ if ($post['accion'] == 'guardar_costos_produccion') {
         $error_occurred = false;
 
         // Función para ejecutar las inserciones
-        function insert_data($mysqli, $producto_id, $data, $table) {
+        function insert_data($mysqli, $producto_id, $data, $table, $include_unidad_cantidad = false) {
             foreach ($data as $item) {
                 $nombre = mysqli_real_escape_string($mysqli, $item['nombre']);
                 $costo = (float)$item['costo'];
-                $query = "INSERT INTO $table (producto_id, nombre, costo) VALUES ($producto_id, '$nombre', $costo)";
+                $unidad = $include_unidad_cantidad ? mysqli_real_escape_string($mysqli, $item['unidad']) : null;
+                $cantidad = $include_unidad_cantidad ? (float)$item['cantidad'] : null;
+                $query = $include_unidad_cantidad 
+                    ? "INSERT INTO $table (producto_id, nombre, costo, unidad, cantidad) VALUES ($producto_id, '$nombre', $costo, '$unidad', $cantidad)"
+                    : "INSERT INTO $table (producto_id, nombre, costo) VALUES ($producto_id, '$nombre', $costo)";
                 if (!mysqli_query($mysqli, $query)) {
                     return false;
                 }
@@ -389,7 +393,7 @@ if ($post['accion'] == 'guardar_costos_produccion') {
         }
 
         // Inserta las materias primas
-        if (!insert_data($mysqli, $producto_id, $materias_primas, 'materias_primas')) $error_occurred = true;
+        if (!insert_data($mysqli, $producto_id, $materias_primas, 'materias_primas', true)) $error_occurred = true;
 
         // Inserta la mano de obra
         if (!$error_occurred && !insert_data($mysqli, $producto_id, $mano_de_obra, 'mano_de_obra')) $error_occurred = true;
@@ -415,7 +419,6 @@ if ($post['accion'] == 'guardar_costos_produccion') {
     // Envía la respuesta
     echo $respuesta;
 }
-
 
 if ($post['accion'] == 'eliminarProducto') {
     $producto_id = (int)$post['productoId'];

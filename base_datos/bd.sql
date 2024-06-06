@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 05-06-2024 a las 15:59:00
+-- Tiempo de generación: 06-06-2024 a las 04:34:38
 -- Versión del servidor: 10.4.27-MariaDB
 -- Versión de PHP: 8.2.0
 
@@ -323,7 +323,10 @@ CREATE TABLE `contrasenia_reset` (
 
 INSERT INTO `contrasenia_reset` (`correo_persona`, `token`, `created_at`) VALUES
 ('steevenflores2019@gmail.com', '03466b364c45f7ed777f4fc5e471bae48c18e800b1508629f959fb3980b9f6178bad2efd83a942888559719b0f4fbaf4018b', '2024-06-01 00:26:42'),
-('andrescarlos988@gmail.com', '5b8da529b09f34f4bbc08668957e9db77504c8731af2c0dc712853af9d17e0ac890ebd87ed5034043b37e099dba745369cdd', '2024-06-05 13:57:49');
+('andrescarlos988@gmail.com', '5b8da529b09f34f4bbc08668957e9db77504c8731af2c0dc712853af9d17e0ac890ebd87ed5034043b37e099dba745369cdd', '2024-06-05 13:57:49'),
+('jaramilloderek13@gmail.com', '386576d4cb68f1a2d787f02fadf1c8436e6ffa9fe2fa7726ee4f98dff4e008b761fd5a6b50452f60e918d128fdd12c6ba8ff', '2024-06-06 01:58:03'),
+('guillojj80@gmail.com', '1f9e36e9e71297041a42e49ff37a60c10a25cf22cc672eef6012ee8aff3f36b15e12e9680a12dc9e5580c4038121bed9bc57', '2024-06-06 02:02:02'),
+('soniapabon2016@gmail.com', '0441a8313d5d951cce2c3eac457b36bb912a55bd544c12447a15efde15621827145efa98a675d3ee51d0d24a4bdd1c97a6b4', '2024-06-06 02:02:57');
 
 -- --------------------------------------------------------
 
@@ -347,15 +350,11 @@ INSERT INTO `costos_indirectos` (`id`, `producto_id`, `nombre`, `costo`) VALUES
 (16, 16, 'XVBCV', '1.00'),
 (18, 18, 'raspadora', '0.09'),
 (26, 26, 'wdwef', '0.90'),
-(33, 33, '', '1.00'),
-(38, 38, '', '0.00'),
-(40, 40, '', '0.00'),
-(41, 41, '', '0.00'),
-(42, 42, '', '0.00'),
-(43, 43, '', '0.00'),
-(45, 45, '', '0.00'),
-(46, 46, '', '0.00'),
-(47, 47, '', '0.00');
+(53, 53, 'ss', '0.15'),
+(54, 54, '', '1.00'),
+(55, 55, 'dsfs', '0.01'),
+(56, 56, '', '1.00'),
+(57, 57, '', '1.00');
 
 -- --------------------------------------------------------
 
@@ -378,15 +377,11 @@ INSERT INTO `mano_de_obra` (`id`, `producto_id`, `nombre`, `costo`) VALUES
 (18, 18, 'mezclar', '0.25'),
 (19, 18, '', '0.00'),
 (27, 26, 'wqdw', '0.10'),
-(34, 33, '', '1.00'),
-(39, 38, '', '1.00'),
-(41, 40, '', '1.00'),
-(42, 41, '', '1.00'),
-(43, 42, '', '0.00'),
-(44, 43, '', '0.00'),
-(46, 45, '', '0.00'),
-(47, 46, '', '1.00'),
-(48, 47, '', '0.00');
+(54, 53, 'ss', '0.10'),
+(55, 54, '', '1.00'),
+(56, 55, 'wefw', '0.05'),
+(57, 56, '', '1.00'),
+(58, 57, '', '1.00');
 
 -- --------------------------------------------------------
 
@@ -398,28 +393,29 @@ CREATE TABLE `materias_primas` (
   `id` int(11) NOT NULL,
   `producto_id` int(11) DEFAULT NULL,
   `nombre` varchar(255) NOT NULL,
-  `costo` decimal(10,2) NOT NULL
+  `costo` decimal(10,2) NOT NULL,
+  `unidad` varchar(50) NOT NULL,
+  `cantidad` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `materias_primas`
 --
 
-INSERT INTO `materias_primas` (`id`, `producto_id`, `nombre`, `costo`) VALUES
-(15, 15, 'xbcvv', '1.00'),
-(16, 16, 'DGDFH', '1.00'),
-(18, 18, 'Agua', '0.10'),
-(19, 18, 'clorantes', '0.01'),
-(27, 26, 'sfsd', '0.10'),
-(34, 33, '', '0.00'),
-(39, 38, '', '0.00'),
-(41, 40, '', '0.00'),
-(42, 41, '', '0.00'),
-(43, 42, '', '1.00'),
-(44, 43, '', '1.00'),
-(46, 45, 'hy', '1.00'),
-(47, 46, '', '1.00'),
-(48, 47, '', '1.00');
+INSERT INTO `materias_primas` (`id`, `producto_id`, `nombre`, `costo`, `unidad`, `cantidad`) VALUES
+(15, 15, 'xbcvv', '1.00', '', 0),
+(16, 16, 'DGDFH', '1.00', '', 0),
+(18, 18, 'Agua', '0.10', '', 0),
+(19, 18, 'clorantes', '0.01', '', 0),
+(27, 26, 'sfsd', '0.10', '', 0),
+(58, 53, 'papas', '0.10', '', 0),
+(59, 54, 'Saborisante', '0.03', '', 0),
+(60, 54, 'colorante', '0.50', '', 0),
+(61, 54, 'agua', '0.01', '', 0),
+(62, 55, 'papas', '0.10', '', 0),
+(63, 55, 'sal', '0.15', '', 0),
+(64, 56, '', '1.00', 'lb', 0),
+(65, 57, '', '0.00', 'kg', 1);
 
 -- --------------------------------------------------------
 
@@ -647,15 +643,10 @@ INSERT INTO `otros_gastos` (`id`, `producto_id`, `nombre`, `costo`) VALUES
 (3, 16, 'CBCVB', '1.00'),
 (5, 18, '', '0.06'),
 (13, 26, 'wqdwe', '0.09'),
-(20, 33, '', '1.00'),
-(25, 38, '', '0.00'),
-(27, 40, '', '0.00'),
-(28, 41, '', '0.00'),
-(29, 42, '', '2.00'),
-(30, 43, '', '0.00'),
-(32, 45, '', '0.00'),
-(33, 46, '', '0.00'),
-(34, 47, '', '1.00');
+(37, 54, '', '1.00'),
+(38, 55, 'sdfs', '0.01'),
+(39, 56, '', '1.00'),
+(40, 57, '', '1.00');
 
 -- --------------------------------------------------------
 
@@ -703,7 +694,8 @@ INSERT INTO `persona` (`cod_persona`, `ci_persona`, `cod_tipoced_persona`, `nom_
 (106, '1050243920', 1, 'Carlos', 'Guevara', '2024-05-15', 21, 'divorciado', 'Mestiza', '', '', '', '', 'Jubilado', 51, 15, 11, 'El sagrario', 'El Vergel', 'Padre Raimundo de Santacruz 3-30', 'Cristóbal Colón', 'Secundaria', 'masculino', 'e10adc3949ba59abbe56e057f20f883e', 'andrescarlos988@gmail.com', '0968569654', 2, 'http://localhost/ACE/WsMunicipioIonic/uploads/avatar_user_1050243920.jpg'),
 (208, '1002219895', 1, 'Silvana', 'Linto', '1979-06-08', 44, 'soltero', 'Mestiza', 'Si', 'Visual', '70%', '235764352', 'Servidor Público', 51, 15, 11, 'zxvxc', 'vcvb', 'cvbcvb', 'xcvcb', 'Cuarto Nivel', 'femenino', '25d55ad283aa400af464c76d713c07ad', 'john.doe23@mail.com', '0997179693', 2, ''),
 (209, '1050225018', 2, 'wqarsef', 'sdfdsg', '2024-05-06', 0, 'casado', 'cv nfnvbnvbn', 'Si', 'nvbnvbnv', 'vbnvbnvb', 'vbnvbnvbn', 'vbnvbnvbnvbn', 51, 15, 11, 'vbnvbn', 'nvbnvbnvbn', 'vbnvbnvb', 'vbnvbnvbn', 'Ninguno', 'vbnvbnvbn', '25d55ad283aa400af464c76d713c07ad', 'swdasfsd2@mail.com', '0987654321', 2, ''),
-(210, '0401404512', 1, 'Widinson', 'Pabon', '2004-04-24', 20, 'casado', 'Afro Ecuatoriana', 'No', '', '', '', 'asfsd', 51, 15, 11, 'sdfsdf', 'sdfsd', 'sdfsd', 'sdfs', 'Bachillerato', 'masculino', '25d55ad283aa400af464c76d713c07ad', 'john.doe23@mail.com', '0987654321', 2, '');
+(210, '0401404512', 1, 'Widinson', 'Pabon', '2004-04-24', 20, 'casado', 'Afro Ecuatoriana', 'No', '', '', '', 'asfsd', 51, 15, 11, 'sdfsdf', 'sdfsd', 'sdfsd', 'sdfs', 'Bachillerato', 'masculino', '25d55ad283aa400af464c76d713c07ad', 'soniapabon2016@gmail.com', '0987654321', 2, ''),
+(211, '1002401501', 1, 'Guillermo ', 'Jaramillo', '1939-06-05', 85, 'casado', 'Afro Ecuatoriana', 'No', '', '', '', 'Servidor Público', 51, 15, 11, 'dfvcfsdgdf', 'fdgdfg', 'fdgfdg', 'dfgdfg', 'Bachillerato', 'masculino', '25d55ad283aa400af464c76d713c07ad', 'guillojj80@gmail.com', '0959606539', 2, '');
 
 -- --------------------------------------------------------
 
@@ -730,15 +722,11 @@ CREATE TABLE `productos` (
 INSERT INTO `productos` (`id`, `id_persona`, `nombre`, `margen_beneficio`, `impuestos`, `costo_produccion`, `costo_fabrica`, `costo_distribucion`, `pvp`) VALUES
 (18, 105, 'Raspado de Hielo', '35.00', '15.00', '0.51', '0.68', '1.06', '1.65'),
 (26, 210, 'Papas', '35.00', '15.00', '1.19', '1.61', '2.49', '3.87'),
-(33, 105, 'hola', '35.00', '15.00', '3.00', '4.05', '6.29', '9.76'),
-(38, 105, 'fgfc', '35.00', '15.00', '1.00', '1.35', '2.10', '3.25'),
-(40, 105, 'dcfvgbhj', '5.00', '5.00', '1.00', '1.05', '1.16', '1.28'),
-(41, 105, 'dcfvgbhj', '5.00', '5.00', '1.00', '1.05', '1.16', '1.28'),
-(42, 105, 'fdyhf', '35.00', '15.00', '3.00', '4.05', '6.29', '9.76'),
-(43, 105, 'zdgxf', '35.00', '15.00', '1.00', '1.35', '2.10', '3.25'),
-(45, 105, 'gj', '1.00', '1.00', '1.00', '1.01', '1.03', '1.05'),
-(46, 105, 'fg', '1.00', '1.00', '2.00', '2.02', '2.06', '2.10'),
-(47, 105, 'dg', '1.00', '1.00', '2.00', '2.02', '2.06', '2.10');
+(53, 105, 'Papas', '35.00', '15.00', '0.35', '0.47', '0.73', '1.14'),
+(54, 105, 'Helados', '35.00', '15.00', '3.54', '4.78', '7.42', '11.52'),
+(55, 211, 'Papas', '35.00', '15.00', '0.32', '0.43', '0.66', '1.03'),
+(56, 105, 'dsgdfg', '15.00', '15.00', '4.00', '4.60', '6.08', '8.05'),
+(57, 105, 'Capuchino', '35.00', '15.00', '3.00', '4.05', '6.29', '9.76');
 
 -- --------------------------------------------------------
 
@@ -916,19 +904,19 @@ ALTER TABLE `ciudades`
 -- AUTO_INCREMENT de la tabla `costos_indirectos`
 --
 ALTER TABLE `costos_indirectos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
 
 --
 -- AUTO_INCREMENT de la tabla `mano_de_obra`
 --
 ALTER TABLE `mano_de_obra`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
 
 --
 -- AUTO_INCREMENT de la tabla `materias_primas`
 --
 ALTER TABLE `materias_primas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
 
 --
 -- AUTO_INCREMENT de la tabla `nacionalidades`
@@ -940,19 +928,19 @@ ALTER TABLE `nacionalidades`
 -- AUTO_INCREMENT de la tabla `otros_gastos`
 --
 ALTER TABLE `otros_gastos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT de la tabla `persona`
 --
 ALTER TABLE `persona`
-  MODIFY `cod_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=211;
+  MODIFY `cod_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=212;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
 
 --
 -- AUTO_INCREMENT de la tabla `provincias`
