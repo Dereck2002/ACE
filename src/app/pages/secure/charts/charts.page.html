@@ -53,33 +53,37 @@
               </ion-item>
               <ion-item>
                 <ion-label position="floating">Unidad de Medida</ion-label>
-                <ion-select [(ngModel)]="materiasPrimas[i].unidad" (ionChange)="calcular()">
-                  <ion-select-option value="unid">Unidades (unid)</ion-select-option>
-                  <ion-select-option value="pcs">Piezas (pcs)</ion-select-option>
-                  <ion-select-option value="pk">Paquetes (pk)</ion-select-option>
-                  <ion-select-option value="dz">Docenas (dz)</ion-select-option>
+                <ion-select [(ngModel)]="materiasPrimas[i].unidad" (ionChange)="calcular()" interface="popover">
+                  <ion-select-option value="" disabled selected hidden>Seleccionar</ion-select-option>
+                
+                  <ion-label>Cantidad:</ion-label>
+                  <ion-select-option value="unid">Unidad (u)</ion-select-option>
+              
+                  <ion-label>Peso:</ion-label>
+                  <ion-select-option disabled value="">--Peso--</ion-select-option>
                   <ion-select-option value="kg">Kilogramos (kg)</ion-select-option>
                   <ion-select-option value="g">Gramos (g)</ion-select-option>
-                  <ion-select-option value="t">Toneladas (t)</ion-select-option>
                   <ion-select-option value="lb">Libras (lb)</ion-select-option>
                   <ion-select-option value="oz">Onzas (oz)</ion-select-option>
+                
+                  <ion-label>Volumen:</ion-label>
+                  <ion-select-option disabled value="">--Volumen--</ion-select-option>
                   <ion-select-option value="L">Litros (L)</ion-select-option>
                   <ion-select-option value="mL">Mililitros (mL)</ion-select-option>
-                  <ion-select-option value="gal">Galones (gal)</ion-select-option>
-                  <ion-select-option value="bbl">Barriles (bbl)</ion-select-option>
                   <ion-select-option value="m³">Metros cúbicos (m³)</ion-select-option>
+                
+                  <ion-label>Longitud:</ion-label>
+                  <ion-select-option disabled value="">--Longitud--</ion-select-option>
                   <ion-select-option value="m">Metros (m)</ion-select-option>
                   <ion-select-option value="cm">Centímetros (cm)</ion-select-option>
                   <ion-select-option value="mm">Milímetros (mm)</ion-select-option>
                   <ion-select-option value="in">Pulgadas (in)</ion-select-option>
-                  <ion-select-option value="ft">Pies (ft)</ion-select-option>
-                  <ion-select-option value="m²">Metros cuadrados (m²)</ion-select-option>
-                  <ion-select-option value="ft²">Pies cuadrados (ft²)</ion-select-option>
                 </ion-select>
               </ion-item>
-              <ion-item *ngIf="materiasPrimas[i].unidad">
-                <ion-label position="floating">Cantidad Utilizada</ion-label>
-                <ion-input [(ngModel)]="materiasPrimas[i].cantidad" type="number" (ionChange)="calcular()"></ion-input>
+              
+              <ion-item *ngIf="shouldShowCantidad(materiasPrimas[i].unidad)">
+                <ion-label position="floating">Cantidad</ion-label>
+                <ion-input [(ngModel)]="materiasPrimas[i].cantidad" type="number"></ion-input>
               </ion-item>
             </div>
             <div class="button-container">
@@ -150,12 +154,12 @@
         <!-- Otros Costos -->
         <ion-card>
           <ion-card-header>
-            <ion-card-title>Otros Costos</ion-card-title>
+            <ion-card-title>Gastos Generales</ion-card-title>
           </ion-card-header>
           <ion-card-content>
             <div *ngFor="let otroCosto of otrosGastoList; let i = index">
               <ion-item>
-                <ion-label position="floating">Nombre de Gastos Generales</ion-label>
+                <ion-label position="floating">Nombre de Gasto General</ion-label>
                 <ion-input [(ngModel)]="otrosGastoList[i].nombre" (ionChange)="calcular()"></ion-input>
               </ion-item>
               <ion-item>
@@ -198,7 +202,7 @@
           <ion-badge style="color: white;" slot="end">{{ costoDistribucion | currency }}</ion-badge>
         </ion-item>
         <ion-item color="medium" *ngIf="pvp !== null">
-          <ion-label>PVP</ion-label>
+          <ion-label>PVP(recomendado)</ion-label>
           <ion-badge color="success" slot="end">{{ pvp | currency }}</ion-badge>
         </ion-item>
       </ion-card-content>

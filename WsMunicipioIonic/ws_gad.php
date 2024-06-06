@@ -356,7 +356,7 @@ if ($post['accion'] == 'guardar_costos_produccion') {
     $materias_primas = $post['materiasPrimas'];
     $mano_de_obra = $post['manoDeObraList'];
     $costos_indirectos = $post['costosIndirectosList'];
-    $otros_gastos = $post['otrosCostosList'];
+    $otros_gastos = $post['otrosGastoList']; // Cambiado de otrosCostosList a otrosGastoList
     $margen_beneficio = (float)$post['margenBeneficio'];
     $impuestos = (float)$post['impuestos'];
     $costo_produccion = (float)$post['costoProduccion'];
@@ -368,7 +368,7 @@ if ($post['accion'] == 'guardar_costos_produccion') {
     mysqli_begin_transaction($mysqli);
 
     // Inserta el producto en la tabla productos
-    $query = "INSERT INTO productos (id_persona,nombre, margen_beneficio, impuestos, costo_produccion, costo_fabrica, costo_distribucion, pvp)
+    $query = "INSERT INTO productos (id_persona, nombre, margen_beneficio, impuestos, costo_produccion, costo_fabrica, costo_distribucion, pvp)
               VALUES ('$codigo_persona','$producto', $margen_beneficio, $impuestos, $costo_produccion, $costo_fabrica, $costo_distribucion, $pvp)";
 
     if (mysqli_query($mysqli, $query)) {

@@ -15,10 +15,6 @@ import { Router } from '@angular/router';
 })
 export class ChartsPage implements OnInit {
   codigo: string="";
-  materiasPrimas: { nombre: string, costo: number, unidad: string, cantidad: number  }[] = [{ nombre: '', costo: 0, unidad: '', cantidad: 0 }];
-  manoDeObraList: { nombre: string, costo: number }[] = [{ nombre: '', costo: 0 }];
-  costosIndirectosList: { nombre: string, costo: number }[] = [{ nombre: '', costo: 0 }];
-  otrosGastoList: { nombre: string, costo: number }[] = [{ nombre: '', costo: 0 }];
   margenBeneficio: number = 0;
   impuestos: number = 0;
   costoProduccion: number | null = null;
@@ -26,7 +22,11 @@ export class ChartsPage implements OnInit {
   costoDistribucion: number | null = null;
   pvp: number | null = null;
   txt_producto: string = '';
-
+  materiasPrimas: Array<{ nombre: string; costo: number; unidad: string; cantidad?: number }> = [{ nombre: '', costo: 0, unidad: '' }];
+  manoDeObraList: Array<{ nombre: string; costo: number }> = [{ nombre: '', costo: 0 }];
+  costosIndirectosList: Array<{ nombre: string; costo: number }> = [{ nombre: '', costo: 0 }];
+  otrosGastoList: Array<{ nombre: string; costo: number }> = [{ nombre: '', costo: 0 }
+  ];
   @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
 
   public barChartOptions: ChartConfiguration['options'] = {
@@ -149,42 +149,48 @@ export class ChartsPage implements OnInit {
       this.content_loaded = true;
     }, 2000);
   }
-
-  agregarMateriaPrima() {
-    this.materiasPrimas.push({ nombre: '', costo: 0, unidad: '', cantidad: 0 });
+  shouldShowCantidad(unidad: string): boolean {
+    return unidad !== 'unid' && unidad !== '';
   }
+  agregarMateriaPrima() {
+    this.materiasPrimas.push({ nombre: '', costo: 0, unidad: '' });
+  }
+
   quitarMateriaPrima() {
     if (this.materiasPrimas.length > 1) {
-      this.materiasPrimas.splice(this.materiasPrimas.length - 1, 1);
+      this.materiasPrimas.pop();
     }
   }
 
   agregarManoDeObra() {
     this.manoDeObraList.push({ nombre: '', costo: 0 });
   }
+
   quitarManoDeObra() {
     if (this.manoDeObraList.length > 1) {
-      this.manoDeObraList.splice(this.manoDeObraList.length - 1, 1);
+      this.manoDeObraList.pop();
     }
   }
 
   agregarCostosIndirectos() {
-    this.costosIndirectosList.push({ nombre: '', costo: 0  });
+    this.costosIndirectosList.push({ nombre: '', costo: 0 });
   }
+
   quitarCostosIndirectos() {
     if (this.costosIndirectosList.length > 1) {
-      this.costosIndirectosList.splice(this.costosIndirectosList.length - 1, 1);
-    }
-  }
-  agregarGasto() {
-    this.otrosGastoList.push({ nombre: '', costo: 0 });
-  }
-  quitarGasto() {
-    if (this.otrosGastoList.length > 1) {
-      this.otrosGastoList.splice(this.otrosGastoList.length - 1, 1);
+      this.costosIndirectosList.pop();
     }
   }
 
+  agregarGasto() {
+    this.otrosGastoList.push({ nombre: '', costo: 0 });
+  }
+
+  quitarGasto() {
+    if (this.otrosGastoList.length > 1) {
+      this.otrosGastoList.pop();
+    }
+  }
   calcular() {
     const costoMateriasPrimas = this.materiasPrimas.reduce((total, materia) => total + (materia.costo || 0), 0);
     const totalManoDeObra = this.manoDeObraList.reduce((total, mano) => total + (mano.costo || 0), 0);
