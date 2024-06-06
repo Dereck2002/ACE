@@ -31,10 +31,10 @@
       <ion-col class="data">{{ producto.pvp }}</ion-col>
       <ion-col class="data actions">
         <div class="action-buttons">
-          <ion-button size="small" fill="clear" color="tertiary" routerLink="/editproducto" >
+          <ion-button size="small" fill="clear" color="tertiary" (click)="irEditar(producto.codigo)" >
             <ion-icon slot="icon-only" name="create-outline"></ion-icon>
           </ion-button>
-          <ion-button size="small" fill="clear" color="danger" (click)="eliminarProducto(producto.id)">
+          <ion-button size="small" fill="clear" color="danger" (click)="eliminarProducto(producto.codigo)">
             <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
           </ion-button>
         </div>

@@ -257,7 +257,7 @@ if($post['accion']=='lproductos')
         while($row=mysqli_fetch_array($rs)) 
         {
             $datos[]=array(
-                'id'=>$row['id'],
+                'codigo'=>$row['id'],
                 'nombre'=>$row['nombre'],
                 'pvp'=>$row['pvp']
             );
@@ -419,6 +419,107 @@ if ($post['accion'] == 'guardar_costos_produccion') {
     // Envía la respuesta
     echo $respuesta;
 }
+
+if ($post['accion'] == 'consultarDatoProductos') {
+    $id_producto = $post['id'];
+    $datos_producto = [];
+    
+    $sentencia = "
+    SELECT 
+        p.id as codigo,
+        p.nombre,
+        p.margen_beneficio as margenBeneficio,
+        p.impuestos,
+        p.costo_produccion as costoProduccion,
+        p.costo_fabrica as costoFabrica,
+        p.costo_distribucion as costoDistribucion,
+        p.pvp,
+        mp.nombre as mp_nombre, mp.costo as mp_costo, mp.unidad as mp_unidad, mp.cantidad as mp_cantidad,
+        mo.nombre as mo_nombre, mo.costo as mo_costo,
+        ci.nombre as ci_nombre, ci.costo as ci_costo,
+        og.nombre as og_nombre, og.costo as og_costo
+    FROM 
+        productos p
+    LEFT JOIN 
+        materias_primas mp ON p.id = mp.producto_id
+    LEFT JOIN 
+        mano_de_obra mo ON p.id = mo.producto_id
+    LEFT JOIN 
+        costos_indirectos ci ON p.id = ci.producto_id
+    LEFT JOIN 
+        otros_gastos og ON p.id = og.producto_id
+    WHERE 
+        p.id = '$id_producto'
+    ";
+
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $materias_primas = [];
+        $mano_de_obra = [];
+        $costos_indirectos = [];
+        $otros_costos = [];
+        $datos_producto = null;
+
+        while ($row = mysqli_fetch_assoc($result)) {
+            if (is_null($datos_producto)) {
+                $datos_producto = array(
+                    'codigo' => $row['codigo'],
+                    'nombre' => $row['nombre'],
+                    'margenBeneficio' => $row['margenBeneficio'],
+                    'impuestos' => $row['impuestos'],
+                    'costoProduccion' => $row['costoProduccion'],
+                    'costoFabrica' => $row['costoFabrica'],
+                    'costoDistribucion' => $row['costoDistribucion'],
+                    'pvp' => $row['pvp'],
+                    'materiasPrimas' => [],
+                    'manoDeObraList' => [],
+                    'costosIndirectosList' => [],
+                    'otrosCostosList' => []
+                );
+            }
+
+            if ($row['mp_nombre']) {
+                $materias_primas[] = array(
+                    'txt_nombre' => $row['mp_nombre'],
+                    'txt_costo' => $row['mp_costo'],
+                    'txt_unidad' => $row['mp_unidad'],
+                    'txt_cantidad' => $row['mp_cantidad']
+                );
+            }
+            if ($row['mo_nombre']) {
+                $mano_de_obra[] = array(
+                    'txt_nombre' => $row['mo_nombre'],
+                    'txt_costo' => $row['mo_costo']
+                );
+            }
+            if ($row['ci_nombre']) {
+                $costos_indirectos[] = array(
+                    'txt_nombre' => $row['ci_nombre'],
+                    'txt_costo' => $row['ci_costo']
+                );
+            }
+            if ($row['og_nombre']) {
+                $otros_costos[] = array(
+                    'txt_nombre' => $row['og_nombre'],
+                    'txt_costo' => $row['og_costo']
+                );
+            }
+        }
+
+        $datos_producto['materiasPrimas'] = $materias_primas;
+        $datos_producto['manoDeObraList'] = $mano_de_obra;
+        $datos_producto['costosIndirectosList'] = $costos_indirectos;
+        $datos_producto['otrosCostosList'] = $otros_costos;
+
+        $respuesta = json_encode(array('estado' => true, 'productos' => [$datos_producto]));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => "No existe"));
+    }
+    
+    echo $respuesta;
+}
+
 
 if ($post['accion'] == 'eliminarProducto') {
     $producto_id = (int)$post['productoId'];

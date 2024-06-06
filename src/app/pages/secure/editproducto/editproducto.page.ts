@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { Router } from '@angular/router';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-editproducto',
@@ -15,17 +16,18 @@ import { Router } from '@angular/router';
 })
 export class EditproductoPage implements OnInit {
   codigo: string = "";
-  materiasPrimas: { nombre: string, costo: number }[] = [{ nombre: '', costo: 0 }];
-  manoDeObraList: { nombre: string, costo: number }[] = [{ nombre: '', costo: 0 }];
-  costosIndirectosList: { nombre: string, costo: number }[] = [{ nombre: '', costo: 0 }];
-  otrosCostosList: { nombre: string, costo: number }[] = [{ nombre: '', costo: 0 }];
-  margenBeneficio: number = 0;
-  impuestos: number = 0;
+  txt_producto: string = '';
+  materiasPrimas: { txt_nombre: string, txt_costo: number, txt_unidad: string, txt_cantidad: number }[] = [{ txt_nombre: '', txt_costo: 0, txt_unidad: '', txt_cantidad: 0 }];
+  manoDeObraList: { txt_nombre: string, txt_costo: number }[] = [{ txt_nombre: '', txt_costo: 0 }];
+  costosIndirectosList: { txt_nombre: string, txt_costo: number }[] = [{ txt_nombre: '', txt_costo: 0 }];
+  otrosCostosList: { txt_nombre: string, txt_costo: number }[] = [{ txt_nombre: '', txt_costo: 0 }];
+  txt_margenBeneficio: number = 0;
+  txt_impuestos: number = 0;
   costoProduccion: number | null = null;
   costoFabrica: number | null = null;
   costoDistribucion: number | null = null;
   pvp: number | null = null;
-  txt_producto: string = '';
+  
   nombre: string = '';
 
   @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
@@ -105,19 +107,70 @@ export class EditproductoPage implements OnInit {
 
   constructor(
     private helperService: HelperService,
+    public navCtrl: NavController,
     private http: HttpClient,
     private alertController: AlertController,
     private authService: AuthService,
     private toastService: ToastService,
     private router: Router,
   ) {
-    this.authService.getSession('codigo').then((res: any) => {
+    this.authService.getSession('id').then((res: any) => {
       this.codigo = res;
+      this.consultarDato(this.codigo);
     });
   }
 
   ngOnInit() {
     this.createBarChart();
+  }
+
+  async consultarDato(codigo: string) {
+    let datos = {
+      accion: "consultarDatoProductos",
+      id: codigo
+    };
+
+    this.authService.postData(datos).subscribe((res: any) => {
+      if (res.estado == true) {
+        this.codigo = res.productos[0].codigo;
+        this.txt_producto = res.productos[0].nombre;
+        this.txt_margenBeneficio = res.productos[0].margenBeneficio;
+        this.txt_impuestos = res.productos[0].impuestos;
+        this.costoProduccion = res.productos[0].costoProduccion;
+        this.costoFabrica = res.productos[0].costoProduccion;
+        this.costoDistribucion = res.productos[0].costoDistribucion;
+        this.pvp = res.productos[0].pvp;
+
+        // Asignar valores a materiasPrimas
+        this.materiasPrimas = res.productos[0].materiasPrimas.map((item: any) => ({
+          txt_nombre: item.txt_nombre,
+          txt_costo: item.txt_costo,
+          txt_unidad: item.txt_unidad,
+          txt_cantidad: item.txt_cantidad
+        }));
+
+        // Asignar valores a manoDeObraList
+        this.manoDeObraList = res.productos[0].manoDeObraList.map((item: any) => ({
+          txt_nombre: item.txt_nombre,
+          txt_costo: item.txt_costo
+        }));
+
+        // Asignar valores a costosIndirectosList
+        this.costosIndirectosList = res.productos[0].costosIndirectosList.map((item: any) => ({
+          txt_nombre: item.txt_nombre,
+          txt_costo: item.txt_costo
+        }));
+
+        // Asignar valores a otrosCostosList
+        this.otrosCostosList = res.productos[0].otrosCostosList.map((item: any) => ({
+          txt_nombre: item.txt_nombre,
+          txt_costo: item.txt_costo
+        }));
+
+      } else {
+        this.authService.showToast(res.mensaje);
+      }
+    });
   }
 
   ionViewDidEnter() {
@@ -127,26 +180,56 @@ export class EditproductoPage implements OnInit {
   }
 
   agregarMateriaPrima() {
-    this.materiasPrimas.push({ nombre: '', costo: 0 });
+    this.materiasPrimas.push({ txt_nombre: '', txt_costo: 0, txt_unidad: '', txt_cantidad: 0 });
+  }
+  quitarMateriaPrima() {
+    if (this.materiasPrimas.length > 1) {
+      this.materiasPrimas.pop();
+    }
   }
 
   agregarManoDeObra() {
-    this.manoDeObraList.push({ nombre: '', costo: 0 });
+    this.manoDeObraList.push({ txt_nombre: '', txt_costo: 0 });
+  }
+  quitarManoDeObra() {
+    if (this.manoDeObraList.length > 1) {
+      this.manoDeObraList.pop();
+    }
   }
 
   agregarCostosIndirectos() {
-    this.costosIndirectosList.push({ nombre: '', costo: 0 });
+    this.costosIndirectosList.push({ txt_nombre: '', txt_costo: 0 });
+  }
+
+  quitarCostosIndirectos() {
+    if (this.costosIndirectosList.length > 1) {
+      this.costosIndirectosList.pop();
+    }
+  }
+
+  agregarGasto() {
+    this.otrosCostosList.push({ txt_nombre: '', txt_costo: 0 });
+  }
+
+  quitarGasto() {
+    if (this.otrosCostosList.length > 1) {
+      this.otrosCostosList.pop();
+    }
   }
 
   agregarOtrosCostos() {
-    this.otrosCostosList.push({ nombre: '', costo: 0 });
+    this.otrosCostosList.push({ txt_nombre: '', txt_costo: 0 });
   }
+  shouldShowCantidad(unidad: string): boolean {
+    return unidad !== 'unid' && unidad !== '';
+  }
+  
 
   calcular() {
-    const costoMateriasPrimas = this.materiasPrimas.reduce((total, materia) => total + (materia.costo || 0), 0);
-    const totalManoDeObra = this.manoDeObraList.reduce((total, mano) => total + (mano.costo || 0), 0);
-    const totalCostosIndirectos = this.costosIndirectosList.reduce((total, costo) => total + (costo.costo || 0), 0);
-    const totalOtrosCostos = this.otrosCostosList.reduce((total, costo) => total + (costo.costo || 0), 0);
+    const costoMateriasPrimas = this.materiasPrimas.reduce((total, materia) => total + (materia.txt_costo || 0), 0);
+    const totalManoDeObra = this.manoDeObraList.reduce((total, mano) => total + (mano.txt_costo || 0), 0);
+    const totalCostosIndirectos = this.costosIndirectosList.reduce((total, costo) => total + (costo.txt_costo || 0), 0);
+    const totalOtrosCostos = this.otrosCostosList.reduce((total, costo) => total + (costo.txt_costo || 0), 0);
     const totalOtrosGastos = totalManoDeObra + totalCostosIndirectos + totalOtrosCostos;
 
     this.costoProduccion = costoMateriasPrimas + totalOtrosGastos;
@@ -157,8 +240,8 @@ export class EditproductoPage implements OnInit {
     console.log('Total de otros costos:', totalOtrosCostos);
     console.log('Costo de producción:', this.costoProduccion);
 
-    const beneficio = this.costoProduccion * (this.margenBeneficio / 100);
-    const impuestosCalculados = this.costoProduccion * (this.impuestos / 100);
+    const beneficio = this.costoProduccion * (this.txt_margenBeneficio / 100);
+    const impuestosCalculados = this.costoProduccion * (this.txt_impuestos / 100);
 
     this.costoFabrica = this.costoProduccion + beneficio;
     this.costoDistribucion = this.costoFabrica + impuestosCalculados;
@@ -200,8 +283,8 @@ export class EditproductoPage implements OnInit {
     ];
   }
 
-  async guardarDatos() {
-    if (!this.txt_producto || !this.margenBeneficio || !this.impuestos || !this.costoProduccion ||
+  async editarProducto() {
+    if (!this.txt_producto || !this.txt_margenBeneficio || !this.txt_impuestos || !this.costoProduccion ||
       !this.costoFabrica || !this.costoDistribucion || !this.pvp || !this.materiasPrimas.length ||
       !this.manoDeObraList.length || !this.costosIndirectosList.length || !this.otrosCostosList.length) {
       this.authService.showToast('Por favor, completa todos los campos antes de guardar.');
@@ -212,8 +295,8 @@ export class EditproductoPage implements OnInit {
       accion: "editarProducto",
       codigo: this.codigo,
       nombre: this.txt_producto,
-      margenBeneficio: this.margenBeneficio,
-      impuestos: this.impuestos,
+      margenBeneficio: this.txt_margenBeneficio,
+      impuestos: this.txt_impuestos,
       costoProduccion: this.costoProduccion,
       costoFabrica: this.costoFabrica,
       costoDistribucion: this.costoDistribucion,
@@ -237,6 +320,10 @@ export class EditproductoPage implements OnInit {
     } catch (error) {
       this.authService.showToast('Error al guardar los datos. Por favor, intenta de nuevo.');
     }
+  }
+  
+  regresar() {
+    this.navCtrl.back();
   }
 
   async mostrarMensajeRegistroExitoso() {

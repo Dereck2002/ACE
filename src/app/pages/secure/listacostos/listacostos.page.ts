@@ -3,6 +3,7 @@ import { AuthService } from 'src/app/services/auth/auth.service';
 import { AlertController } from '@ionic/angular';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { Router } from '@angular/router';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-listacostos',
@@ -17,6 +18,7 @@ export class ListacostosPage implements OnInit {
 
   constructor(
     private authService: AuthService,
+    public navCtrl: NavController,
     private alertController: AlertController,
     private toastService: ToastService,
     private router: Router
@@ -27,7 +29,20 @@ export class ListacostosPage implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  async ngOnInit() {
+    await this.initializeData();
+  }
+
+  async initializeData() {
+    try {
+      const res = await this.authService.getSession('codigo');
+      this.codigo = res;
+      await this.lproductos(this.codigo);
+    } catch (error) {
+      console.error('Error al inicializar los datos', error);
+      this.authService.showToast('Error al cargar los datos. Por favor, intenta de nuevo.');
+    }
+  }
 
   lproductos(codigo: string) {
     let datos = {
@@ -43,17 +58,17 @@ export class ListacostosPage implements OnInit {
       }
     });
   }
+  irEditar(codigo:string) {
+    this.navCtrl.navigateRoot(['/editproducto']);
+    this.authService.creatSession("id", codigo);
+  }
+  Recargar(){}
 
   filterProductos(event: any) {
     const searchTerm = event.target.value.toLowerCase();
     this.Productos = this.productos.filter((producto: any) => {
       return producto.nombre.toLowerCase().includes(searchTerm);
     });
-  }
-
-  editarProducto(producto: any) {
-    console.log('Editar producto', producto);
-    this.router.navigate(['/editar-producto', producto.id]);
   }
 
   async eliminarProducto(productoId: string) {
@@ -82,6 +97,7 @@ export class ListacostosPage implements OnInit {
               if (res.estado) {
                 this.authService.showToast2("Producto eliminado con éxito");
                 this.lproductos(this.codigo); // Actualiza la lista de productos
+                window.location.reload();
               } else {
                 this.authService.showToast(res.mensaje);
               }

@@ -4,6 +4,7 @@ import { AuthService } from 'src/app/services/auth/auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { Router } from '@angular/router';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-login',
@@ -28,7 +29,8 @@ export class LoginPage implements OnInit {
     private loadingController: LoadingController,
     private formBuilder: FormBuilder,
     private toastService: ToastService,
-    private router: Router
+    private router: Router,
+    public navCtrl: NavController,
   ) { }
 
   ngOnInit() {
@@ -92,7 +94,9 @@ export class LoginPage implements OnInit {
       this.authService.creatSession('correo', res.persona[0].correo);
       this.authService.creatSession("imgUrl", res.persona[0].img_perfil);
       this.authService.showToast2('Bienvenido');
-      this.router.navigate(['/home']);
+      
+      this.navCtrl.navigateRoot(['/home']);
+      
     }
     
     else
