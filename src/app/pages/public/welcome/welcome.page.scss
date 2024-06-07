@@ -2,11 +2,11 @@
 @import 'swiper/css/bundle';
 
 app-welcome {
-  background-color: var(--ion-color-dark);
+  background-color: var(--ion-color-light);
 }
 
 app-welcome ion-content {
-  --background: linear-gradient(135deg, var(--ion-color-dark), var(--ion-color-primary));
+  --background: linear-gradient(150deg, var(--ion-color-light), var(--ion-color-medium));
 }
 
 app-welcome .swiper-welcome {
@@ -52,7 +52,7 @@ app-welcome swiper ion-icon {
   height: 100px;
   padding: 30px;
   border: 4px solid hsl(215deg 20% 58% / 25%);
-  background-color: var(--ion-color-primary)
+  background-color: var(--ion-color-primary);
 }
 
 app-welcome .swiper-pagination-bullet {
@@ -64,5 +64,63 @@ app-welcome .swiper-pagination-bullet-active {
 }
 
 app-welcome ion-footer {
-  background: linear-gradient(135deg, var(--ion-color-dark), var(--ion-color-primary));
+  background: linear-gradient(135deg, var(--ion-color-medium), var(--ion-color-medium));
+}
+
+.slide-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  animation-duration: 1s;
+}
+
+.icon {
+  font-size: 4rem;
+  margin-bottom: 10px;
+}
+
+.title {
+  font-size: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  animation-delay: 0.5s;
+}
+
+.subtitle {
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  animation-delay: 1s;
+}
+
+@media (max-width: 768px) {
+  .icon {
+    font-size: 3rem;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .subtitle {
+    font-size: 0.875rem;
+  }
+}
+
+/* Custom button style */
+.custom-button {
+  --color: white !important; /* Text color */
+  --background: var(--ion-color-secondary); /* Background color */
+  --background-activated: var(--ion-color-secondary-shade); /* Background color when activated */
+  --background-focused: var(--ion-color-secondary-tint); /* Background color when focused */
+  --background-hover: var(--ion-color-secondary-tint); /* Background color when hovered */
+  color: white !important; /* Force the text color to be white */
+}
+.custom-icon-background {
+  color: white;
+  background-color: rgb(219, 25, 25); /* Cambia este color por el azul que desees */
+  padding: 30px; /* Ajusta el espacio alrededor del icono según sea necesario */
+  border-radius: 50%; /* Esto crea un borde redondeado alrededor del icono */
 }

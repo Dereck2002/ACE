@@ -17,6 +17,7 @@ export class LoginPage implements OnInit {
   txt_clave:string="";
   clave:string="";
   claveType: string = 'password';
+  backgroundImage: string = "url('/assets/obelisco.png')";
 
 
   current_year: number = new Date().getFullYear();
@@ -112,4 +113,8 @@ export class LoginPage implements OnInit {
   togglePasswordVisibility(show: boolean): void {
     this.claveType = show ? 'text' : 'password';
   }
+  setBackgroundImage(imageUrl: string): void {
+    this.backgroundImage = `url('${imageUrl}')`;
+  }
+  
 }

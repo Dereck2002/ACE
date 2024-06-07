@@ -2,46 +2,21 @@
   <swiper class="swiper-welcome" #swiper [config]="config" (slideChange)="swiperSlideChanged($event)"
     (reachEnd)="onLastSlide()">
     <ng-template swiperSlide>
-      <ion-icon name="logo-ionic" class="animate__animated animate__fadeInDown"></ion-icon>
-
-      <h3 class="animate__animated animate__fadeInUp">
-        <ion-text color="light">APLICACION CONTABLE PARA EMPRENDEDORES</ion-text>
-      </h3>
-      <p class="animate__animated animate__fadeInUp">
-        <ion-text color="medium">Latest Ionic version starter theme. Experiencing the best of new features to start your project.</ion-text>
-      </p>
-    </ng-template>
-
-    <ng-template swiperSlide>
-      <ion-icon name="logo-capacitor" class="animate__animated animate__fadeInDown"></ion-icon>
-
-      <h3 class="animate__animated animate__fadeInUp">
-        <ion-text color="light">Capacitor Ready</ion-text>
-      </h3>
-      <p class="animate__animated animate__fadeInUp">
-        <ion-text color="medium">Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore optio mollitia sed sint quod, repellendus illum ex, doloribus, quis ipsam officiis hic saepe commodi? Ab porro laboriosam totam iure et.</ion-text>
-      </p>
-    </ng-template>
-
-    <ng-template swiperSlide>
-      <ion-icon name="stats-chart" class="animate__animated animate__fadeInDown"></ion-icon>
-
-      <h3 class="animate__animated animate__fadeInUp">
-        <ion-text color="light">Components Sample</ion-text>
-      </h3>
-      <p class="animate__animated animate__fadeInUp">
-        <ion-text color="medium">Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore optio mollitia sed sint quod, repellendus illum ex, doloribus, quis ipsam officiis hic saepe commodi? Ab porro laboriosam totam iure et.</ion-text>
-      </p>
+      <div class="slide-content">
+        <ion-icon name="storefront-outline" class="icon custom-icon-background animate_animated animate_fadeInDown"></ion-icon>
+        <h3 class="title animate_animated animate_fadeInUp">
+          <ion-text style="text-align: center;" color="dark">BIENVENIDOS A "ACE" APLICACIÓN CONTABLE PARA EMPRENDEDORES</ion-text>
+        </h3>
+        <p class="subtitle animate_animated animate_fadeInUp">
+          <ion-text color="dark">Tu aliado contable para simplificar las finanzas de tu emprendimiento.</ion-text>
+        </p>
+      </div>
     </ng-template>
   </swiper>
 </ion-content>
 
-<ion-footer class="ion-padding-bottom-large animate__animated animate__fadeInUp">
-  <ion-button class="ion-margin" expand="block" size="large" color="secondary" (click)="nextSlide()" *ngIf="!last_slide">
-    Siuiente
-    <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
-  </ion-button>
-  <ion-button class="ion-margin" expand="block" size="large" color="secondary" (click)="getStarted()" *ngIf="last_slide">
-    Get started
+<ion-footer class="ion-padding-bottom-large animate_animated animate_fadeInUp">
+  <ion-button color-text="light" class="ion-margin custom-button" expand="block" size="large" (click)="getStarted()" *ngIf="last_slide">
+    Empezar
   </ion-button>
 </ion-footer>
