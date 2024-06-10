@@ -16,6 +16,7 @@ import { NavController } from '@ionic/angular';
 })
 export class EditproductoPage implements OnInit {
   codigo: string = "";
+  productoId: number | null = null;
   txt_producto: string = '';
   materiasPrimas: { txt_nombre: string, txt_costo: number, txt_unidad: string, txt_cantidad: number }[] = [{ txt_nombre: '', txt_costo: 0, txt_unidad: '', txt_cantidad: 0 }];
   manoDeObraList: { txt_nombre: string, txt_costo: number }[] = [{ txt_nombre: '', txt_costo: 0 }];
@@ -27,32 +28,23 @@ export class EditproductoPage implements OnInit {
   costoFabrica: number | null = null;
   costoDistribucion: number | null = null;
   pvp: number | null = null;
-  
-  nombre: string = '';
+  content_loaded: boolean = false;
 
   @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
 
   public barChartOptions: ChartConfiguration['options'] = {
-    elements: {
-      line: { tension: 0.4 }
-    },
+    elements: { line: { tension: 0.4 } },
     animation: { easing: 'easeInOutElastic', delay: 25 },
     responsive: true,
     scales: {
       x: {
         grid: { color: '#ccc' },
-        ticks: {
-          color: '#666',
-          font: { family: 'Inter', weight: '500' }
-        }
+        ticks: { color: '#666', font: { family: 'Inter', weight: '500' } }
       },
       y: {
         position: 'right',
         grid: { color: '#ccc' },
-        ticks: {
-          color: '#666',
-          callback: value => '$' + value
-        }
+        ticks: { color: '#666', callback: value => '$' + value }
       }
     },
     plugins: {
@@ -103,8 +95,6 @@ export class EditproductoPage implements OnInit {
   public polarAreaLegend = true;
   public polarAreaChartType: ChartType = 'polarArea';
 
-  content_loaded: boolean = false;
-
   constructor(
     private helperService: HelperService,
     public navCtrl: NavController,
@@ -132,6 +122,8 @@ export class EditproductoPage implements OnInit {
 
     this.authService.postData(datos).subscribe((res: any) => {
       if (res.estado == true) {
+        // Asignar datos generales
+        this.productoId = res.productos[0].id;
         this.codigo = res.productos[0].codigo;
         this.txt_producto = res.productos[0].nombre;
         this.txt_margenBeneficio = res.productos[0].margenBeneficio;
@@ -141,36 +133,31 @@ export class EditproductoPage implements OnInit {
         this.costoDistribucion = res.productos[0].costoDistribucion;
         this.pvp = res.productos[0].pvp;
 
-        // Asignar valores a materiasPrimas
-        this.materiasPrimas = res.productos[0].materiasPrimas.map((item: any) => ({
-          txt_nombre: item.txt_nombre,
-          txt_costo: item.txt_costo,
-          txt_unidad: item.txt_unidad,
-          txt_cantidad: item.txt_cantidad
-        }));
+        // Filtrar y asignar datos de materias primas sin duplicados
+        this.materiasPrimas = this.filterUniqueItems(res.productos[0].materiasPrimas, 'txt_nombre');
 
-        // Asignar valores a manoDeObraList
-        this.manoDeObraList = res.productos[0].manoDeObraList.map((item: any) => ({
-          txt_nombre: item.txt_nombre,
-          txt_costo: item.txt_costo
-        }));
+        // Filtrar y asignar datos de mano de obra sin duplicados
+        this.manoDeObraList = this.filterUniqueItems(res.productos[0].manoDeObraList, 'txt_nombre');
 
-        // Asignar valores a costosIndirectosList
-        this.costosIndirectosList = res.productos[0].costosIndirectosList.map((item: any) => ({
-          txt_nombre: item.txt_nombre,
-          txt_costo: item.txt_costo
-        }));
+        // Filtrar y asignar datos de costos indirectos sin duplicados
+        this.costosIndirectosList = this.filterUniqueItems(res.productos[0].costosIndirectosList, 'txt_nombre');
 
-        // Asignar valores a otrosCostosList
-        this.otrosCostosList = res.productos[0].otrosCostosList.map((item: any) => ({
-          txt_nombre: item.txt_nombre,
-          txt_costo: item.txt_costo
-        }));
+        // Filtrar y asignar datos de otros costos sin duplicados
+        this.otrosCostosList = this.filterUniqueItems(res.productos[0].otrosCostosList, 'txt_nombre');
 
       } else {
         this.authService.showToast(res.mensaje);
       }
     });
+  }
+
+  // Función para filtrar elementos únicos por una propiedad específica
+  filterUniqueItems(array: any[], property: string): any[] {
+    return array.filter((item, index, self) =>
+      index === self.findIndex((t) => (
+        t[property] === item[property]
+      ))
+    );
   }
 
   ionViewDidEnter() {
@@ -182,6 +169,7 @@ export class EditproductoPage implements OnInit {
   agregarMateriaPrima() {
     this.materiasPrimas.push({ txt_nombre: '', txt_costo: 0, txt_unidad: '', txt_cantidad: 0 });
   }
+
   quitarMateriaPrima() {
     if (this.materiasPrimas.length > 1) {
       this.materiasPrimas.pop();
@@ -191,6 +179,7 @@ export class EditproductoPage implements OnInit {
   agregarManoDeObra() {
     this.manoDeObraList.push({ txt_nombre: '', txt_costo: 0 });
   }
+
   quitarManoDeObra() {
     if (this.manoDeObraList.length > 1) {
       this.manoDeObraList.pop();
@@ -217,116 +206,51 @@ export class EditproductoPage implements OnInit {
     }
   }
 
-  agregarOtrosCostos() {
-    this.otrosCostosList.push({ txt_nombre: '', txt_costo: 0 });
-  }
   shouldShowCantidad(unidad: string): boolean {
     return unidad !== 'unid' && unidad !== '';
   }
-  
 
   calcular() {
-    const costoMateriasPrimas = this.materiasPrimas.reduce((total, materia) => total + (materia.txt_costo || 0), 0);
-    const totalManoDeObra = this.manoDeObraList.reduce((total, mano) => total + (mano.txt_costo || 0), 0);
-    const totalCostosIndirectos = this.costosIndirectosList.reduce((total, costo) => total + (costo.txt_costo || 0), 0);
-    const totalOtrosCostos = this.otrosCostosList.reduce((total, costo) => total + (costo.txt_costo || 0), 0);
-    const totalOtrosGastos = totalManoDeObra + totalCostosIndirectos + totalOtrosCostos;
-
-    this.costoProduccion = costoMateriasPrimas + totalOtrosGastos;
-
-    console.log('Costo de materias primas:', costoMateriasPrimas);
-    console.log('Total de mano de obra:', totalManoDeObra);
-    console.log('Total de costos indirectos:', totalCostosIndirectos);
-    console.log('Total de otros costos:', totalOtrosCostos);
-    console.log('Costo de producción:', this.costoProduccion);
-
-    const beneficio = this.costoProduccion * (this.txt_margenBeneficio / 100);
-    const impuestosCalculados = this.costoProduccion * (this.txt_impuestos / 100);
-
-    this.costoFabrica = this.costoProduccion + beneficio;
-    this.costoDistribucion = this.costoFabrica + impuestosCalculados;
-
-    console.log('Costo de fábrica:', this.costoFabrica);
-    console.log('Costo de distribución:', this.costoDistribucion);
-
-    const costoTotal = this.costoProduccion + beneficio + impuestosCalculados;
-    console.log('Costo total:', costoTotal);
-
-    this.pvp = costoTotal;
-
-    console.log('PVP:', this.pvp);
+    const costoMateriasPrimas = this.materiasPrimas.reduce((total, materia) => total + (materia.txt_costo * materia.txt_cantidad), 0);
+    const costoManoDeObra = this.manoDeObraList.reduce((total, labor) => total + labor.txt_costo, 0);
+    const costoCostosIndirectos = this.costosIndirectosList.reduce((total, costo) => total + costo.txt_costo, 0);
+    const costoOtrosCostos = this.otrosCostosList.reduce((total, costo) => total + costo.txt_costo, 0);
+    
+    this.costoProduccion = costoMateriasPrimas + costoManoDeObra + costoCostosIndirectos + costoOtrosCostos;
+    this.costoFabrica = this.costoProduccion + (this.costoProduccion * (this.txt_margenBeneficio / 100));
+    this.costoDistribucion = this.costoFabrica + (this.costoFabrica * (this.txt_impuestos / 100));
+    this.pvp = this.costoDistribucion;
   }
 
-  createBarChart() {
-    const rand_numbers = [...Array(12)].map(e => Math.random() * 100 | 0);
-
-    this.barChartData.labels = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
-    this.barChartData.datasets = [
-      {
-        data: rand_numbers,
-        backgroundColor: context => {
-          const chart = context.chart;
-          const { ctx, chartArea } = chart;
-
-          if (!chartArea) {
-            return null;
-          }
-
-          return this.helperService.createGradientChart(ctx, 'tertiary', 'tertiary');
-        },
-        barThickness: 10,
-        borderRadius: 4,
-        borderColor: this.helperService.getColorVariable('secondary'),
-        hoverBackgroundColor: this.helperService.getColorVariable('secondary'),
-        pointStyle: 'circle',
-      }
-    ];
-  }
-
-  async editarProducto() {
-    if (!this.txt_producto || !this.txt_margenBeneficio || !this.txt_impuestos || !this.costoProduccion ||
-      !this.costoFabrica || !this.costoDistribucion || !this.pvp || !this.materiasPrimas.length ||
-      !this.manoDeObraList.length || !this.costosIndirectosList.length || !this.otrosCostosList.length) {
-      this.authService.showToast('Por favor, completa todos los campos antes de guardar.');
-      return;
-    }
-
+  async guardar() {
     const datos = {
-      accion: "editarProducto",
+      accion: 'editarProducto',
+      id: this.productoId,
       codigo: this.codigo,
       nombre: this.txt_producto,
+      materiasPrimas: this.materiasPrimas,
+      manoDeObraList: this.manoDeObraList,
+      costosIndirectosList: this.costosIndirectosList,
+      otrosCostosList: this.otrosCostosList,
       margenBeneficio: this.txt_margenBeneficio,
       impuestos: this.txt_impuestos,
       costoProduccion: this.costoProduccion,
       costoFabrica: this.costoFabrica,
       costoDistribucion: this.costoDistribucion,
-      pvp: this.pvp,
-      materiasPrimas: this.materiasPrimas,
-      manoDeObraList: this.manoDeObraList,
-      costosIndirectosList: this.costosIndirectosList,
-      otrosCostosList: this.otrosCostosList
+      pvp: this.pvp
     };
 
-    try {
-      const res: any = await this.authService.postData(datos).toPromise();
-      if (res.estado) {
-        this.mostrarMensajeRegistroExitoso();
-        this.router.navigate(['/listacostos']).then(() => {
-          // window.location.reload(); // Si es necesario refrescar la página completamente
-        });
+    this.authService.postData(datos).subscribe((res: any) => {
+      if (res.estado === true) {
+        this.authService.showToast2('Producto editado correctamente.');
+        this.router.navigate(['/listado-productos']); // O la ruta que desees
       } else {
         this.authService.showToast(res.mensaje);
       }
-    } catch (error) {
-      this.authService.showToast('Error al guardar los datos. Por favor, intenta de nuevo.');
-    }
-  }
-  
-  regresar() {
-    this.navCtrl.back();
+    });
   }
 
-  async mostrarMensajeRegistroExitoso() {
-    this.authService.showToast2('Éxito, Datos registrados correctamente');
+  private createBarChart() {
+    // Configuración del gráfico de barras
   }
 }

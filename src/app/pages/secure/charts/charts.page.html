@@ -53,38 +53,39 @@
               </ion-item>
               <ion-item>
                 <ion-label position="floating">Unidad de Medida</ion-label>
-                <ion-select [(ngModel)]="materiasPrimas[i].unidad" (ionChange)="calcular()" interface="popover">
-                  <ion-select-option value="" disabled selected hidden>Seleccionar</ion-select-option>
-                
-                  <ion-label>Cantidad:</ion-label>
-                  <ion-select-option value="unid">Unidad (u)</ion-select-option>
-              
-                  <ion-label>Peso:</ion-label>
-                  <ion-select-option disabled value="">--Peso--</ion-select-option>
-                  <ion-select-option value="kg">Kilogramos (kg)</ion-select-option>
-                  <ion-select-option value="g">Gramos (g)</ion-select-option>
-                  <ion-select-option value="lb">Libras (lb)</ion-select-option>
-                  <ion-select-option value="oz">Onzas (oz)</ion-select-option>
-                
-                  <ion-label>Volumen:</ion-label>
-                  <ion-select-option disabled value="">--Volumen--</ion-select-option>
-                  <ion-select-option value="L">Litros (L)</ion-select-option>
-                  <ion-select-option value="mL">Mililitros (mL)</ion-select-option>
-                  <ion-select-option value="m³">Metros cúbicos (m³)</ion-select-option>
-                
-                  <ion-label>Longitud:</ion-label>
-                  <ion-select-option disabled value="">--Longitud--</ion-select-option>
-                  <ion-select-option value="m">Metros (m)</ion-select-option>
-                  <ion-select-option value="cm">Centímetros (cm)</ion-select-option>
-                  <ion-select-option value="mm">Milímetros (mm)</ion-select-option>
-                  <ion-select-option value="in">Pulgadas (in)</ion-select-option>
-                </ion-select>
-              </ion-item>
-              
-              <ion-item *ngIf="shouldShowCantidad(materiasPrimas[i].unidad)">
-                <ion-label position="floating">Cantidad</ion-label>
-                <ion-input [(ngModel)]="materiasPrimas[i].cantidad" type="number"></ion-input>
-              </ion-item>
+<ion-select [(ngModel)]="materiasPrimas[i].unidad" (ionChange)="unidadChange($event, i)" interface="popover">
+  <ion-select-option value="" disabled selected hidden>Seleccionar</ion-select-option>
+
+  <ion-label *ngIf="materiasPrimas[i].unidad !== 'unidad'">Cantidad:</ion-label>
+  <ion-select-option value="unidad">Unidad (u)</ion-select-option>
+
+  <ion-label>Peso:</ion-label>
+  <ion-select-option disabled value="">--Peso--</ion-select-option>
+  <ion-select-option value="kg">Kilogramos (kg)</ion-select-option>
+  <ion-select-option value="g">Gramos (g)</ion-select-option>
+  <ion-select-option value="lb">Libras (lb)</ion-select-option>
+  <ion-select-option value="oz">Onzas (oz)</ion-select-option>
+
+  <ion-label>Volumen:</ion-label>
+  <ion-select-option disabled value="">--Volumen--</ion-select-option>
+  <ion-select-option value="L">Litros (L)</ion-select-option>
+  <ion-select-option value="mL">Mililitros (mL)</ion-select-option>
+  <ion-select-option value="m³">Metros cúbicos (m³)</ion-select-option>
+
+  <ion-label>Longitud:</ion-label>
+  <ion-select-option disabled value="">--Longitud--</ion-select-option>
+  <ion-select-option value="m">Metros (m)</ion-select-option>
+  <ion-select-option value="cm">Centímetros (cm)</ion-select-option>
+  <ion-select-option value="mm">Milímetros (mm)</ion-select-option>
+  <ion-select-option value="in">Pulgadas (in)</ion-select-option>
+</ion-select>
+</ion-item>
+
+<ion-item *ngIf="materiasPrimas[i].unidad !== 'unidad'">
+  <ion-label position="floating">Cantidad</ion-label>
+  <ion-input [(ngModel)]="materiasPrimas[i].cantidad" type="number" value="1"></ion-input>
+</ion-item>
+
             </div>
             <div class="button-container">
               <ion-button color="tertiary" expand="small" (click)="agregarMateriaPrima()">

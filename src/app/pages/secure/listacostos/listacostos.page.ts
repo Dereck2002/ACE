@@ -23,17 +23,14 @@ export class ListacostosPage implements OnInit {
     private toastService: ToastService,
     private router: Router
   ) {
-    this.authService.getSession('codigo').then((res: any) => {
-      this.codigo = res;
-      this.lproductos(this.codigo);
-    });
+    
   }
 
-  async ngOnInit() {
-    await this.initializeData();
+  ngOnInit() {
+    
   }
 
-  async initializeData() {
+  async ionViewWillEnter() {
     try {
       const res = await this.authService.getSession('codigo');
       this.codigo = res;
@@ -62,14 +59,15 @@ export class ListacostosPage implements OnInit {
     this.navCtrl.navigateRoot(['/editproducto']);
     this.authService.creatSession("id", codigo);
   }
-  Recargar(){}
 
   filterProductos(event: any) {
     const searchTerm = event.target.value.toLowerCase();
     this.Productos = this.productos.filter((producto: any) => {
       return producto.nombre.toLowerCase().includes(searchTerm);
     });
+
   }
+    
 
   async eliminarProducto(productoId: string) {
     const alert = await this.alertController.create({

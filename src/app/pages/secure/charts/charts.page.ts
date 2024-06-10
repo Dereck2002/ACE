@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http'; // Asegúrate de importar Htt
 import { AlertController } from '@ionic/angular';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { Router } from '@angular/router';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-charts',
@@ -133,6 +134,7 @@ export class ChartsPage implements OnInit {
     private authService: AuthService,
     private toastService: ToastService,
     private router: Router,
+    private navCtrl: NavController
   ) {
     this.authService.getSession('codigo').then((res:any)=>{
       this.codigo=res;
@@ -192,39 +194,37 @@ export class ChartsPage implements OnInit {
     }
   }
   calcular() {
+    // Calcular el costo de las materias primas
     const costoMateriasPrimas = this.materiasPrimas.reduce((total, materia) => total + (materia.costo || 0), 0);
+  
+    // Calcular el costo de la mano de obra
     const totalManoDeObra = this.manoDeObraList.reduce((total, mano) => total + (mano.costo || 0), 0);
+  
+    // Calcular el costo de los costos indirectos
     const totalCostosIndirectos = this.costosIndirectosList.reduce((total, costo) => total + (costo.costo || 0), 0);
-    const totalOtrosCostos = this.otrosGastoList.reduce((total, costo) => total + (costo.costo || 0), 0);
-    const totalOtrosGastos = totalManoDeObra + totalCostosIndirectos + totalOtrosCostos;
-
-    this.costoProduccion = costoMateriasPrimas + totalOtrosGastos;
-
+  
+    // Calcular el costo de otros gastos
+    const totalOtrosGastos = this.otrosGastoList.reduce((total, costo) => total + (costo.costo || 0), 0);
+  
+    // Calcular el costo de producción
+    this.costoProduccion = costoMateriasPrimas + totalManoDeObra + totalCostosIndirectos + totalOtrosGastos;
+  
+    // Calcular el costo de fábrica
+    this.costoFabrica = this.costoProduccion * (this.margenBeneficio / 100);
+  
+    // Calcular el costo de distribución
+    this.costoDistribucion = this.costoFabrica * (1 + this.impuestos / 100);
+  
+    // Calcular el precio de venta al público (PVP)
+    this.pvp = this.costoDistribucion * (1 + this.margenBeneficio / 100);
+  
     console.log('Costo de materias primas:', costoMateriasPrimas);
     console.log('Total de mano de obra:', totalManoDeObra);
     console.log('Total de costos indirectos:', totalCostosIndirectos);
-    console.log('Total de otros costos:', totalOtrosCostos);
+    console.log('Total de otros gastos:', totalOtrosGastos);
     console.log('Costo de producción:', this.costoProduccion);
-
-    const beneficio = this.costoProduccion * (this.margenBeneficio / 100);
-    const impuestosCalculados = this.costoProduccion * (this.impuestos / 100);
-
-    this.costoFabrica = this.costoProduccion * (this.margenBeneficio / 100 + 1);
-    this.costoDistribucion = this.costoFabrica * (this.margenBeneficio / 100 + 1)* (this.impuestos / 100 + 1);
-
     console.log('Costo de fábrica:', this.costoFabrica);
     console.log('Costo de distribución:', this.costoDistribucion);
-
-    const costoTotal = this.costoProduccion + this.costoFabrica + this.costoDistribucion;
-    console.log('Costo total:', costoTotal);
-
-    const pvpBeneficio = costoTotal * (this.margenBeneficio / 100);
-    console.log('Beneficio:', pvpBeneficio);
-
-    const pvpImpuestos = (costoTotal + pvpBeneficio) * (this.impuestos / 100);
-    console.log('Impuestos calculados:', pvpImpuestos);
-
-    this.pvp = this.costoDistribucion * (this.margenBeneficio / 100 + 1) * (this.impuestos / 100 + 1);
     console.log('PVP:', this.pvp);
   }
 
@@ -256,54 +256,60 @@ export class ChartsPage implements OnInit {
   }
 
   async guardarDatos() {
-  // Validar datos antes de enviarlos
-  if (!this.txt_producto || !this.margenBeneficio || !this.impuestos || !this.costoProduccion || 
-      !this.costoFabrica || !this.costoDistribucion || !this.pvp || !this.materiasPrimas.length || 
-      !this.manoDeObraList.length || !this.costosIndirectosList.length || !this.otrosGastoList.length) {
-    this.authService.showToast('Por favor, completa todos los campos antes de guardar.');
-    return;
-  }
-
-  let datos = {
-    accion: "guardar_costos_produccion",
-    codigo: this.codigo,
-    nombre: this.txt_producto,
-    margenBeneficio: this.margenBeneficio,
-    impuestos: this.impuestos,
-    costoProduccion: this.costoProduccion,
-    costoFabrica: this.costoFabrica,
-    costoDistribucion: this.costoDistribucion,
-    pvp: this.pvp,
-    materiasPrimas: this.materiasPrimas,
-    manoDeObraList: this.manoDeObraList,
-    costosIndirectosList: this.costosIndirectosList,
-    otrosGastoList: this.otrosGastoList
-  };
-
-  try {
-    const res: any = await this.authService.postData(datos).toPromise();
-    if (res.estado) {
-      this.mostrarMensajeRegistroExitoso();
-      // Utiliza uno de los dos métodos para actualizar la página
-
-      // Método 1: Navegar a la misma página (actualiza el componente)
-      this.router.navigate(['/listacostos']).then(() => {
-        window.location.reload(); // Refresca completamente la página
-      });
-
-      // Método 2: Recargar la página completamente
-      // window.location.reload();
-
-    } else {
-      this.authService.showToast(res.mensaje);
+    // Validar datos antes de enviarlos
+    if (!this.txt_producto || !this.margenBeneficio || !this.impuestos || !this.costoProduccion || 
+        !this.costoFabrica || !this.costoDistribucion || !this.pvp || !this.materiasPrimas.length || 
+        !this.manoDeObraList.length || !this.costosIndirectosList.length || !this.otrosGastoList.length) {
+      this.authService.showToast('Por favor, completa todos los campos antes de guardar.');
+      return;
     }
-  } catch (error) {
-    this.authService.showToast('Error al guardar los datos. Por favor, intenta de nuevo.');
+  
+    let datos = {
+      accion: "guardar_costos_produccion",
+      codigo: this.codigo,
+      nombre: this.txt_producto,
+      margenBeneficio: this.margenBeneficio,
+      impuestos: this.impuestos,
+      costoProduccion: this.costoProduccion,
+      costoFabrica: this.costoFabrica,
+      costoDistribucion: this.costoDistribucion,
+      pvp: this.pvp,
+      materiasPrimas: this.materiasPrimas,
+      manoDeObraList: this.manoDeObraList,
+      costosIndirectosList: this.costosIndirectosList,
+      otrosGastoList: this.otrosGastoList
+    };
+  
+    try {
+      const res: any = await this.authService.postData(datos).toPromise();
+      if (res.estado) {
+        this.mostrarMensajeRegistroExitoso();
+        // Utiliza uno de los dos métodos para actualizar la página
+  
+        // Método 1: Navegar a la misma página (actualiza el componente)
+        this.navCtrl.navigateRoot(['/listacostos']);
+  
+      } else {
+        this.authService.showToast(res.mensaje);
+      }
+    } catch (error) {
+      this.authService.showToast('Error al guardar los datos. Por favor, intenta de nuevo.');
+    }
   }
-}
-
-async mostrarMensajeRegistroExitoso() {
-  const toast = await this.toastService.presentToast('Éxito', '¡Datos registrados correctamente!', 'top', 'success', 3000);
-}
-
+  
+  async mostrarMensajeRegistroExitoso() {
+    const toast = await this.authService.showToast2('Éxito, ¡Datos registrados correctamente!');
+  }
+  unidadChange(event, index) {
+    if (event.detail.value === 'unidad') {
+      // Si la unidad seleccionada es "unidad", mostrar la cantidad y establecerla en 1 automáticamente
+      this.materiasPrimas[index].cantidad = 1;
+    } else {
+      // Si no es "unidad", ocultar la cantidad
+      this.materiasPrimas[index].cantidad = null;
+    }
+    // Llamar a la función calcular para actualizar los cálculos
+    this.calcular();
+  }  
+      
 }
