@@ -3,7 +3,7 @@ import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { HelperService } from 'src/app/services/helper/helper.service';
-import { HttpClient } from '@angular/common/http'; // Asegúrate de importar HttpClient
+import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { Router } from '@angular/router';
@@ -15,7 +15,7 @@ import { NavController } from '@ionic/angular';
   styleUrls: ['./charts.page.scss'],
 })
 export class ChartsPage implements OnInit {
-  codigo: string="";
+  codigo: string = "";
   margenBeneficio: number = 0;
   impuestos: number = 0;
   costoProduccion: number | null = null;
@@ -26,8 +26,7 @@ export class ChartsPage implements OnInit {
   materiasPrimas: Array<{ nombre: string; costo: number; unidad: string; cantidad?: number }> = [{ nombre: '', costo: 0, unidad: '' }];
   manoDeObraList: Array<{ nombre: string; costo: number }> = [{ nombre: '', costo: 0 }];
   costosIndirectosList: Array<{ nombre: string; costo: number }> = [{ nombre: '', costo: 0 }];
-  otrosGastoList: Array<{ nombre: string; costo: number }> = [{ nombre: '', costo: 0 }
-  ];
+  otrosGastoList: Array<{ nombre: string; costo: number }> = [{ nombre: '', costo: 0 }];
   @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
 
   public barChartOptions: ChartConfiguration['options'] = {
@@ -44,7 +43,7 @@ export class ChartsPage implements OnInit {
     scales: {
       x: {
         grid: {
-          color: '#ccc' // Ajuste de color del grid
+          color: '#ccc'
         },
         ticks: {
           color: '#666',
@@ -128,7 +127,7 @@ export class ChartsPage implements OnInit {
   content_loaded: boolean = false;
 
   constructor(
-    private helperService: HelperService, 
+    private helperService: HelperService,
     private http: HttpClient,
     private alertController: AlertController,
     private authService: AuthService,
@@ -136,10 +135,9 @@ export class ChartsPage implements OnInit {
     private router: Router,
     private navCtrl: NavController
   ) {
-    this.authService.getSession('codigo').then((res:any)=>{
-      this.codigo=res;
-      
-      });
+    this.authService.getSession('codigo').then((res: any) => {
+      this.codigo = res;
+    });
   }
 
   ngOnInit() {
@@ -151,16 +149,18 @@ export class ChartsPage implements OnInit {
       this.content_loaded = true;
     }, 2000);
   }
+
   shouldShowCantidad(unidad: string): boolean {
-    return unidad !== 'unid' && unidad !== '';
+    return unidad !== 'unidad' && unidad !== '';
   }
+
   agregarMateriaPrima() {
     this.materiasPrimas.push({ nombre: '', costo: 0, unidad: '' });
   }
 
-  quitarMateriaPrima() {
+  quitarMateriaPrima(index: number) {
     if (this.materiasPrimas.length > 1) {
-      this.materiasPrimas.pop();
+      this.materiasPrimas.splice(index, 1);
     }
   }
 
@@ -168,9 +168,9 @@ export class ChartsPage implements OnInit {
     this.manoDeObraList.push({ nombre: '', costo: 0 });
   }
 
-  quitarManoDeObra() {
+  quitarManoDeObra(index: number) {
     if (this.manoDeObraList.length > 1) {
-      this.manoDeObraList.pop();
+      this.manoDeObraList.splice(index, 1);
     }
   }
 
@@ -178,9 +178,9 @@ export class ChartsPage implements OnInit {
     this.costosIndirectosList.push({ nombre: '', costo: 0 });
   }
 
-  quitarCostosIndirectos() {
+  quitarCostosIndirectos(index: number) {
     if (this.costosIndirectosList.length > 1) {
-      this.costosIndirectosList.pop();
+      this.costosIndirectosList.splice(index, 1);
     }
   }
 
@@ -188,36 +188,37 @@ export class ChartsPage implements OnInit {
     this.otrosGastoList.push({ nombre: '', costo: 0 });
   }
 
-  quitarGasto() {
+  quitarGasto(index: number) {
     if (this.otrosGastoList.length > 1) {
-      this.otrosGastoList.pop();
+      this.otrosGastoList.splice(index, 1);
     }
   }
+
   calcular() {
     // Calcular el costo de las materias primas
     const costoMateriasPrimas = this.materiasPrimas.reduce((total, materia) => total + (materia.costo || 0), 0);
-  
+
     // Calcular el costo de la mano de obra
     const totalManoDeObra = this.manoDeObraList.reduce((total, mano) => total + (mano.costo || 0), 0);
-  
+
     // Calcular el costo de los costos indirectos
     const totalCostosIndirectos = this.costosIndirectosList.reduce((total, costo) => total + (costo.costo || 0), 0);
-  
+
     // Calcular el costo de otros gastos
     const totalOtrosGastos = this.otrosGastoList.reduce((total, costo) => total + (costo.costo || 0), 0);
-  
+
     // Calcular el costo de producción
     this.costoProduccion = costoMateriasPrimas + totalManoDeObra + totalCostosIndirectos + totalOtrosGastos;
-  
+
     // Calcular el costo de fábrica
     this.costoFabrica = this.costoProduccion * (this.margenBeneficio / 100);
-  
+
     // Calcular el costo de distribución
     this.costoDistribucion = this.costoFabrica * (1 + this.impuestos / 100);
-  
+
     // Calcular el precio de venta al público (PVP)
     this.pvp = this.costoDistribucion * (1 + this.margenBeneficio / 100);
-  
+
     console.log('Costo de materias primas:', costoMateriasPrimas);
     console.log('Total de mano de obra:', totalManoDeObra);
     console.log('Total de costos indirectos:', totalCostosIndirectos);
@@ -256,14 +257,13 @@ export class ChartsPage implements OnInit {
   }
 
   async guardarDatos() {
-    // Validar datos antes de enviarlos
     if (!this.txt_producto || !this.margenBeneficio || !this.impuestos || !this.costoProduccion || 
         !this.costoFabrica || !this.costoDistribucion || !this.pvp || !this.materiasPrimas.length || 
         !this.manoDeObraList.length || !this.costosIndirectosList.length || !this.otrosGastoList.length) {
       this.authService.showToast('Por favor, completa todos los campos antes de guardar.');
       return;
     }
-  
+
     let datos = {
       accion: "guardar_costos_produccion",
       codigo: this.codigo,
@@ -279,16 +279,12 @@ export class ChartsPage implements OnInit {
       costosIndirectosList: this.costosIndirectosList,
       otrosGastoList: this.otrosGastoList
     };
-  
+
     try {
       const res: any = await this.authService.postData(datos).toPromise();
       if (res.estado) {
         this.mostrarMensajeRegistroExitoso();
-        // Utiliza uno de los dos métodos para actualizar la página
-  
-        // Método 1: Navegar a la misma página (actualiza el componente)
         this.navCtrl.navigateRoot(['/listacostos']);
-  
       } else {
         this.authService.showToast(res.mensaje);
       }
@@ -296,20 +292,17 @@ export class ChartsPage implements OnInit {
       this.authService.showToast('Error al guardar los datos. Por favor, intenta de nuevo.');
     }
   }
-  
+
   async mostrarMensajeRegistroExitoso() {
     const toast = await this.authService.showToast2('Éxito, ¡Datos registrados correctamente!');
   }
+
   unidadChange(event, index) {
     if (event.detail.value === 'unidad') {
-      // Si la unidad seleccionada es "unidad", mostrar la cantidad y establecerla en 1 automáticamente
       this.materiasPrimas[index].cantidad = 1;
     } else {
-      // Si no es "unidad", ocultar la cantidad
       this.materiasPrimas[index].cantidad = null;
     }
-    // Llamar a la función calcular para actualizar los cálculos
     this.calcular();
-  }  
-      
+  }
 }

@@ -114,6 +114,10 @@ export class EditproductoPage implements OnInit {
     this.createBarChart();
   }
 
+  regresar(){
+    this.navCtrl.back();
+  }
+
   async consultarDato(codigo: string) {
     let datos = {
       accion: "consultarDatoProductos",
@@ -207,7 +211,17 @@ export class EditproductoPage implements OnInit {
   }
 
   shouldShowCantidad(unidad: string): boolean {
-    return unidad !== 'unid' && unidad !== '';
+    return unidad !== 'unidad' && unidad !== '';
+  }
+  unidadChange(event, index) {
+    const selectedUnit = event.detail.value;
+    this.materiasPrimas[index].txt_unidad = selectedUnit;
+    if (selectedUnit === 'unidad') {
+      this.materiasPrimas[index].txt_cantidad = 1;
+    } else {
+      this.materiasPrimas[index].txt_cantidad = null; // or set a default value
+    }
+    this.calcular();
   }
 
   calcular() {
@@ -222,7 +236,7 @@ export class EditproductoPage implements OnInit {
     this.pvp = this.costoDistribucion;
   }
 
-  async guardar() {
+  async editar() {
     const datos = {
       accion: 'editarProducto',
       id: this.productoId,

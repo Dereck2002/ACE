@@ -20,13 +20,24 @@
     font-weight: 700;
   }
 
-  // ion-item {
-  //   background-color: var(--ion-color-primary);
-  // }
   .button-container {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 7vh; /* Esto es opcional, dependiendo de si quieres centrarlo verticalmente también */
+    justify-content: left;
+    align-items: left;
+    height: 5vh; /* Esto es opcional, dependiendo de si quieres centrarlo verticalmente también */
+    margin: 6px;
   }
+}
+.remove-button {
+  position: absolute;
+  top: -5px;
+  right: -7px;
+  z-index: 4;
+}
+
+.bordes-item {
+  position: relative;
+  border: 1px solid #1a1717;
+  padding: 10px;
+  margin-bottom: 10px;
 }

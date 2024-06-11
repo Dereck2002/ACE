@@ -582,73 +582,110 @@ if ($post['accion'] == 'eliminarProducto') {
     // Envía la respuesta
     echo $respuesta;
 }
-/*if ($input['accion'] == 'editarProducto') {
-    $productoId = $input['id'];
-    $codigo = $input['codigo'];
-    $nombre = $input['nombre'];
-    $materiasPrimas = $input['materiasPrimas'];
-    $manoDeObraList = $input['manoDeObraList'];
-    $costosIndirectosList = $input['costosIndirectosList'];
-    $otrosCostosList = $input['otrosCostosList'];
-    $margenBeneficio = $input['margenBeneficio'];
-    $impuestos = $input['impuestos'];
-    $costoProduccion = $input['costoProduccion'];
-    $costoFabrica = $input['costoFabrica'];
-    $costoDistribucion = $input['costoDistribucion'];
-    $pvp = $input['pvp'];
 
-    // Actualiza la información del producto en la base de datos
-    $query = "UPDATE productos SET codigo = ?, nombre = ?, margenBeneficio = ?, impuestos = ?, costoProduccion = ?, costoFabrica = ?, costoDistribucion = ?, pvp = ? WHERE id = ?";
-    $stmt = $mysqli->prepare($query);
-    $stmt->bind_param("ssddddddi", $codigo, $nombre, $margenBeneficio, $impuestos, $costoProduccion, $costoFabrica, $costoDistribucion, $pvp, $productoId);
+if ($post['accion'] == 'editarProducto') {
+    $codigo_persona = ($post['codigo']);
+    $producto_id = (int)$post['id']; // ID del producto a actualizar
+    $producto = mysqli_real_escape_string($mysqli, $post['nombre']);
+    $materias_primas = $post['materiasPrimas'];
+    $mano_de_obra = $post['manoDeObraList'];
+    $costos_indirectos = $post['costosIndirectosList'];
+    $otros_gastos = $post['otrosGastoList']; // Cambiado de otrosCostosList a otrosGastoList
+    $margen_beneficio = (float)$post['margenBeneficio'];
+    $impuestos = (float)$post['impuestos'];
+    $costo_produccion = (float)$post['costoProduccion'];
+    $costo_fabrica = (float)$post['costoFabrica'];
+    $costo_distribucion = (float)$post['costoDistribucion'];
+    $pvp = (float)$post['pvp'];
 
-    if ($stmt->execute()) {
-        // Eliminar registros actuales de materias primas, mano de obra, costos indirectos y otros costos para este producto
-        $mysqli->query("DELETE FROM materias_primas WHERE producto_id = $productoId");
-        $mysqli->query("DELETE FROM mano_de_obra WHERE producto_id = $productoId");
-        $mysqli->query("DELETE FROM costos_indirectos WHERE producto_id = $productoId");
-        $mysqli->query("DELETE FROM otros_costos WHERE producto_id = $productoId");
 
-        // Inserta las nuevas materias primas
-        foreach ($materiasPrimas as $materia) {
-            $query = "INSERT INTO materias_primas (producto_id, nombre, costo, unidad, cantidad) VALUES (?, ?, ?, ?, ?)";
-            $stmt = $mysqli->prepare($query);
-            $stmt->bind_param("isdis", $productoId, $materia['txt_nombre'], $materia['txt_costo'], $materia['txt_unidad'], $materia['txt_cantidad']);
-            $stmt->execute();
-        }
+    // Verifica si el producto existe
+    $query = "SELECT id FROM productos WHERE id_persona = '$codigo_persona' AND id = $producto_id";
+    $result = mysqli_query($mysqli, $query);
 
-        // Inserta la nueva mano de obra
-        foreach ($manoDeObraList as $manoDeObra) {
-            $query = "INSERT INTO mano_de_obra (producto_id, nombre, costo) VALUES (?, ?, ?)";
-            $stmt = $mysqli->prepare($query);
-            $stmt->bind_param("isd", $productoId, $manoDeObra['txt_nombre'], $manoDeObra['txt_costo']);
-            $stmt->execute();
-        }
-
-        // Inserta los nuevos costos indirectos
-        foreach ($costosIndirectosList as $costoIndirecto) {
-            $query = "INSERT INTO costos_indirectos (producto_id, nombre, costo) VALUES (?, ?, ?)";
-            $stmt = $mysqli->prepare($query);
-            $stmt->bind_param("isd", $productoId, $costoIndirecto['txt_nombre'], $costoIndirecto['txt_costo']);
-            $stmt->execute();
-        }
-
-        // Inserta los nuevos otros costos
-        foreach ($otrosCostosList as $otroCosto) {
-            $query = "INSERT INTO otros_costos (producto_id, nombre, costo) VALUES (?, ?, ?)";
-            $stmt = $mysqli->prepare($query);
-            $stmt->bind_param("isd", $productoId, $otroCosto['txt_nombre'], $otroCosto['txt_costo']);
-            $stmt->execute();
-        }
-
-        echo json_encode(['estado' => true, 'mensaje' => 'Producto editado correctamente.']);
-    } else {
-        echo json_encode(['estado' => false, 'mensaje' => 'Error al editar el producto.']);
+    if (mysqli_num_rows($result) == 0) {
+        // Si el producto no existe, envía una respuesta indicando que no está registrado
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'El producto no existe en la base de datos.'));
+        echo $respuesta;
+        exit;
     }
-} else {
-    echo json_encode(['estado' => false, 'mensaje' => 'Acción no válida.']);
-} */
 
+    // Inicia una transacción
+    mysqli_begin_transaction($mysqli);
+
+    // Actualiza el producto en la tabla productos
+    $query = "UPDATE productos 
+              SET nombre = '$producto', margen_beneficio = $margen_beneficio, impuestos = $impuestos, 
+                  costo_produccion = $costo_produccion, costo_fabrica = $costo_fabrica, 
+                  costo_distribucion = $costo_distribucion, pvp = $pvp
+              WHERE id = $producto_id AND id_persona = '$codigo_persona'";
+
+    if (mysqli_query($mysqli, $query)) {
+        $error_occurred = false;
+
+        // Función para eliminar datos existentes y luego insertar nuevos datos
+        function update_data($mysqli, $producto_id, $data, $table, $include_unidad_cantidad = false) {
+            $delete_query = "DELETE FROM $table WHERE producto_id = $producto_id";
+            if (!mysqli_query($mysqli, $delete_query)) {
+                error_log("Error al eliminar datos antiguos de $table: " . mysqli_error($mysqli));
+                return false;
+            }
+            foreach ($data as $item) {
+                $nombre = mysqli_real_escape_string($mysqli, $item['nombre']);
+                $costo = (float)$item['costo'];
+                $unidad = $include_unidad_cantidad ? mysqli_real_escape_string($mysqli, $item['unidad']) : null;
+                $cantidad = $include_unidad_cantidad ? (float)$item['cantidad'] : null;
+                $query = $include_unidad_cantidad 
+                    ? "INSERT INTO $table (producto_id, nombre, costo, unidad, cantidad) VALUES ($producto_id, '$nombre', $costo, '$unidad', $cantidad)"
+                    : "INSERT INTO $table (producto_id, nombre, costo) VALUES ($producto_id, '$nombre', $costo)";
+                if (!mysqli_query($mysqli, $query)) {
+                    error_log("Error al insertar en $table: " . mysqli_error($mysqli));
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Actualiza las materias primas
+        if (!update_data($mysqli, $producto_id, $materias_primas, 'materias_primas', true)) {
+            $error_occurred = true;
+            error_log("Error al actualizar materias primas");
+        }
+
+        // Actualiza la mano de obra
+        if (!$error_occurred && !update_data($mysqli, $producto_id, $mano_de_obra, 'mano_de_obra')) {
+            $error_occurred = true;
+            error_log("Error al actualizar mano de obra");
+        }
+
+        // Actualiza los costos indirectos
+        if (!$error_occurred && !update_data($mysqli, $producto_id, $costos_indirectos, 'costos_indirectos')) {
+            $error_occurred = true;
+            error_log("Error al actualizar costos indirectos");
+        }
+
+        // Actualiza los otros gastos
+        if (!$error_occurred && !update_data($mysqli, $producto_id, $otros_gastos, 'otros_gastos')) {
+            $error_occurred = true;
+            error_log("Error al actualizar otros gastos");
+        }
+
+        if ($error_occurred) {
+            mysqli_rollback($mysqli);
+            $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al actualizar algunos de los datos.'));
+        } else {
+            mysqli_commit($mysqli);
+            $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Producto actualizado correctamente.'));
+        }
+    } else {
+        mysqli_rollback($mysqli);
+        error_log("Error al actualizar producto: " . mysqli_error($mysqli));
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al actualizar el producto.'));
+    }
+
+    // Envía la respuesta
+    echo $respuesta;
+} 
 
 
 ?>
