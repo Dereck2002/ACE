@@ -448,9 +448,10 @@ if ($post['accion'] == 'guardar_costos_produccion') {
 
 
 if ($post['accion'] == 'consultarDatoProductos') {
-    $id_producto = $post['id'];
+    $id_producto = (int)$post['id'];
     $datos_producto = [];
     
+    // Prepared statement para prevenir inyecciones SQL
     $sentencia = "
     SELECT 
         p.id as codigo,
@@ -476,74 +477,87 @@ if ($post['accion'] == 'consultarDatoProductos') {
     LEFT JOIN 
         otros_gastos og ON p.id = og.producto_id
     WHERE 
-        p.id = '$id_producto'
+        p.id = ?
     ";
 
-    $result = mysqli_query($mysqli, $sentencia);
+    if ($stmt = mysqli_prepare($mysqli, $sentencia)) {
+        // Bind parameters
+        mysqli_stmt_bind_param($stmt, "i", $id_producto);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
 
-    if (mysqli_num_rows($result) > 0) {
-        $datos_producto = null; // Inicializa aquí antes del bucle
-    
-        while ($row = mysqli_fetch_assoc($result)) {
-            if (is_null($datos_producto)) {
-                $datos_producto = array(
-                    'codigo' => $row['codigo'],
-                    'nombre' => $row['nombre'],
-                    'margenBeneficio' => $row['margenBeneficio'],
-                    'impuestos' => $row['impuestos'],
-                    'costoProduccion' => $row['costoProduccion'],
-                    'costoFabrica' => $row['costoFabrica'],
-                    'costoDistribucion' => $row['costoDistribucion'],
-                    'pvp' => $row['pvp'],
-                    'materiasPrimas' => [],
-                    'manoDeObraList' => [],
-                    'costosIndirectosList' => [],
-                    'otrosCostosList' => []
-                );
+        if (mysqli_num_rows($result) > 0) {
+            $datos_producto = null; // Inicializa aquí antes del bucle
+        
+            while ($row = mysqli_fetch_assoc($result)) {
+                if (is_null($datos_producto)) {
+                    $datos_producto = array(
+                        'codigo' => $row['codigo'],
+                        'nombre' => $row['nombre'],
+                        'margenBeneficio' => $row['margenBeneficio'],
+                        'impuestos' => $row['impuestos'],
+                        'costoProduccion' => $row['costoProduccion'],
+                        'costoFabrica' => $row['costoFabrica'],
+                        'costoDistribucion' => $row['costoDistribucion'],
+                        'pvp' => $row['pvp'],
+                        'materiasPrimas' => [],
+                        'manoDeObraList' => [],
+                        'costosIndirectosList' => [],
+                        'otrosCostosList' => []
+                    );
+                }
+        
+                // Agregar datos de materias primas
+                if ($row['mp_nombre']) {
+                    $datos_producto['materiasPrimas'][] = array(
+                        'txt_nombre' => $row['mp_nombre'],
+                        'txt_costo' => $row['mp_costo'],
+                        'txt_unidad' => $row['mp_unidad'],
+                        'txt_cantidad' => $row['mp_cantidad']
+                    );
+                }
+        
+                // Agregar datos de mano de obra
+                if ($row['mo_nombre']) {
+                    $datos_producto['manoDeObraList'][] = array(
+                        'txt_nombre' => $row['mo_nombre'],
+                        'txt_costo' => $row['mo_costo']
+                    );
+                }
+        
+                // Agregar datos de costos indirectos
+                if ($row['ci_nombre']) {
+                    $datos_producto['costosIndirectosList'][] = array(
+                        'txt_nombre' => $row['ci_nombre'],
+                        'txt_costo' => $row['ci_costo']
+                    );
+                }
+        
+                // Agregar datos de otros gastos
+                if ($row['og_nombre']) {
+                    $datos_producto['otrosCostosList'][] = array(
+                        'txt_nombre' => $row['og_nombre'],
+                        'txt_costo' => $row['og_costo']
+                    );
+                }
             }
-    
-            // Agregar datos de materias primas
-            if ($row['mp_nombre']) {
-                $datos_producto['materiasPrimas'][] = array(
-                    'txt_nombre' => $row['mp_nombre'],
-                    'txt_costo' => $row['mp_costo'],
-                    'txt_unidad' => $row['mp_unidad'],
-                    'txt_cantidad' => $row['mp_cantidad']
-                );
-            }
-    
-            // Agregar datos de mano de obra
-            if ($row['mo_nombre']) {
-                $datos_producto['manoDeObraList'][] = array(
-                    'txt_nombre' => $row['mo_nombre'],
-                    'txt_costo' => $row['mo_costo']
-                );
-            }
-    
-            // Agregar datos de costos indirectos
-            if ($row['ci_nombre']) {
-                $datos_producto['costosIndirectosList'][] = array(
-                    'txt_nombre' => $row['ci_nombre'],
-                    'txt_costo' => $row['ci_costo']
-                );
-            }
-    
-            // Agregar datos de otros gastos
-            if ($row['og_nombre']) {
-                $datos_producto['otrosCostosList'][] = array(
-                    'txt_nombre' => $row['og_nombre'],
-                    'txt_costo' => $row['og_costo']
-                );
-            }
+        
+            $respuesta = json_encode(array('estado' => true, 'productos' => [$datos_producto]));
+        } else {
+            $respuesta = json_encode(array('estado' => false, 'mensaje' => "No existe"));
         }
-    
-        $respuesta = json_encode(array('estado' => true, 'productos' => [$datos_producto]));
+        
+        // Cerrar el statement
+        mysqli_stmt_close($stmt);
     } else {
-        $respuesta = json_encode(array('estado' => false, 'mensaje' => "No existe"));
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => "Error en la consulta"));
+        error_log("Error en la preparación de la consulta: " . mysqli_error($mysqli));
     }
-    
+
+    // Envía la respuesta
     echo $respuesta;
-}    
+}
+
 
 
 if ($post['accion'] == 'eliminarProducto') {
@@ -583,14 +597,14 @@ if ($post['accion'] == 'eliminarProducto') {
     echo $respuesta;
 }
 
-if ($post['accion'] == 'editarProducto') {
-    $codigo_persona = ($post['codigo']);
+if ($post['accion'] == 'editarActualizarProducto') {
+    $codigo_persona = mysqli_real_escape_string($mysqli, $post['codigo']); 
     $producto_id = (int)$post['id']; // ID del producto a actualizar
     $producto = mysqli_real_escape_string($mysqli, $post['nombre']);
     $materias_primas = $post['materiasPrimas'];
     $mano_de_obra = $post['manoDeObraList'];
     $costos_indirectos = $post['costosIndirectosList'];
-    $otros_gastos = $post['otrosGastoList']; // Cambiado de otrosCostosList a otrosGastoList
+    $otros_gastos = $post['otrosCostosList'];
     $margen_beneficio = (float)$post['margenBeneficio'];
     $impuestos = (float)$post['impuestos'];
     $costo_produccion = (float)$post['costoProduccion'];
@@ -598,94 +612,62 @@ if ($post['accion'] == 'editarProducto') {
     $costo_distribucion = (float)$post['costoDistribucion'];
     $pvp = (float)$post['pvp'];
 
+    $respuesta = array();
 
-    // Verifica si el producto existe
-    $query = "SELECT id FROM productos WHERE id_persona = '$codigo_persona' AND id = $producto_id";
-    $result = mysqli_query($mysqli, $query);
+    try {
+        // Verificar si el producto existe
+        $query = "SELECT id FROM productos WHERE id_persona = '$codigo_persona' AND id = $producto_id";
+        $result = mysqli_query($mysqli, $query);
 
-    if (mysqli_num_rows($result) == 0) {
-        // Si el producto no existe, envía una respuesta indicando que no está registrado
-        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'El producto no existe en la base de datos.'));
-        echo $respuesta;
-        exit;
-    }
-
-    // Inicia una transacción
-    mysqli_begin_transaction($mysqli);
-
-    // Actualiza el producto en la tabla productos
-    $query = "UPDATE productos 
-              SET nombre = '$producto', margen_beneficio = $margen_beneficio, impuestos = $impuestos, 
-                  costo_produccion = $costo_produccion, costo_fabrica = $costo_fabrica, 
-                  costo_distribucion = $costo_distribucion, pvp = $pvp
-              WHERE id = $producto_id AND id_persona = '$codigo_persona'";
-
-    if (mysqli_query($mysqli, $query)) {
-        $error_occurred = false;
-
-        // Función para eliminar datos existentes y luego insertar nuevos datos
-        function update_data($mysqli, $producto_id, $data, $table, $include_unidad_cantidad = false) {
-            $delete_query = "DELETE FROM $table WHERE producto_id = $producto_id";
-            if (!mysqli_query($mysqli, $delete_query)) {
-                error_log("Error al eliminar datos antiguos de $table: " . mysqli_error($mysqli));
-                return false;
-            }
-            foreach ($data as $item) {
-                $nombre = mysqli_real_escape_string($mysqli, $item['nombre']);
-                $costo = (float)$item['costo'];
-                $unidad = $include_unidad_cantidad ? mysqli_real_escape_string($mysqli, $item['unidad']) : null;
-                $cantidad = $include_unidad_cantidad ? (float)$item['cantidad'] : null;
-                $query = $include_unidad_cantidad 
-                    ? "INSERT INTO $table (producto_id, nombre, costo, unidad, cantidad) VALUES ($producto_id, '$nombre', $costo, '$unidad', $cantidad)"
-                    : "INSERT INTO $table (producto_id, nombre, costo) VALUES ($producto_id, '$nombre', $costo)";
-                if (!mysqli_query($mysqli, $query)) {
-                    error_log("Error al insertar en $table: " . mysqli_error($mysqli));
-                    return false;
-                }
-            }
-            return true;
+        if (!$result) {
+            throw new Exception("Error al verificar el producto: " . mysqli_error($mysqli));
         }
 
-        // Actualiza las materias primas
-        if (!update_data($mysqli, $producto_id, $materias_primas, 'materias_primas', true)) {
-            $error_occurred = true;
-            error_log("Error al actualizar materias primas");
-        }
-
-        // Actualiza la mano de obra
-        if (!$error_occurred && !update_data($mysqli, $producto_id, $mano_de_obra, 'mano_de_obra')) {
-            $error_occurred = true;
-            error_log("Error al actualizar mano de obra");
-        }
-
-        // Actualiza los costos indirectos
-        if (!$error_occurred && !update_data($mysqli, $producto_id, $costos_indirectos, 'costos_indirectos')) {
-            $error_occurred = true;
-            error_log("Error al actualizar costos indirectos");
-        }
-
-        // Actualiza los otros gastos
-        if (!$error_occurred && !update_data($mysqli, $producto_id, $otros_gastos, 'otros_gastos')) {
-            $error_occurred = true;
-            error_log("Error al actualizar otros gastos");
-        }
-
-        if ($error_occurred) {
-            mysqli_rollback($mysqli);
-            $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al actualizar algunos de los datos.'));
+        if (mysqli_num_rows($result) == 0) {
+            $respuesta['estado'] = false;
+            $respuesta['mensaje'] = 'El producto no existe en la base de datos.';
         } else {
+            // Iniciar una transacción
+            mysqli_begin_transaction($mysqli);
+
+            // Actualizar el producto en la tabla productos
+            $query = "UPDATE productos 
+                      SET nombre = '$producto', margen_beneficio = $margen_beneficio, impuestos = $impuestos, 
+                          costo_produccion = $costo_produccion, costo_fabrica = $costo_fabrica, 
+                          costo_distribucion = $costo_distribucion, pvp = $pvp
+                      WHERE id = $producto_id AND id_persona = '$codigo_persona'";
+
+            if (!mysqli_query($mysqli, $query)) {
+                throw new Exception("Error al actualizar producto: " . mysqli_error($mysqli));
+            }
+
+            // Actualizar los datos relacionados
+            actualizarDatosRelacionados($mysqli, $producto_id, $materias_primas, 'materias_primas', true);
+            actualizarDatosRelacionados($mysqli, $producto_id, $mano_de_obra, 'mano_de_obra');
+            actualizarDatosRelacionados($mysqli, $producto_id, $costos_indirectos, 'costos_indirectos');
+            actualizarDatosRelacionados($mysqli, $producto_id, $otros_gastos, 'otros_gastos');
+
+            // Commit la transacción
             mysqli_commit($mysqli);
-            $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Producto actualizado correctamente.'));
+
+            $respuesta['estado'] = true;
+            $respuesta['mensaje'] = 'Producto actualizado correctamente.';
         }
-    } else {
+    } catch (Exception $e) {
         mysqli_rollback($mysqli);
-        error_log("Error al actualizar producto: " . mysqli_error($mysqli));
-        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al actualizar el producto.'));
+        error_log("Error: " . $e->getMessage());
+        $respuesta['estado'] = false;
+        $respuesta['mensaje'] = 'Error al actualizar el producto.';
     }
 
     // Envía la respuesta
-    echo $respuesta;
-} 
+    echo json_encode($respuesta);
+}
 
+// Función para actualizar datos relacionados
+function actualizarDatosRelacionados($mysqli, $producto_id, $data, $table, $include_unidad_cantidad = false) {
+    // Implementación de la función
+    // ...
+}
 
 ?>

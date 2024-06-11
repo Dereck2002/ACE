@@ -1,5 +1,5 @@
 <ion-header collapse="fade" [translucent]="true">
-  <ion-toolbar color="dark">
+  <ion-toolbar color="primary">
     <ion-title color="light">Lista Costos</ion-title>
     <ion-buttons slot="primary">
       <ion-button color="light" routerLink="/ajustes">
@@ -14,18 +14,18 @@
 
   <ion-button color="tertiary" routerLink="/charts" class="floating-button">
     <ion-icon color="dark" name="duplicate-outline" class="icon-space"></ion-icon>
-    Nuevo Producto
+    <strong>Nuevo Producto</strong>
   </ion-button>
 
   <ion-grid class="transparent-grid custom-table">
     <ion-row class="header-row">
-      <ion-col class="header">N°</ion-col>
-      <ion-col class="header">Nombre</ion-col>
-      <ion-col class="header">PVP</ion-col>
-      <ion-col class="header">Acciones</ion-col>
+      <ion-col class="header" color="light">N°</ion-col>
+      <ion-col class="header" color="light">Nombre</ion-col>
+      <ion-col class="header" color="light">PVP</ion-col>
+      <ion-col class="header" color="light">Acciones</ion-col>
     </ion-row>
 
-    <ion-row *ngFor="let producto of Productos; let i = index" class="data-row">
+    <ion-row *ngFor="let producto of Productos; let i = index" class="data-row" [ngClass]="{'even-row': i % 2 == 0, 'odd-row': i % 2 != 0}">
       <ion-col class="data">{{ i + 1 }}</ion-col>
       <ion-col class="data">{{ producto.nombre }}</ion-col>
       <ion-col class="data">{{ producto.pvp }}</ion-col>

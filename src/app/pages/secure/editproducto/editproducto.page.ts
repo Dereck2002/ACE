@@ -120,40 +120,40 @@ export class EditproductoPage implements OnInit {
 
   async consultarDato(codigo: string) {
     let datos = {
-      accion: "consultarDatoProductos",
-      id: codigo
+        accion: "consultarDatoProductos",
+        id: codigo
     };
 
     this.authService.postData(datos).subscribe((res: any) => {
-      if (res.estado == true) {
-        // Asignar datos generales
-        this.productoId = res.productos[0].id;
-        this.codigo = res.productos[0].codigo;
-        this.txt_producto = res.productos[0].nombre;
-        this.txt_margenBeneficio = res.productos[0].margenBeneficio;
-        this.txt_impuestos = res.productos[0].impuestos;
-        this.costoProduccion = res.productos[0].costoProduccion;
-        this.costoFabrica = res.productos[0].costoProduccion;
-        this.costoDistribucion = res.productos[0].costoDistribucion;
-        this.pvp = res.productos[0].pvp;
+        if (res.estado == true) {
+            // Asignar datos generales
+            this.productoId = res.productos[0].id;
+            console.log("Producto ID asignado:", this.productoId); // Agrega esta línea para verificar
+            this.codigo = res.productos[0].codigo;
+            this.txt_producto = res.productos[0].nombre;
+            this.txt_margenBeneficio = res.productos[0].margenBeneficio;
+            this.txt_impuestos = res.productos[0].impuestos;
+            this.costoProduccion = res.productos[0].costoProduccion;
+            this.costoFabrica = res.productos[0].costoProduccion;
+            this.costoDistribucion = res.productos[0].costoDistribucion;
+            this.pvp = res.productos[0].pvp;
 
-        // Filtrar y asignar datos de materias primas sin duplicados
-        this.materiasPrimas = this.filterUniqueItems(res.productos[0].materiasPrimas, 'txt_nombre');
+            // Filtrar y asignar datos de materias primas sin duplicados
+            this.materiasPrimas = this.filterUniqueItems(res.productos[0].materiasPrimas, 'txt_nombre');
 
-        // Filtrar y asignar datos de mano de obra sin duplicados
-        this.manoDeObraList = this.filterUniqueItems(res.productos[0].manoDeObraList, 'txt_nombre');
+            // Filtrar y asignar datos de mano de obra sin duplicados
+            this.manoDeObraList = this.filterUniqueItems(res.productos[0].manoDeObraList, 'txt_nombre');
 
-        // Filtrar y asignar datos de costos indirectos sin duplicados
-        this.costosIndirectosList = this.filterUniqueItems(res.productos[0].costosIndirectosList, 'txt_nombre');
+            // Filtrar y asignar datos de costos indirectos sin duplicados
+            this.costosIndirectosList = this.filterUniqueItems(res.productos[0].costosIndirectosList, 'txt_nombre');
 
-        // Filtrar y asignar datos de otros costos sin duplicados
-        this.otrosCostosList = this.filterUniqueItems(res.productos[0].otrosCostosList, 'txt_nombre');
-
-      } else {
-        this.authService.showToast(res.mensaje);
-      }
+            // Filtrar y asignar datos de otros costos sin duplicados
+            this.otrosCostosList = this.filterUniqueItems(res.productos[0].otrosCostosList, 'txt_nombre');
+        } else {
+            this.authService.showToast(res.mensaje);
+        }
     });
-  }
+}
 
   // Función para filtrar elementos únicos por una propiedad específica
   filterUniqueItems(array: any[], property: string): any[] {
@@ -238,8 +238,8 @@ export class EditproductoPage implements OnInit {
 
   async editar() {
     const datos = {
-      accion: 'editarProducto',
-      id: this.productoId,
+      accion: 'editarActualizarProducto',
+      id: this.codigo,
       codigo: this.codigo,
       nombre: this.txt_producto,
       materiasPrimas: this.materiasPrimas,
@@ -253,7 +253,9 @@ export class EditproductoPage implements OnInit {
       costoDistribucion: this.costoDistribucion,
       pvp: this.pvp
     };
-
+  
+    console.log('Datos a enviar:', datos); // Agrega esta línea
+  
     this.authService.postData(datos).subscribe((res: any) => {
       if (res.estado === true) {
         this.authService.showToast2('Producto editado correctamente.');
@@ -263,6 +265,8 @@ export class EditproductoPage implements OnInit {
       }
     });
   }
+  
+  
 
   private createBarChart() {
     // Configuración del gráfico de barras
