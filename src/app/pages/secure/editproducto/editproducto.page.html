@@ -52,7 +52,7 @@
           </ion-item>
           <ion-item>
             <ion-label position="floating">Costo</ion-label>
-            <ion-input [(ngModel)]="materiasPrimas[i].txt_costo" type="number" (ionChange)="calcular()"></ion-input>
+            <ion-input [(ngModel)]="materiasPrimas[i].txt_costo" type="number"  step="0.00001" (ionChange)="calcular()"></ion-input>
           </ion-item>
           <ion-item>
             <ion-label position="floating">Unidad de Medida</ion-label>

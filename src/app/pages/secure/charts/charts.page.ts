@@ -195,29 +195,39 @@ export class ChartsPage implements OnInit {
   }
 
   calcular() {
+    // Función para limpiar números
+    const limpiarNumero = (valor: any): number => {
+      if (typeof valor === 'string') {
+        valor = valor.replace(/[^0-9.-]+/g, ''); // Eliminar caracteres no numéricos
+      }
+      return parseFloat(valor) || 0; // Convertir a número y manejar NaN
+    };
+
     // Calcular el costo de las materias primas
-    const costoMateriasPrimas = this.materiasPrimas.reduce((total, materia) => total + (materia.costo || 0), 0);
+    const costoMateriasPrimas = this.materiasPrimas.reduce((total, materia) => total + limpiarNumero(materia.costo), 0);
 
     // Calcular el costo de la mano de obra
-    const totalManoDeObra = this.manoDeObraList.reduce((total, mano) => total + (mano.costo || 0), 0);
+    const totalManoDeObra = this.manoDeObraList.reduce((total, mano) => total + limpiarNumero(mano.costo), 0);
 
     // Calcular el costo de los costos indirectos
-    const totalCostosIndirectos = this.costosIndirectosList.reduce((total, costo) => total + (costo.costo || 0), 0);
+    const totalCostosIndirectos = this.costosIndirectosList.reduce((total, costo) => total + limpiarNumero(costo.costo), 0);
 
     // Calcular el costo de otros gastos
-    const totalOtrosGastos = this.otrosGastoList.reduce((total, costo) => total + (costo.costo || 0), 0);
+    const totalOtrosGastos = this.otrosGastoList.reduce((total, costo) => total + limpiarNumero(costo.costo), 0);
 
     // Calcular el costo de producción
     this.costoProduccion = costoMateriasPrimas + totalManoDeObra + totalCostosIndirectos + totalOtrosGastos;
 
     // Calcular el costo de fábrica
-    this.costoFabrica = this.costoProduccion * (this.margenBeneficio / 100);
+    const beneficio = this.costoProduccion * (this.margenBeneficio / 100);
+    this.costoFabrica = this.costoProduccion + beneficio;
 
     // Calcular el costo de distribución
-    this.costoDistribucion = this.costoFabrica * (1 + this.impuestos / 100);
+    const impuestosCalculados = this.costoFabrica * (this.impuestos / 100);
+    this.costoDistribucion = this.costoFabrica + impuestosCalculados;
 
     // Calcular el precio de venta al público (PVP)
-    this.pvp = this.costoDistribucion * (1 + this.margenBeneficio / 100);
+    this.pvp = this.costoDistribucion * (this.margenBeneficio / 100 + 1) ;
 
     console.log('Costo de materias primas:', costoMateriasPrimas);
     console.log('Total de mano de obra:', totalManoDeObra);
@@ -228,7 +238,6 @@ export class ChartsPage implements OnInit {
     console.log('Costo de distribución:', this.costoDistribucion);
     console.log('PVP:', this.pvp);
   }
-
   createBarChart() {
     let helperService = this.helperService;
     let rand_numbers = [...Array(12)].map(e => Math.random() * 100 | 0);

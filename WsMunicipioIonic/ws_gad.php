@@ -503,7 +503,7 @@ if ($post['accion'] == 'consultarDatoProductos') {
                         'materiasPrimas' => [],
                         'manoDeObraList' => [],
                         'costosIndirectosList' => [],
-                        'otrosCostosList' => []
+                        'otrosCostosList' => [],
                     );
                 }
         

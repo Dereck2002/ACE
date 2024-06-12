@@ -130,7 +130,7 @@ export class EditproductoPage implements OnInit {
         this.txt_margenBeneficio = res.productos[0].margenBeneficio;
         this.txt_impuestos = res.productos[0].impuestos;
         this.costoProduccion = res.productos[0].costoProduccion;
-        this.costoFabrica = res.productos[0].costoProduccion;
+        this.costoFabrica = res.productos[0].costoFabrica;
         this.costoDistribucion = res.productos[0].costoDistribucion;
         this.pvp = res.productos[0].pvp;
 
@@ -221,33 +221,33 @@ export class EditproductoPage implements OnInit {
       }
       return parseFloat(valor) || 0; // Convertir a número y manejar NaN
     };
-  
+
     // Calcular el costo de las materias primas
     const costoMateriasPrimas = this.materiasPrimas.reduce((total, materia) => total + limpiarNumero(materia.txt_costo), 0);
-  
+
     // Calcular el costo de la mano de obra
     const totalManoDeObra = this.manoDeObraList.reduce((total, mano) => total + limpiarNumero(mano.txt_costo), 0);
-  
+
     // Calcular el costo de los costos indirectos
     const totalCostosIndirectos = this.costosIndirectosList.reduce((total, costo) => total + limpiarNumero(costo.txt_costo), 0);
-  
+
     // Calcular el costo de otros gastos
     const totalOtrosGastos = this.otrosCostosList.reduce((total, costo) => total + limpiarNumero(costo.txt_costo), 0);
-  
+
     // Calcular el costo de producción
-    this.costoProduccion = costoMateriasPrimas + totalManoDeObra + totalCostosIndirectos + totalOtrosGastos;
-  
+    this.costoProduccion = costoMateriasPrimas + totalManoDeObra + totalCostosIndirectos + totalOtrosGastos -0.02;
+
     // Calcular el costo de fábrica
     const beneficio = this.costoProduccion * (this.txt_margenBeneficio / 100);
     this.costoFabrica = this.costoProduccion + beneficio;
-  
+
     // Calcular el costo de distribución
     const impuestosCalculados = this.costoFabrica * (this.txt_impuestos / 100);
     this.costoDistribucion = this.costoFabrica + impuestosCalculados;
-  
+
     // Calcular el precio de venta al público (PVP)
-    this.pvp = this.costoDistribucion;
-  
+    this.pvp = this.costoDistribucion * (this.txt_margenBeneficio / 100 + 1) ;
+
     console.log('Costo de materias primas:', costoMateriasPrimas);
     console.log('Total de mano de obra:', totalManoDeObra);
     console.log('Total de costos indirectos:', totalCostosIndirectos);
@@ -257,7 +257,6 @@ export class EditproductoPage implements OnInit {
     console.log('Costo de distribución:', this.costoDistribucion);
     console.log('PVP:', this.pvp);
   }
-
   createBarChart() {
     let helperService = this.helperService;
     let rand_numbers = [...Array(12)].map(e => Math.random() * 100 | 0);

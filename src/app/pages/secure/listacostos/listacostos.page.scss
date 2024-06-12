@@ -53,16 +53,39 @@
   text-align: center;
 }
 
-.actions .action-buttons {
+.action-buttons {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
 }
 
-.actions .action-buttons ion-button {
-  margin-bottom: 5px;
+.action-buttons ion-button {
+  margin: 0 2px; /* Espacio entre los botones de acción */
 }
-
 ion-searchbar {
   margin: 10px;
+}
+.col-num {
+  flex: 0 0 75px; /* Ajusta el ancho según tus necesidades */
+  max-width: 75px;
+  .col-nombre {
+    flex: 0 0 200px; /* Ancho fijo para la columna Nombre */
+    max-width: 200px;
+  }
+}
+.col-acc {
+  flex: 0 0 90px; /* Ajusta el ancho según tus necesidades */
+  max-width: 90px;
+}
+.col-pvp {
+  flex: 0 0 80px; /* Ajusta el ancho según tus necesidades */
+  max-width: 80px;
+}
+/* Nuevas reglas para añadir márgenes */
+.searchbar-spacing {
+  margin: -0px; /* Ajusta el valor según tus necesidades */
+}
+
+.button-spacing {
+  margin-left: 16px; /* Ajusta el valor según tus necesidades */
 }
