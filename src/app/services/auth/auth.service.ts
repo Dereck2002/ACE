@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { Storage } from '@capacitor/storage';
+import { NavController } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,8 @@ export class AuthService {
   constructor(
     public http: HttpClient,
     public toastCtrl: ToastController,
-    private router: Router
+    private router: Router,
+    public navCtrl: NavController,
   ) { }
 
   postData(body: any) {
@@ -28,7 +30,7 @@ export class AuthService {
   }
 
   public uploadIMG(formData: FormData) {
-    return this.http.post(`http://localhost/ACE/WsMunicipioIonic/ws_img.php`, formData);
+    return this.http.post("http://localhost/ACE/WsMunicipioIonic/ws_img.php", formData);
   }
 
   async creatSession(id: string, valor: string) {
@@ -40,6 +42,7 @@ export class AuthService {
 
   async closeSession() {
     await Storage.clear();
+    this.navCtrl.navigateRoot(['/login']);
   }
 
   async getSession(id: string) {

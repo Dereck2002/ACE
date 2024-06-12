@@ -43,7 +43,7 @@ export class AjustesPage implements OnInit {
 
   // Sign out
   signOut() {
-    this.authService.signOut();
+    this.authService.closeSession();
   }
 
 }

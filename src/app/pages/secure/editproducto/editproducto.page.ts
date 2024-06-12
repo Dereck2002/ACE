@@ -214,25 +214,59 @@ export class EditproductoPage implements OnInit {
   }
 
   calcular() {
-    const costoMateriasPrimas = this.materiasPrimas.reduce((total, materia) => total + (materia.txt_costo * materia.txt_cantidad), 0);
-    const costoManoDeObra = this.manoDeObraList.reduce((total, labor) => total + labor.txt_costo, 0);
-    const costoCostosIndirectos = this.costosIndirectosList.reduce((total, costo) => total + costo.txt_costo, 0);
-    const costoOtrosCostos = this.otrosCostosList.reduce((total, costo) => total + costo.txt_costo, 0);
-    
-    this.costoProduccion = costoMateriasPrimas + costoManoDeObra + costoCostosIndirectos + costoOtrosCostos;
-    this.costoFabrica = this.costoProduccion + (this.costoProduccion * (this.txt_margenBeneficio / 100));
-    this.costoDistribucion = this.costoFabrica + (this.costoFabrica * (this.txt_impuestos / 100));
+    // Función para limpiar números
+    const limpiarNumero = (valor: any): number => {
+      if (typeof valor === 'string') {
+        valor = valor.replace(/[^0-9.-]+/g, ''); // Eliminar caracteres no numéricos
+      }
+      return parseFloat(valor) || 0; // Convertir a número y manejar NaN
+    };
+  
+    // Calcular el costo de las materias primas
+    const costoMateriasPrimas = this.materiasPrimas.reduce((total, materia) => total + limpiarNumero(materia.txt_costo), 0);
+  
+    // Calcular el costo de la mano de obra
+    const totalManoDeObra = this.manoDeObraList.reduce((total, mano) => total + limpiarNumero(mano.txt_costo), 0);
+  
+    // Calcular el costo de los costos indirectos
+    const totalCostosIndirectos = this.costosIndirectosList.reduce((total, costo) => total + limpiarNumero(costo.txt_costo), 0);
+  
+    // Calcular el costo de otros gastos
+    const totalOtrosGastos = this.otrosCostosList.reduce((total, costo) => total + limpiarNumero(costo.txt_costo), 0);
+  
+    // Calcular el costo de producción
+    this.costoProduccion = costoMateriasPrimas + totalManoDeObra + totalCostosIndirectos + totalOtrosGastos;
+  
+    // Calcular el costo de fábrica
+    const beneficio = this.costoProduccion * (this.txt_margenBeneficio / 100);
+    this.costoFabrica = this.costoProduccion + beneficio;
+  
+    // Calcular el costo de distribución
+    const impuestosCalculados = this.costoFabrica * (this.txt_impuestos / 100);
+    this.costoDistribucion = this.costoFabrica + impuestosCalculados;
+  
+    // Calcular el precio de venta al público (PVP)
     this.pvp = this.costoDistribucion;
+  
+    console.log('Costo de materias primas:', costoMateriasPrimas);
+    console.log('Total de mano de obra:', totalManoDeObra);
+    console.log('Total de costos indirectos:', totalCostosIndirectos);
+    console.log('Total de otros gastos:', totalOtrosGastos);
+    console.log('Costo de producción:', this.costoProduccion);
+    console.log('Costo de fábrica:', this.costoFabrica);
+    console.log('Costo de distribución:', this.costoDistribucion);
+    console.log('PVP:', this.pvp);
   }
 
   createBarChart() {
-    const rand_numbers = [...Array(12)].map(e => Math.random() * 100 | 0);
+    let helperService = this.helperService;
+    let rand_numbers = [...Array(12)].map(e => Math.random() * 100 | 0);
 
     this.barChartData.labels = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
     this.barChartData.datasets = [
       {
         data: rand_numbers,
-        backgroundColor: context => {
+        backgroundColor: function (context) {
           const chart = context.chart;
           const { ctx, chartArea } = chart;
 
@@ -240,16 +274,17 @@ export class EditproductoPage implements OnInit {
             return null;
           }
 
-          return this.helperService.createGradientChart(ctx, 'tertiary', 'tertiary');
+          return helperService.createGradientChart(ctx, 'tertiary', 'tertiary');
         },
         barThickness: 10,
         borderRadius: 4,
-        borderColor: this.helperService.getColorVariable('secondary'),
-        hoverBackgroundColor: this.helperService.getColorVariable('secondary'),
+        borderColor: helperService.getColorVariable('secondary'),
+        hoverBackgroundColor: helperService.getColorVariable('secondary'),
         pointStyle: 'circle',
       }
     ];
   }
+ 
 
   async editarProducto() {
     const datos = {
