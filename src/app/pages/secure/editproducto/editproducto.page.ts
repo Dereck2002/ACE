@@ -114,46 +114,42 @@ export class EditproductoPage implements OnInit {
     this.createBarChart();
   }
 
-  regresar(){
-    this.navCtrl.back();
-  }
-
   async consultarDato(codigo: string) {
     let datos = {
-        accion: "consultarDatoProductos",
-        id: codigo
+      accion: "consultarDatoProductos",
+      id: codigo
     };
 
     this.authService.postData(datos).subscribe((res: any) => {
-        if (res.estado == true) {
-            // Asignar datos generales
-            this.productoId = res.productos[0].id;
-            console.log("Producto ID asignado:", this.productoId); // Agrega esta línea para verificar
-            this.codigo = res.productos[0].codigo;
-            this.txt_producto = res.productos[0].nombre;
-            this.txt_margenBeneficio = res.productos[0].margenBeneficio;
-            this.txt_impuestos = res.productos[0].impuestos;
-            this.costoProduccion = res.productos[0].costoProduccion;
-            this.costoFabrica = res.productos[0].costoProduccion;
-            this.costoDistribucion = res.productos[0].costoDistribucion;
-            this.pvp = res.productos[0].pvp;
+      if (res.estado == true) {
+        // Asignar datos generales
+        this.productoId = res.productos[0].id;
+        console.log("Producto ID asignado:", this.productoId); // Agrega esta línea para verificar
+        this.codigo = res.productos[0].codigo;
+        this.txt_producto = res.productos[0].nombre;
+        this.txt_margenBeneficio = res.productos[0].margenBeneficio;
+        this.txt_impuestos = res.productos[0].impuestos;
+        this.costoProduccion = res.productos[0].costoProduccion;
+        this.costoFabrica = res.productos[0].costoProduccion;
+        this.costoDistribucion = res.productos[0].costoDistribucion;
+        this.pvp = res.productos[0].pvp;
 
-            // Filtrar y asignar datos de materias primas sin duplicados
-            this.materiasPrimas = this.filterUniqueItems(res.productos[0].materiasPrimas, 'txt_nombre');
+        // Filtrar y asignar datos de materias primas sin duplicados
+        this.materiasPrimas = this.filterUniqueItems(res.productos[0].materiasPrimas, 'txt_nombre');
 
-            // Filtrar y asignar datos de mano de obra sin duplicados
-            this.manoDeObraList = this.filterUniqueItems(res.productos[0].manoDeObraList, 'txt_nombre');
+        // Filtrar y asignar datos de mano de obra sin duplicados
+        this.manoDeObraList = this.filterUniqueItems(res.productos[0].manoDeObraList, 'txt_nombre');
 
-            // Filtrar y asignar datos de costos indirectos sin duplicados
-            this.costosIndirectosList = this.filterUniqueItems(res.productos[0].costosIndirectosList, 'txt_nombre');
+        // Filtrar y asignar datos de costos indirectos sin duplicados
+        this.costosIndirectosList = this.filterUniqueItems(res.productos[0].costosIndirectosList, 'txt_nombre');
 
-            // Filtrar y asignar datos de otros costos sin duplicados
-            this.otrosCostosList = this.filterUniqueItems(res.productos[0].otrosCostosList, 'txt_nombre');
-        } else {
-            this.authService.showToast(res.mensaje);
-        }
+        // Filtrar y asignar datos de otros costos sin duplicados
+        this.otrosCostosList = this.filterUniqueItems(res.productos[0].otrosCostosList, 'txt_nombre');
+      } else {
+        this.authService.showToast(res.mensaje);
+      }
     });
-}
+  }
 
   // Función para filtrar elementos únicos por una propiedad específica
   filterUniqueItems(array: any[], property: string): any[] {
@@ -175,9 +171,7 @@ export class EditproductoPage implements OnInit {
   }
 
   quitarMateriaPrima() {
-    if (this.materiasPrimas.length > 1) {
-      this.materiasPrimas.pop();
-    }
+    this.materiasPrimas.pop();
   }
 
   agregarManoDeObra() {
@@ -185,9 +179,7 @@ export class EditproductoPage implements OnInit {
   }
 
   quitarManoDeObra() {
-    if (this.manoDeObraList.length > 1) {
-      this.manoDeObraList.pop();
-    }
+    this.manoDeObraList.pop();
   }
 
   agregarCostosIndirectos() {
@@ -195,9 +187,7 @@ export class EditproductoPage implements OnInit {
   }
 
   quitarCostosIndirectos() {
-    if (this.costosIndirectosList.length > 1) {
-      this.costosIndirectosList.pop();
-    }
+    this.costosIndirectosList.pop();
   }
 
   agregarGasto() {
@@ -205,14 +195,13 @@ export class EditproductoPage implements OnInit {
   }
 
   quitarGasto() {
-    if (this.otrosCostosList.length > 1) {
-      this.otrosCostosList.pop();
-    }
+    this.otrosCostosList.pop();
   }
 
   shouldShowCantidad(unidad: string): boolean {
     return unidad !== 'unidad' && unidad !== '';
   }
+
   unidadChange(event, index) {
     const selectedUnit = event.detail.value;
     this.materiasPrimas[index].txt_unidad = selectedUnit;
@@ -236,39 +225,67 @@ export class EditproductoPage implements OnInit {
     this.pvp = this.costoDistribucion;
   }
 
-  async editar() {
+  createBarChart() {
+    const rand_numbers = [...Array(12)].map(e => Math.random() * 100 | 0);
+
+    this.barChartData.labels = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+    this.barChartData.datasets = [
+      {
+        data: rand_numbers,
+        backgroundColor: context => {
+          const chart = context.chart;
+          const { ctx, chartArea } = chart;
+
+          if (!chartArea) {
+            return null;
+          }
+
+          return this.helperService.createGradientChart(ctx, 'tertiary', 'tertiary');
+        },
+        barThickness: 10,
+        borderRadius: 4,
+        borderColor: this.helperService.getColorVariable('secondary'),
+        hoverBackgroundColor: this.helperService.getColorVariable('secondary'),
+        pointStyle: 'circle',
+      }
+    ];
+  }
+
+  async editarProducto() {
     const datos = {
-      accion: 'editarActualizarProducto',
-      id: this.codigo,
+      accion: "editarProducto",
       codigo: this.codigo,
       nombre: this.txt_producto,
-      materiasPrimas: this.materiasPrimas,
-      manoDeObraList: this.manoDeObraList,
-      costosIndirectosList: this.costosIndirectosList,
-      otrosCostosList: this.otrosCostosList,
       margenBeneficio: this.txt_margenBeneficio,
       impuestos: this.txt_impuestos,
       costoProduccion: this.costoProduccion,
       costoFabrica: this.costoFabrica,
       costoDistribucion: this.costoDistribucion,
-      pvp: this.pvp
+      pvp: this.pvp,
+      materiasPrimas: this.materiasPrimas,
+      manoDeObraList: this.manoDeObraList,
+      costosIndirectosList: this.costosIndirectosList,
+      otrosCostosList: this.otrosCostosList
     };
-  
-    console.log('Datos a enviar:', datos); // Agrega esta línea
-  
-    this.authService.postData(datos).subscribe((res: any) => {
-      if (res.estado === true) {
-        this.authService.showToast2('Producto editado correctamente.');
-        this.router.navigate(['/listado-productos']); // O la ruta que desees
+
+    try {
+      const res: any = await this.authService.postData(datos).toPromise();
+      if (res.estado) {
+        this.mostrarMensajeRegistroExitoso();
+        this.navCtrl.navigateRoot(['/listacostos']);
       } else {
         this.authService.showToast(res.mensaje);
       }
-    });
+    } catch (error) {
+      this.authService.showToast('Error al guardar los datos. Por favor, intenta de nuevo.');
+    }
   }
-  
-  
 
-  private createBarChart() {
-    // Configuración del gráfico de barras
+  regresar() {
+    this.navCtrl.back();
+  }
+
+  async mostrarMensajeRegistroExitoso() {
+    this.authService.showToast2('Éxito, Datos registrados correctamente');
   }
 }
