@@ -599,11 +599,11 @@ if ($post['accion'] == 'eliminarProducto') {
 
 if ($post['accion'] == 'editarProducto') {
     $producto_id = (int)$post['codigo'];
-    $producto = isset($post['nombre']) ? mysqli_real_escape_string($mysqli, $post['nombre']) : '';
+    $producto = mysqli_real_escape_string($mysqli, $post['nombre']);
     $materias_primas = isset($post['materiasPrimas']) ? $post['materiasPrimas'] : [];
     $mano_de_obra = isset($post['manoDeObraList']) ? $post['manoDeObraList'] : [];
     $costos_indirectos = isset($post['costosIndirectosList']) ? $post['costosIndirectosList'] : [];
-    $otros_gastos = isset($post['otrosGastoList']) ? $post['otrosGastoList'] : []; // Cambiado de otrosCostosList a otrosGastoList
+    $otros_gastos = isset($post['otrosCostosList']) ? $post['otrosCostosList'] : [];
     $margen_beneficio = isset($post['margenBeneficio']) ? (float)$post['margenBeneficio'] : 0;
     $impuestos = isset($post['impuestos']) ? (float)$post['impuestos'] : 0;
     $costo_produccion = isset($post['costoProduccion']) ? (float)$post['costoProduccion'] : 0;
@@ -628,21 +628,42 @@ if ($post['accion'] == 'editarProducto') {
     if (mysqli_query($mysqli, $query)) {
         $error_occurred = false;
 
-        // Función para ejecutar las actualizaciones
+        // Función para actualizar y agregar datos a la tabla
         function update_data($mysqli, $producto_id, $data, $table, $include_unidad_cantidad = false) {
-            $query_delete = "DELETE FROM $table WHERE producto_id = $producto_id";
-            if (!mysqli_query($mysqli, $query_delete)) {
-                return false;
-            }
+            $ids = [];
             foreach ($data as $item) {
                 $nombre = mysqli_real_escape_string($mysqli, $item['txt_nombre']);
                 $costo = (float)$item['txt_costo'];
                 $unidad = $include_unidad_cantidad ? mysqli_real_escape_string($mysqli, $item['txt_unidad']) : null;
                 $cantidad = $include_unidad_cantidad ? (float)$item['txt_cantidad'] : null;
-                $query_insert = $include_unidad_cantidad 
-                    ? "INSERT INTO $table (producto_id, nombre, costo, unidad, cantidad) VALUES ($producto_id, '$nombre', $costo, '$unidad', $cantidad)"
-                    : "INSERT INTO $table (producto_id, nombre, costo) VALUES ($producto_id, '$nombre', $costo)";
-                if (!mysqli_query($mysqli, $query_insert)) {
+
+                if (isset($item['id']) && !empty($item['id'])) {
+                    // Actualiza el registro existente
+                    $id = (int)$item['id'];
+                    $ids[] = $id;
+                    $query_update = $include_unidad_cantidad
+                        ? "UPDATE $table SET nombre = '$nombre', costo = $costo, unidad = '$unidad', cantidad = $cantidad WHERE id = $id"
+                        : "UPDATE $table SET nombre = '$nombre', costo = $costo WHERE id = $id";
+                } else {
+                    // Inserta un nuevo registro
+                    $query_update = $include_unidad_cantidad 
+                        ? "INSERT INTO $table (producto_id, nombre, costo, unidad, cantidad) VALUES ($producto_id, '$nombre', $costo, '$unidad', $cantidad)"
+                        : "INSERT INTO $table (producto_id, nombre, costo) VALUES ($producto_id, '$nombre', $costo)";
+                    if (mysqli_query($mysqli, $query_update)) {
+                        $ids[] = mysqli_insert_id($mysqli);
+                    }
+                }
+                
+                if (!mysqli_query($mysqli, $query_update)) {
+                    return false;
+                }
+            }
+            
+            // Elimina los registros que no están en la nueva lista
+            if (!empty($ids)) {
+                $ids_to_keep = implode(',', array_map('intval', $ids));
+                $query_delete = "DELETE FROM $table WHERE producto_id = $producto_id AND id NOT IN ($ids_to_keep)";
+                if (!mysqli_query($mysqli, $query_delete)) {
                     return false;
                 }
             }
@@ -676,5 +697,4 @@ if ($post['accion'] == 'editarProducto') {
     // Envía la respuesta
     echo $respuesta;
 }
-
 ?>
