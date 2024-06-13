@@ -182,6 +182,17 @@
           <ion-label position="floating">Margen de Beneficio (%)</ion-label>
           <ion-input [(ngModel)]="margenBeneficio" type="number" (ionChange)="calcular()"></ion-input>
         </ion-item>
+
+        <ion-item >
+          <ion-label position="floating">Utilidad Vendedor (%)</ion-label>
+          <ion-input [(ngModel)]="utilidadv" type="number" (ionChange)="calcular()"></ion-input>
+        </ion-item>
+
+        <ion-item >
+          <ion-label position="floating">Utilidad Comercial(%)</ion-label>
+          <ion-input [(ngModel)]="utilidadc" type="number" (ionChange)="calcular()"></ion-input>
+        </ion-item>
+
         <ion-item>
           <ion-label position="floating">Impuestos (%)</ion-label>
           <ion-input [(ngModel)]="impuestos" type="number" (ionChange)="calcular()"></ion-input>

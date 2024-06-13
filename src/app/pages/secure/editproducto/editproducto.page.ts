@@ -130,6 +130,8 @@ export class EditproductoPage implements OnInit {
         this.codigo = res.productos[0].codigo;
         this.txt_producto = res.productos[0].nombre;
         this.txt_margenBeneficio = res.productos[0].margenBeneficio;
+        this.txt_utilidadv = res.productos[0].utilidadVenta;
+        this.txt_utilidadc = res.productos[0].utilidadDis;
         this.txt_impuestos = res.productos[0].impuestos;
         this.costoProduccion = res.productos[0].costoProduccion;
         this.costoFabrica = res.productos[0].costoFabrica;
@@ -214,6 +216,7 @@ export class EditproductoPage implements OnInit {
     }
     this.calcular();
   }
+  
   calcular() {
     // Función para limpiar números
     const limpiarNumero = (valor: any): number => {
@@ -236,20 +239,20 @@ export class EditproductoPage implements OnInit {
     const totalOtrosGastos = this.otrosCostosList.reduce((total, costo) => total + limpiarNumero(costo.txt_costo), 0);
   
     // Calcular el costo de producción
-    this.costoProduccion = costoMateriasPrimas + totalManoDeObra + totalCostosIndirectos + totalOtrosGastos -0.02;
+    this.costoProduccion = parseFloat((costoMateriasPrimas + totalManoDeObra + totalCostosIndirectos + totalOtrosGastos - 0.02).toFixed(2));
   
     // Calcular el costo de fábrica
-    const beneficio = this.costoProduccion * (this.txt_margenBeneficio / 100);
-    this.costoFabrica = this.costoProduccion + beneficio;
+    const beneficio = parseFloat((this.costoProduccion * (this.txt_margenBeneficio / 100)).toFixed(2));
+    this.costoFabrica = parseFloat((this.costoProduccion + beneficio).toFixed(2));
   
     // Calcular el costo de distribución
-    const utilidadVendedor = this.costoFabrica * (this.txt_utilidadv / 100);
-    this.costoDistribucion = this.costoFabrica + utilidadVendedor;
+    const utilidadVendedor = parseFloat((this.costoFabrica * (this.txt_utilidadv / 100)).toFixed(2));
+    this.costoDistribucion = parseFloat((this.costoFabrica + utilidadVendedor).toFixed(2));
   
     // Calcular el precio de venta al público (PVP)
-    const utilidadComercial = this.costoDistribucion * (this.txt_utilidadc / 100);
-    const impuestosCalculados = this.costoDistribucion * (this.txt_impuestos / 100);
-    this.pvp = this.costoDistribucion + utilidadComercial + impuestosCalculados;
+    const utilidadComercial = parseFloat((this.costoDistribucion * (this.txt_utilidadc / 100)).toFixed(2));
+    const impuestosCalculados = parseFloat((this.costoDistribucion * (this.txt_impuestos / 100)).toFixed(2));
+    this.pvp = parseFloat((this.costoDistribucion + utilidadComercial + impuestosCalculados).toFixed(2));
   
     console.log('Costo de materias primas:', costoMateriasPrimas);
     console.log('Total de mano de obra:', totalManoDeObra);
@@ -260,8 +263,7 @@ export class EditproductoPage implements OnInit {
     console.log('Costo de distribución:', this.costoDistribucion);
     console.log('PVP:', this.pvp);
   }
-
- 
+  
   createBarChart() {
     let helperService = this.helperService;
     let rand_numbers = [...Array(12)].map(e => Math.random() * 100 | 0);
@@ -296,6 +298,8 @@ export class EditproductoPage implements OnInit {
       codigo: this.codigo,
       nombre: this.txt_producto,
       margenBeneficio: this.txt_margenBeneficio,
+      utilidad_venta: this.txt_utilidadv,
+      utilidad_dis: this.txt_utilidadc,
       impuestos: this.txt_impuestos,
       costoProduccion: this.costoProduccion,
       costoFabrica: this.costoFabrica,
