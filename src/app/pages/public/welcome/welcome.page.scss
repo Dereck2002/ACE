@@ -119,8 +119,18 @@ app-welcome ion-footer {
   color: white !important; /* Force the text color to be white */
 }
 .custom-icon-background {
-  color: white;
-  background-color: rgb(219, 25, 25); /* Cambia este color por el azul que desees */
-  padding: 30px; /* Ajusta el espacio alrededor del icono según sea necesario */
+  background-color: rgb(255, 255, 255); /* Cambia este color por el azul que desees */
+  padding: 0px; /* Ajusta el espacio alrededor del icono según sea necesario */
   border-radius: 50%; /* Esto crea un borde redondeado alrededor del icono */
+  overflow: hidden; /* Asegura que la imagen no sobresalga del borde del contenedor */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Asegura que la imagen cubra todo el área del contenedor sin distorsionarse */
+    border-radius: 50%; /* Aplica el borde redondeado también a la imagen */
+  }
 }

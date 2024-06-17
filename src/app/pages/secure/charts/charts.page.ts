@@ -16,8 +16,8 @@ import { NavController } from '@ionic/angular';
 })
 export class ChartsPage implements OnInit {
   codigo: string = "";
-  margenBeneficio: number = 0;
-  impuestos: number = 0;
+  margenBeneficio: number = 35;
+  impuestos: number = 15;
   costoProduccion: number | null = null;
   costoFabrica: number | null = null;
   costoDistribucion: number | null = null;
