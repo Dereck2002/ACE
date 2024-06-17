@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 13-06-2024 a las 03:04:12
+-- Tiempo de generación: 17-06-2024 a las 17:14:56
 -- Versión del servidor: 10.4.27-MariaDB
 -- Versión de PHP: 8.2.0
 
@@ -322,6 +322,8 @@ CREATE TABLE `contrasenia_reset` (
 --
 
 INSERT INTO `contrasenia_reset` (`correo_persona`, `token`, `created_at`) VALUES
+('steevenflores2019@gmail.com', '03466b364c45f7ed777f4fc5e471bae48c18e800b1508629f959fb3980b9f6178bad2efd83a942888559719b0f4fbaf4018b', '2024-06-01 00:26:42'),
+('andrescarlos988@gmail.com', '5b8da529b09f34f4bbc08668957e9db77504c8731af2c0dc712853af9d17e0ac890ebd87ed5034043b37e099dba745369cdd', '2024-06-05 13:57:49'),
 
 -- --------------------------------------------------------
 
@@ -340,6 +342,40 @@ CREATE TABLE `costos_indirectos` (
 -- Volcado de datos para la tabla `costos_indirectos`
 --
 
+INSERT INTO `costos_indirectos` (`id`, `producto_id`, `nombre`, `costo`) VALUES
+(15, 15, 'vbnbv', '3.0000000'),
+(16, 16, 'XVBCV', '1.0000000'),
+(57, 57, '', '1.0000000'),
+(82, 82, 'ci', '1.0000000'),
+(89, 98, 'gas', '0.0200000'),
+(115, 138, 'ci', '124.0000000'),
+(127, 18, 'raspadora', '0.0900000'),
+(132, 141, 'asaa', '1.0000000'),
+(133, 142, '', '0.0000000'),
+(134, 143, '', '0.0000000'),
+(135, 144, '', '0.0000000'),
+(136, 145, '', '0.0000000'),
+(137, 146, '', '0.0000000'),
+(138, 147, '', '0.0000000'),
+(139, 148, '', '0.0000000'),
+(140, 149, '', '0.0000000'),
+(141, 150, '', '0.0000000'),
+(170, 151, 'luz', '0.0004000'),
+(171, 151, 'agua', '0.0001000'),
+(172, 151, 'gas', '0.0056000'),
+(179, 152, 'Luz', '0.0020000'),
+(180, 152, 'Agua', '0.0008000'),
+(181, 152, 'Gas', '0.0002000'),
+(185, 154, 'Luz', '0.0004000'),
+(186, 154, 'Agua', '0.0001000'),
+(187, 154, 'Gas', '0.0056000'),
+(218, 153, 'Luz', '0.0020000'),
+(220, 153, 'Agua', '0.0008000'),
+(222, 153, 'Gas', '0.0002000'),
+(254, 134, 'luz', '0.0004000'),
+(256, 134, 'agua', '0.0001000'),
+(258, 134, 'gas', '0.0056000'),
+(260, 155, '', '0.0000000');
 
 -- --------------------------------------------------------
 
@@ -358,6 +394,35 @@ CREATE TABLE `mano_de_obra` (
 -- Volcado de datos para la tabla `mano_de_obra`
 --
 
+INSERT INTO `mano_de_obra` (`id`, `producto_id`, `nombre`, `costo`) VALUES
+(58, 57, '', '1.0000000'),
+(83, 82, 'mo', '1.0000000'),
+(89, 98, 'pelar papas', '0.0500000'),
+(114, 138, 'mo1', '101.0000000'),
+(126, 18, 'mezclar', '0.2500000'),
+(131, 141, 'asas', '1.0000000'),
+(132, 142, '', '0.0000000'),
+(133, 143, '', '0.0000000'),
+(134, 144, '', '0.0000000'),
+(135, 145, '', '0.0000000'),
+(136, 146, '', '0.0000000'),
+(137, 147, '', '0.0000000'),
+(138, 148, '', '0.0000000'),
+(139, 149, '', '0.0000000'),
+(140, 150, '', '0.0000000'),
+(159, 151, 'operario freidor', '0.0300000'),
+(160, 151, 'operario pelador', '0.0300000'),
+(165, 152, 'elaboración', '0.6000000'),
+(166, 152, 'Auxiliar', '1.0700000'),
+(169, 154, 'Pelador', '0.0300000'),
+(170, 154, 'Freidor', '0.0300000'),
+(191, 153, '1 Elaboracion', '0.6000000'),
+(193, 153, '2 Auxiliar', '1.0700000'),
+(215, 134, 'operario freidor', '0.0300000'),
+(217, 134, 'operario pelador', '0.0300000'),
+(219, 155, '', '0.0000000');
+
+-- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `materias_primas`
@@ -375,6 +440,53 @@ CREATE TABLE `materias_primas` (
 --
 -- Volcado de datos para la tabla `materias_primas`
 --
+
+INSERT INTO `materias_primas` (`id`, `producto_id`, `nombre`, `costo`, `unidad`, `cantidad`) VALUES
+(15, 15, 'xbcvv', '1.0000000', '', 0),
+(16, 16, 'DGDFH', '1.0000000', '', 0),
+(65, 57, '', '0.0000000', 'kg', 1),
+(106, 82, 'mp1', '1.0000000', 'lb', 1),
+(120, 98, 'papa', '0.1000000', 'g', 1),
+(121, 98, 'salchicha', '0.1000000', 'unid', 0),
+(122, 98, 'aceite', '0.1000000', 'mL', 10),
+(151, 138, 'mp1', '1.0000000', 'kg', 1),
+(156, 139, 'asda', '122.0000000', 'unidad', 1),
+(175, 18, 'Agua', '0.1000000', 'L', 1),
+(176, 18, 'clorantes', '2.5000000', 'g', 0.1),
+(181, 141, 'asas', '1.0000000', 'kg', 0),
+(182, 142, 'dsgb', '1.0000000', '', 0),
+(183, 143, 'dsgb', '1.0000000', 'unidad', 1),
+(184, 144, 'dsgb', '1.0000000', 'unidad', 1),
+(185, 145, 'dsgb', '1.0000000', 'unidad', 1),
+(186, 146, 'dsgb', '1.0000000', 'unidad', 1),
+(187, 147, 'dsgb', '1.0000000', 'unidad', 1),
+(188, 148, 'dsgb', '1.0000000', 'unidad', 1),
+(189, 149, 'dsgb', '1.0000000', 'unidad', 1),
+(190, 150, 'dsgb', '1.0000000', 'unidad', 1),
+(227, 151, 'papas', '0.1200000', 'g', 1),
+(228, 151, 'sal', '0.0004000', 'g', 10),
+(229, 151, 'salsa de tomate', '0.0100000', 'mL', 5),
+(230, 151, 'Aceite', '0.0500000', 'unidad', 1),
+(241, 152, 'Mortiño', '0.5800000', 'lb', 1),
+(242, 152, 'Azucar', '0.3100000', 'g', 500),
+(243, 152, 'Agua', '0.1300000', 'L', 1),
+(244, 152, 'Levadura', '0.0227000', 'g', 500),
+(245, 152, 'metabisulfito de sodio', '0.0100000', 'g', 500),
+(251, 154, 'papas', '0.1200000', 'g', 200),
+(252, 154, 'sal', '0.0000000', 'g', 10),
+(253, 154, 'salsa de tomate', '0.0100000', 'unidad', 1),
+(254, 154, 'Aceite', '0.0500000', 'L', 0.5),
+(297, 153, 'Mortiño', '0.5800000', 'unidad', 1),
+(299, 153, 'azucar', '0.3100000', 'kg', 0.1),
+(301, 153, 'agua', '0.1300000', 'L', 1),
+(303, 153, 'Levadura', '0.0227000', 'unidad', 1),
+(345, 134, 'papas', '0.1200000', 'g', 1),
+(347, 134, 'sal', '0.0000000', 'g', 10),
+(349, 134, 'salsa de tomate', '0.0100000', 'mL', 5),
+(351, 134, 'Aceite', '0.0500000', 'unidad', 1),
+(356, 155, 'hkbkjb', '999.9999999', 'unidad', 1);
+
+-- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `nacionalidades`
@@ -595,6 +707,33 @@ CREATE TABLE `otros_gastos` (
 -- Volcado de datos para la tabla `otros_gastos`
 --
 
+INSERT INTO `otros_gastos` (`id`, `producto_id`, `nombre`, `costo`) VALUES
+(2, 15, 'vnvbn', '4.0000000'),
+(3, 16, 'CBCVB', '1.0000000'),
+(40, 57, '', '1.0000000'),
+(66, 82, 'gg', '1.0000000'),
+(72, 98, 'Desechables', '0.0500000'),
+(97, 138, 'gg', '123.0000000'),
+(100, 141, 'asasa', '1.0000000'),
+(101, 142, '', '0.0000000'),
+(102, 143, '', '0.0000000'),
+(103, 144, '', '0.0000000'),
+(104, 145, '', '0.0000000'),
+(105, 146, '', '0.0000000'),
+(106, 147, '', '0.0000000'),
+(107, 148, '', '0.0000000'),
+(108, 149, '', '0.0000000'),
+(109, 150, '', '0.0000000'),
+(118, 154, 'Fundas', '0.0200000'),
+(119, 154, 'Etiquetas', '0.0100000'),
+(146, 153, 'Botellas', '1.0300000'),
+(148, 153, 'etiquetas', '0.6300000'),
+(150, 153, 'Timbre', '0.0500000'),
+(182, 134, 'fundas', '0.0200000'),
+(184, 134, 'Etiquetas', '0.0100000'),
+(186, 134, 'trasporte', '0.0025000'),
+(188, 155, '', '0.0000000');
+
 -- --------------------------------------------------------
 
 --
@@ -635,6 +774,15 @@ CREATE TABLE `persona` (
 --
 -- Volcado de datos para la tabla `persona`
 --
+
+INSERT INTO `persona` (`cod_persona`, `ci_persona`, `cod_tipoced_persona`, `nom_persona`, `ape_persona`, `fecha_nacimiento`, `edad_persona`, `ecivil_persona`, `etnia_persona`, `dis_persona`, `tipo_dis_persona`, `porcentaje_dis_persona`, `ncarnet_dis_persona`, `ocupacion_persona`, `cod_nacionalidad_persona`, `cod_ciudad_persona`, `cod_provincia_persona`, `parroquia_persona`, `barrio_persona`, `calle1_persona`, `calle2_persona`, `neducacion_persona`, `genero_persona`, `clave_persona`, `correo_persona`, `telefono_persona`, `cod_rol_persona`, `img_perfil`) VALUES
+(105, '1005037492', 1, 'Dereck', 'Jaramillo', '2024-05-12', 21, 'soltero', 'Afro Ecuatoriana', '', '', '', '', 'Estudiante', 51, 15, 11, 'El sagrario', 'bariio 10 de agosto', 'esfdv', 'sdfsd', 'dsfdgvdx', 'masculino', 'e10adc3949ba59abbe56e057f20f883e', 'jaramilloderek13@gmail.com', '0983288443', 1, 'http://localhost/ACE/WsMunicipioIonic/uploads/avatar_user_1005037492.jpg'),
+(106, '1050243920', 1, 'Carlos', 'Guevara', '2024-05-15', 21, 'divorciado', 'Mestiza', '', '', '', '', 'Jubilado', 51, 15, 11, 'El sagrario', 'El Vergel', 'Padre Raimundo de Santacruz 3-30', 'Cristóbal Colón', 'Secundaria', 'masculino', 'e10adc3949ba59abbe56e057f20f883e', 'andrescarlos988@gmail.com', '0968569654', 2, 'http://localhost/ACE/WsMunicipioIonic/uploads/avatar_user_1050243920.jpg'),
+(208, '1002219895', 1, 'Silvana', 'Linto', '1979-06-08', 44, 'soltero', 'Mestiza', 'Si', 'Visual', '70%', '235764352', 'Servidor Público', 51, 15, 11, 'zxvxc', 'vcvb', 'cvbcvb', 'xcvcb', 'Cuarto Nivel', 'femenino', '25d55ad283aa400af464c76d713c07ad', 'john.doe23@mail.com', '0997179693', 2, ''),
+(209, '1050225018', 2, 'wqarsef', 'sdfdsg', '2024-05-06', 0, 'casado', 'cv nfnvbnvbn', 'Si', 'nvbnvbnv', 'vbnvbnvb', 'vbnvbnvbn', 'vbnvbnvbnvbn', 51, 15, 11, 'vbnvbn', 'nvbnvbnvbn', 'vbnvbnvb', 'vbnvbnvbn', 'Ninguno', 'vbnvbnvbn', '25d55ad283aa400af464c76d713c07ad', 'swdasfsd2@mail.com', '0987654321', 2, ''),
+(210, '0401404512', 1, 'Widinson', 'Pabon', '2004-04-24', 20, 'casado', 'Afro Ecuatoriana', 'No', '', '', '', 'asfsd', 51, 15, 11, 'sdfsdf', 'sdfsd', 'sdfsd', 'sdfs', 'Bachillerato', 'masculino', '25d55ad283aa400af464c76d713c07ad', 'soniapabon2016@gmail.com', '0987654321', 2, ''),
+(211, '1002401501', 1, 'Guillermo ', 'Jaramillo', '1939-06-05', 85, 'casado', 'Afro Ecuatoriana', 'No', '', '', '', 'Servidor Público', 51, 15, 11, 'dfvcfsdgdf', 'fdgdfg', 'fdgfdg', 'dfgdfg', 'Bachillerato', 'masculino', '25d55ad283aa400af464c76d713c07ad', 'guillojj80@gmail.com', '0959606539', 2, '');
+
 -- --------------------------------------------------------
 
 --
@@ -646,6 +794,8 @@ CREATE TABLE `productos` (
   `id_persona` int(11) NOT NULL,
   `nombre` varchar(255) NOT NULL,
   `margen_beneficio` decimal(5,2) NOT NULL,
+  `utilidad_dis` decimal(10,0) NOT NULL,
+  `utilidad_venta` decimal(10,0) NOT NULL,
   `impuestos` decimal(5,2) NOT NULL,
   `costo_produccion` decimal(10,2) DEFAULT NULL,
   `costo_fabrica` decimal(10,2) DEFAULT NULL,
@@ -655,7 +805,33 @@ CREATE TABLE `productos` (
 
 --
 -- Volcado de datos para la tabla `productos`
-------------------------------------------------
+--
+
+INSERT INTO `productos` (`id`, `id_persona`, `nombre`, `margen_beneficio`, `utilidad_dis`, `utilidad_venta`, `impuestos`, `costo_produccion`, `costo_fabrica`, `costo_distribucion`, `pvp`) VALUES
+(18, 105, 'Raspado de Hielo', '25.00', '0', '0', '15.00', '0.35', '0.35', '0.35', '0.35'),
+(57, 105, 'Capuchino', '35.00', '0', '0', '15.00', '3.00', '4.05', '6.29', '9.76'),
+(82, 106, 'paraguas', '123.00', '0', '0', '123.00', '4.00', '8.92', '44.36', '220.59'),
+(98, 105, 'Salchi papa', '30.00', '0', '0', '15.00', '0.42', '0.55', '0.82', '1.22'),
+(134, 210, 'papitas', '30.00', '39', '20', '12.00', '0.26', '0.34', '0.41', '0.62'),
+(138, 105, 'prueba1', '12.00', '0', '0', '11.00', '349.00', '41.88', '46.49', '52.07'),
+(139, 105, 'prueba2', '123.00', '0', '0', '99.00', '122.00', '150.06', '298.62', '665.92'),
+(141, 105, 'asasaas', '30.00', '0', '0', '15.00', '4.00', '1.20', '1.38', '1.79'),
+(142, 105, 'vcxbx', '35.00', '0', '0', '15.00', '1.00', '0.35', '0.40', '0.54'),
+(143, 105, 'carlos', '35.00', '0', '0', '15.00', '1.00', '0.35', '0.40', '0.54'),
+(144, 105, 'fjdfjd', '35.00', '0', '0', '15.00', '1.00', '0.35', '0.40', '0.54'),
+(145, 105, 'zfjxjgxjn', '35.00', '0', '0', '15.00', '1.00', '0.35', '0.40', '0.54'),
+(146, 105, 's<nzdfnzd', '35.00', '0', '0', '15.00', '1.00', '0.35', '0.40', '0.54'),
+(147, 105, 'dfbz z', '35.00', '0', '0', '15.00', '1.00', '0.35', '0.40', '0.54'),
+(148, 105, 'rdhdj', '35.00', '0', '0', '15.00', '1.00', '0.35', '0.40', '0.54'),
+(149, 105, 'erajteszgn', '35.00', '0', '0', '15.00', '1.00', '0.35', '0.40', '0.54'),
+(150, 105, 'zdfnmfg', '35.00', '0', '0', '15.00', '1.00', '0.35', '0.40', '0.54'),
+(151, 210, 'papitas2', '35.00', '0', '0', '12.00', '0.26', '0.35', '0.39', '0.52'),
+(152, 105, 'Vino de mortiño', '44.50', '0', '0', '12.00', '4.47', '6.45', '7.23', '10.44'),
+(153, 210, 'Vino Artesanal', '44.50', '0', '0', '12.00', '4.41', '6.37', '8.53', '13.46'),
+(154, 210, 'Papitas 3', '30.00', '0', '0', '12.00', '0.28', '0.36', '0.40', '0.52'),
+(155, 210, 'ibouigoubl', '3.00', '4', '3', '3.00', '999.98', '1029.98', '1060.88', '1135.15');
+
+-- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `provincias`
@@ -831,19 +1007,19 @@ ALTER TABLE `ciudades`
 -- AUTO_INCREMENT de la tabla `costos_indirectos`
 --
 ALTER TABLE `costos_indirectos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=185;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=261;
 
 --
 -- AUTO_INCREMENT de la tabla `mano_de_obra`
 --
 ALTER TABLE `mano_de_obra`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=169;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=220;
 
 --
 -- AUTO_INCREMENT de la tabla `materias_primas`
 --
 ALTER TABLE `materias_primas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=251;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=358;
 
 --
 -- AUTO_INCREMENT de la tabla `nacionalidades`
@@ -855,7 +1031,7 @@ ALTER TABLE `nacionalidades`
 -- AUTO_INCREMENT de la tabla `otros_gastos`
 --
 ALTER TABLE `otros_gastos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=118;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=189;
 
 --
 -- AUTO_INCREMENT de la tabla `persona`
@@ -867,7 +1043,7 @@ ALTER TABLE `persona`
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=154;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=156;
 
 --
 -- AUTO_INCREMENT de la tabla `provincias`
