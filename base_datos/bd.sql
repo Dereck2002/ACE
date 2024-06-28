@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 17-06-2024 a las 17:14:56
+-- Tiempo de generación: 28-06-2024 a las 04:46:46
 -- Versión del servidor: 10.4.27-MariaDB
 -- Versión de PHP: 8.2.0
 
@@ -324,6 +324,9 @@ CREATE TABLE `contrasenia_reset` (
 INSERT INTO `contrasenia_reset` (`correo_persona`, `token`, `created_at`) VALUES
 ('steevenflores2019@gmail.com', '03466b364c45f7ed777f4fc5e471bae48c18e800b1508629f959fb3980b9f6178bad2efd83a942888559719b0f4fbaf4018b', '2024-06-01 00:26:42'),
 ('andrescarlos988@gmail.com', '5b8da529b09f34f4bbc08668957e9db77504c8731af2c0dc712853af9d17e0ac890ebd87ed5034043b37e099dba745369cdd', '2024-06-05 13:57:49'),
+('guillojj80@gmail.com', '1f9e36e9e71297041a42e49ff37a60c10a25cf22cc672eef6012ee8aff3f36b15e12e9680a12dc9e5580c4038121bed9bc57', '2024-06-06 02:02:02'),
+('soniapabon2016@gmail.com', '0441a8313d5d951cce2c3eac457b36bb912a55bd544c12447a15efde15621827145efa98a675d3ee51d0d24a4bdd1c97a6b4', '2024-06-06 02:02:57'),
+('jaramilloderek13@gmail.com', 'cea649d1a047d31a31c81b2b6b223d6d48367e774ed43e7ba133b4bd434eea2fe94d77ec41fc0b3c3375e32598b82ea6e52f', '2024-06-06 14:45:00');
 
 -- --------------------------------------------------------
 
