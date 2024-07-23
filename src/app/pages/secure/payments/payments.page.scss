@@ -1,0 +1,119 @@
+:host {
+  body {
+    background-color: var(--ion-color-dark);
+  }
+
+  ion-content,
+  .toolbar-search {
+    --background: linear-gradient(135deg, var(--ion-color-dark), var(--ion-color-primary), url('/src/assets/escudo.png'));
+  }
+
+  ion-list {
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background-color: var(--ion-color-primary);
+  }
+
+  ion-label {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+}
+
+.transparent-grid {
+  background-color: rgba(255, 255, 255, 0.85); // 85% de transparencia
+  border-radius: 10px; // Esquinas redondeadas
+  padding: 10px; // Espacio interno
+}
+
+.custom-table {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.header-row {
+  background-color: #5ba5c7; // Verde
+  font-weight: bold;
+  text-align: center;
+  border-bottom: 2px solid #5ba5c791; // Verde oscuro
+}
+
+.data-row {
+  text-align: center;
+  border-bottom: 1px solid #00000034; // Amarillo
+  color: #000000; // Letras de color negro
+}
+
+.header, .data {
+  padding: 10px 5px;
+  border-left: 1px solid #00000034; // Verde oscuro
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+}
+
+.actions ion-button {
+  margin: 0 5px;
+}
+
+.even-row {
+  background-color: rgba(248, 245, 241, 0.1); // Naranja claro
+}
+
+.odd-row {
+  background-color: rgba(132, 167, 162, 0.527); // Verde azulado claro
+}
+
+.icon-space {
+  margin-right: 8px; /* Ajusta el valor según el espacio que desees */
+}
+
+
+.header, .data {
+  padding: 8px;
+  text-align: center;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.action-buttons ion-button {
+  margin: 0 2px; /* Espacio entre los botones de acción */
+}
+ion-searchbar {
+  margin: 10px;
+}
+.col-num {
+  flex: 0 0 75px; /* Ajusta el ancho según tus necesidades */
+  max-width: 75px;
+  .col-nombre {
+    flex: 0 0 200px; /* Ancho fijo para la columna Nombre */
+    max-width: 200px;
+  }
+}
+.col-acc {
+  // flex: 0 0 90px; /* Ajusta el ancho según tus necesidades */
+  max-width: 105px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.col-pvp {
+  flex: 0 0 80px; /* Ajusta el ancho según tus necesidades */
+  max-width: 80px;
+}
+/* Nuevas reglas para añadir márgenes */
+.searchbar-spacing {
+  margin: -0px; /* Ajusta el valor según tus necesidades */
+}
+
+.button-spacing {
+  margin-left: 16px; /* Ajusta el valor según tus necesidades */
+}
+

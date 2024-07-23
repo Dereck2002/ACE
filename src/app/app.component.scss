@@ -1,0 +1,37 @@
+/* Archivo: src/app/costos-lista/costos-lista.page.scss */
+.transparent-grid {
+    --ion-grid-padding: 0;
+  }
+  
+  .custom-table {
+    width: 100%;
+  }
+  
+  .header-row {
+    background-color: #f4f4f4;
+    font-weight: bold;
+  }
+  
+  .data-row:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .header, .data {
+    padding: 8px;
+    text-align: center;
+  }
+  
+  .actions .action-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .actions .action-buttons ion-button {
+    margin-bottom: 3px; /* Reducir el margen inferior para acercar los botones */
+  }
+  
+  ion-searchbar {
+    margin: 10px;
+  }
+  

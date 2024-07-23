@@ -1,0 +1,82 @@
+<ion-header collapse="fade" [translucent]="true">
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/payments"></ion-back-button>
+    </ion-buttons>
+    <ion-title color="light">
+      Registro inventario
+    </ion-title>
+    <ion-buttons slot="primary">
+      <ion-button color="secondary" (click)="filterProductos($event)">
+        <ion-icon slot="icon-only" name="filter"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Registro Inicial</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="floating">Producto</ion-label>
+        <ion-select [(ngModel)]="initial.product" (ionChange)="updatePrice()">
+          <ion-select-option *ngFor="let product of productos" [value]="product.id">{{ product.nombre
+            }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Cantidad Inicial</ion-label>
+        <ion-input type="number" [(ngModel)]="initial.quantity"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Precio de Venta</ion-label>
+        <ion-input type="number" [(ngModel)]="initial.price" readonly></ion-input>
+      </ion-item>
+      <ion-button expand="block" (click)="registerInitial()">Registrar</ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Registro Final</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="floating">Cantidad Vendida</ion-label>
+        <ion-input type="number" [(ngModel)]="final.sold" (ionChange)="updateTotalMoney()"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Dinero Total</ion-label>
+        <ion-input type="number" [(ngModel)]="final.totalMoney" readonly></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Productos Regalados</ion-label>
+        <ion-input type="number" [(ngModel)]="final.gifted"></ion-input>
+      </ion-item>
+      <ion-button expand="block" (click)="registerFinal()">Registrar</ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Resultados</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label>Ganancias/Pérdidas</ion-label>
+        <ion-input readonly [(ngModel)]="results.profitLoss"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Pérdidas por Productos Regalados</ion-label>
+        <ion-input readonly [(ngModel)]="results.giftedLoss"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Productos No Vendidos</ion-label>
+        <ion-input readonly [(ngModel)]="results.remainingProducts"></ion-input>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

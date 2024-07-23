@@ -1,0 +1,22 @@
+<ion-content>
+  <swiper class="swiper-welcome" #swiper [config]="config" (slideChange)="swiperSlideChanged($event)"
+    (reachEnd)="onLastSlide()">
+    <ng-template swiperSlide>
+      <div class="slide-content">
+        <img src="../../../../assets/icon/logo.png" class="icon custom-icon-background animate_animated animate_fadeInDown" alt="Descripción de la imagen">
+        <h3 class="title animate_animated animate_fadeInUp">
+          <ion-text style="text-align: center;" color="dark">BIENVENIDOS "ACE"</ion-text>
+        </h3>
+        <p class="subtitle animate_animated animate_fadeInUp">
+          <ion-text color="dark">Tu aliado contable para simplificar las finanzas de tu emprendimiento.</ion-text>
+        </p>
+      </div>
+    </ng-template>
+  </swiper>
+</ion-content>
+
+<ion-footer class="ion-padding-bottom-large animate_animated animate_fadeInUp">
+  <ion-button color-text="light" class="ion-margin custom-button" expand="block" size="large" (click)="getStarted()" *ngIf="last_slide">
+    Empezar
+  </ion-button>
+</ion-footer>

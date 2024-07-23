@@ -1,0 +1,60 @@
+<ion-header collapse="fade" [translucent]="true">
+  <ion-toolbar color="dark">
+    <ion-title color="light">Inventario</ion-title>
+    <ion-buttons slot="primary">
+      <!--<ion-button color="light" routerLink="/ajustes">
+        <ion-icon slot="icon-only" name="cog"></ion-icon>
+      </ion-button> -->
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-searchbar class="searchbar-spacing" color="medium" [(ngModel)]="searchTerm" (ionInput)="filterProductos($event)"
+    placeholder="Buscar producto"></ion-searchbar>
+
+  <ion-button color="tertiary" routerLink="/registroinventario" class="floating-button button-spacing">
+    <ion-icon color="dark" name="duplicate-outline" class="icon-space"></ion-icon>
+    <strong>Registrar Inventario</strong>
+  </ion-button>
+
+  <ion-grid class="transparent-grid custom-table">
+    <ion-row class="header-row">
+      <ion-col class="header col-nombre" color="light">Producto</ion-col>
+      <ion-col class="header col-cantidad_inicial" color="light">Cantidad</ion-col>
+      <ion-col class="header col-acc" color="light">
+        <ion-icon name="settings-outline"></ion-icon>Opcion
+      </ion-col>
+    </ion-row>
+
+    <!-- getPaginatedProductos() trae el array de Productos implementando el paginador -->
+    <ion-row *ngFor="let producto of getPaginatedProductos(); let i = index" class="data-row"
+      [ngClass]="{'even-row': i % 2 == 0, 'odd-row': i % 2 != 0}">
+      <ion-col class="data col-nombre">{{ producto.nombre }}</ion-col>
+      <ion-col class="data col-cantidad_inicial">{{ producto.cantidad_inicial }}</ion-col>
+      <ion-col class="data col-acc actions">
+        <div class="action-buttons">
+          <ion-button size="small" fill="clear" color="tertiary" (click)="editarProducto(producto.codigo)">
+            <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+          </ion-button>
+          <ion-button size="small" fill="clear" color="danger" (click)="eliminarProducto(producto.codigo)">
+            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-row class="pagination-row">
+    <ion-col class="pagination-controls">
+      <ion-button (click)="previousPage()" [disabled]="page === 1">
+        Anterior
+      </ion-button>
+      <span>Página {{ page }} de {{ totalPages }}</span>
+      <ion-button (click)="nextPage()" [disabled]="page === totalPages">
+        Siguiente
+      </ion-button>
+    </ion-col>
+  </ion-row>
+
+</ion-content>

@@ -1,0 +1,83 @@
+<ion-header [translucent]="true">
+</ion-header>
+
+<ion-content class="content-container" [ngStyle]="{'background-image': backgroundImage, 'background-size': 'cover', 'background-position': 'center'}">
+  <div class="ion-padding ion-full-height ion-flex ion-flex-center">
+    <div class="logo-container">
+      <h1 class="animate__animated animate__fadeInUp">
+        <ion-text color="secondary">Ingreso</ion-text>
+      </h1>
+      <p class="animate__animated animate__fadeInUp">
+        <ion-text color="secondary">Ingrese a su cuenta</ion-text>
+      </p>
+    </div>
+
+    <!-- Login form -->
+    <form class="form-default" [formGroup]="login_form" (submit)="login()">
+      <ion-item color="medium" class="animate__animated animate__fadeInUp">
+        <ion-label  position="floating">
+          <ion-icon name="card" item-start></ion-icon>
+          Cédula
+        </ion-label>
+        <ion-input color="dark" type="text" formControlName="cedula" [(ngModel)]="txt_cedula"></ion-input>
+      </ion-item>
+
+      <ion-item color="medium" class="animate__animated animate__fadeInUp">
+        <ion-label position="floating">
+          <ion-icon  name="lock-closed-outline"></ion-icon>
+          Contraseña
+        </ion-label>
+        <ion-input
+          required
+          color="dark"
+          formControlName="clave"
+          [type]="claveType"
+          placeholder="Ingrese su contraseña, mínimo 8 dígitos"
+          [(ngModel)]="txt_clave">
+        </ion-input>
+        <ion-button
+          fill="clear"
+          size="small"
+          slot="end"
+          (mousedown)="togglePasswordVisibility(true)"
+          (mouseup)="togglePasswordVisibility(false)"
+          (mouseleave)="togglePasswordVisibility(false)">
+          <ion-icon [name]="claveType === 'password' ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
+        </ion-button>
+      </ion-item>
+
+      <ion-button class="ion-margin-top" type="submit" expand="block" size="large" color="danger">
+        INICIAR SESIÓN
+      </ion-button>
+     
+      <ion-button color="secondary" fill="clear" expand="block" class="ion-button-small ion-margin-top-medium" routerLink="/recuperer_c">
+        ¿Olvidé mi contraseña?
+      </ion-button>
+
+      <div color="dark" class="center-container">
+        <ion-button color="success" class="center-container" routerLink="/registro">
+          <ion-icon color="dark" name="person-add-outline" class="icon-spacing"></ion-icon>
+          <span class="button-text">Registrarse</span>
+        </ion-button>
+      </div>
+    </form>
+  </div>
+  
+  <!-- Social media icons -->
+  <div  class="ion-text-center ion-margin-top social-icons-container">
+    <ion-button fill="clear" href="https://www.facebook.com/AlcaldiaIbarra/?locale=es_LA">
+      <ion-icon color="dark" name="logo-facebook" size="large"></ion-icon>
+    </ion-button>
+    <ion-button fill="clear" href="https://www.instagram.com/alcaldiaibarra/?hl=es">
+      <ion-icon color="dark" name="logo-instagram" size="large"></ion-icon>
+    </ion-button>
+    <ion-button fill="clear" href="https://x.com/alcaldiaibarra?lang=es">
+      <ion-icon color="dark" name="logo-twitter" size="large"></ion-icon>
+    </ion-button>
+  </div>
+  <div class="ion-text-center ion-margin-top">
+    <ion-text color="dark">
+      <small>&copy; Gad Municipal - Ibarra {{current_year}}</small>
+    </ion-text>
+  </div>
+</ion-content>

@@ -1,0 +1,82 @@
+<ion-header collapse="fade" [translucent]="true">
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/payments"></ion-back-button>
+    </ion-buttons>
+    <ion-title color="light">
+      Editar inventario
+    </ion-title>
+
+    <!-- <ion-buttons slot="primary">
+      <ion-button color="secondary" (click)="filterProductos($event)">
+        <ion-icon slot="icon-only" name="filter"></ion-icon>
+      </ion-button>
+    </ion-buttons> -->
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Registro Inicial</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="floating">Producto</ion-label>
+        <ion-select>
+          <ion-select-option></ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Cantidad Inicial</ion-label>
+        <ion-input type="number">0</ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Precio de Venta</ion-label>
+        <ion-input type="number" readonly>0</ion-input>
+      </ion-item>
+      <ion-button expand="block">Registrar</ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Registro Final</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="floating">Cantidad Vendida</ion-label>
+        <ion-input type="number">0</ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Dinero Total</ion-label>
+        <ion-input type="number" readonly>0</ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Productos Regalados</ion-label>
+        <ion-input type="number">0</ion-input>
+      </ion-item>
+      <ion-button expand="block">Registrar</ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Resultados</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label>Ganancias/Pérdidas</ion-label>
+        <ion-input readonly></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Pérdidas por Productos Regalados</ion-label>
+        <ion-input readonly></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Productos No Vendidos</ion-label>
+        <ion-input readonly></ion-input>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

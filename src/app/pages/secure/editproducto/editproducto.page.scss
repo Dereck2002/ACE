@@ -1,0 +1,44 @@
+:host {
+    body {
+      background-color: var(--ion-color-dark);
+    }
+  
+    ion-content {
+      --background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),url('/src/assets/escudo.png') no-repeat center center;
+    background-color: white;
+  
+    }
+  
+    ion-list {
+      border-radius: 8px;
+      margin-bottom: 8px;
+      background-color: var(--ion-color-primary);
+    }
+  
+    ion-label {
+      font-size: 16px;
+      font-weight: 700;
+    }
+  
+    .button-container {
+      display: flex;
+      justify-content: left;
+      align-items: left;
+      height: 5vh; /* Esto es opcional, dependiendo de si quieres centrarlo verticalmente también */
+      margin: 6px;
+    }
+  }
+  .remove-button {
+    position: absolute;
+    top: -5px;
+    right: -7px;
+    z-index: 4;
+  }
+  
+  .bordes-item {
+    position: relative;
+    border: 1px solid #1a1717;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
