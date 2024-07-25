@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 23-07-2024 a las 16:58:06
+-- Tiempo de generación: 25-07-2024 a las 05:51:32
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,8 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `appemp`
 --
-CREATE DATABASE IF NOT EXISTS `appemp` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `appemp`;
 
 -- --------------------------------------------------------
 
@@ -29,18 +27,11 @@ USE `appemp`;
 -- Estructura de tabla para la tabla `ciudades`
 --
 
-DROP TABLE IF EXISTS `ciudades`;
 CREATE TABLE `ciudades` (
   `cod_ciudad` int(11) NOT NULL,
   `nombre_ciudad` varchar(55) NOT NULL,
   `cod_ciudad_provincia` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `ciudades`:
---   `cod_ciudad_provincia`
---       `provincias` -> `cod_provincia`
---
 
 --
 -- Volcado de datos para la tabla `ciudades`
@@ -320,16 +311,11 @@ INSERT INTO `ciudades` (`cod_ciudad`, `nombre_ciudad`, `cod_ciudad_provincia`) V
 -- Estructura de tabla para la tabla `contrasenia_reset`
 --
 
-DROP TABLE IF EXISTS `contrasenia_reset`;
 CREATE TABLE `contrasenia_reset` (
   `correo_persona` varchar(255) NOT NULL,
   `token` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `contrasenia_reset`:
---
 
 --
 -- Volcado de datos para la tabla `contrasenia_reset`
@@ -348,7 +334,6 @@ INSERT INTO `contrasenia_reset` (`correo_persona`, `token`, `created_at`) VALUES
 -- Estructura de tabla para la tabla `costos_indirectos`
 --
 
-DROP TABLE IF EXISTS `costos_indirectos`;
 CREATE TABLE `costos_indirectos` (
   `id` int(11) NOT NULL,
   `producto_id` int(11) DEFAULT NULL,
@@ -357,30 +342,10 @@ CREATE TABLE `costos_indirectos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- RELACIONES PARA LA TABLA `costos_indirectos`:
---
-
---
 -- Volcado de datos para la tabla `costos_indirectos`
 --
 
 INSERT INTO `costos_indirectos` (`id`, `producto_id`, `nombre`, `costo`) VALUES
-(15, 15, 'vbnbv', 3.0000000),
-(16, 16, 'XVBCV', 1.0000000),
-(57, 57, '', 1.0000000),
-(82, 82, 'ci', 1.0000000),
-(89, 98, 'gas', 0.0200000),
-(115, 138, 'ci', 124.0000000),
-(127, 18, 'raspadora', 0.0900000),
-(133, 142, '', 0.0000000),
-(134, 143, '', 0.0000000),
-(135, 144, '', 0.0000000),
-(136, 145, '', 0.0000000),
-(137, 146, '', 0.0000000),
-(138, 147, '', 0.0000000),
-(139, 148, '', 0.0000000),
-(140, 149, '', 0.0000000),
-(141, 150, '', 0.0000000),
 (170, 151, 'luz', 0.0004000),
 (171, 151, 'agua', 0.0001000),
 (172, 151, 'gas', 0.0056000),
@@ -403,7 +368,6 @@ INSERT INTO `costos_indirectos` (`id`, `producto_id`, `nombre`, `costo`) VALUES
 -- Estructura de tabla para la tabla `mano_de_obra`
 --
 
-DROP TABLE IF EXISTS `mano_de_obra`;
 CREATE TABLE `mano_de_obra` (
   `id` int(11) NOT NULL,
   `producto_id` int(11) DEFAULT NULL,
@@ -412,30 +376,10 @@ CREATE TABLE `mano_de_obra` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- RELACIONES PARA LA TABLA `mano_de_obra`:
---   `producto_id`
---       `productos` -> `id`
---
-
---
 -- Volcado de datos para la tabla `mano_de_obra`
 --
 
 INSERT INTO `mano_de_obra` (`id`, `producto_id`, `nombre`, `costo`) VALUES
-(58, 57, '', 1.0000000),
-(83, 82, 'mo', 1.0000000),
-(89, 98, 'pelar papas', 0.0500000),
-(114, 138, 'mo1', 101.0000000),
-(126, 18, 'mezclar', 0.2500000),
-(132, 142, '', 0.0000000),
-(133, 143, '', 0.0000000),
-(134, 144, '', 0.0000000),
-(135, 145, '', 0.0000000),
-(136, 146, '', 0.0000000),
-(137, 147, '', 0.0000000),
-(138, 148, '', 0.0000000),
-(139, 149, '', 0.0000000),
-(140, 150, '', 0.0000000),
 (159, 151, 'operario freidor', 0.0300000),
 (160, 151, 'operario pelador', 0.0300000),
 (165, 152, 'elaboración', 0.6000000),
@@ -453,7 +397,6 @@ INSERT INTO `mano_de_obra` (`id`, `producto_id`, `nombre`, `costo`) VALUES
 -- Estructura de tabla para la tabla `materias_primas`
 --
 
-DROP TABLE IF EXISTS `materias_primas`;
 CREATE TABLE `materias_primas` (
   `id` int(11) NOT NULL,
   `producto_id` int(11) DEFAULT NULL,
@@ -464,34 +407,10 @@ CREATE TABLE `materias_primas` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- RELACIONES PARA LA TABLA `materias_primas`:
---
-
---
 -- Volcado de datos para la tabla `materias_primas`
 --
 
 INSERT INTO `materias_primas` (`id`, `producto_id`, `nombre`, `costo`, `unidad`, `cantidad`) VALUES
-(15, 15, 'xbcvv', 1.0000000, '', 0),
-(16, 16, 'DGDFH', 1.0000000, '', 0),
-(65, 57, '', 0.0000000, 'kg', 1),
-(106, 82, 'mp1', 1.0000000, 'lb', 1),
-(120, 98, 'papa', 0.1000000, 'g', 1),
-(121, 98, 'salchicha', 0.1000000, 'unid', 0),
-(122, 98, 'aceite', 0.1000000, 'mL', 10),
-(151, 138, 'mp1', 1.0000000, 'kg', 1),
-(156, 139, 'asda', 122.0000000, 'unidad', 1),
-(175, 18, 'Agua', 0.1000000, 'L', 1),
-(176, 18, 'clorantes', 2.5000000, 'g', 0.1),
-(182, 142, 'dsgb', 1.0000000, '', 0),
-(183, 143, 'dsgb', 1.0000000, 'unidad', 1),
-(184, 144, 'dsgb', 1.0000000, 'unidad', 1),
-(185, 145, 'dsgb', 1.0000000, 'unidad', 1),
-(186, 146, 'dsgb', 1.0000000, 'unidad', 1),
-(187, 147, 'dsgb', 1.0000000, 'unidad', 1),
-(188, 148, 'dsgb', 1.0000000, 'unidad', 1),
-(189, 149, 'dsgb', 1.0000000, 'unidad', 1),
-(190, 150, 'dsgb', 1.0000000, 'unidad', 1),
 (227, 151, 'papas', 0.1200000, 'g', 1),
 (228, 151, 'sal', 0.0004000, 'g', 10),
 (229, 151, 'salsa de tomate', 0.0100000, 'mL', 5),
@@ -520,15 +439,10 @@ INSERT INTO `materias_primas` (`id`, `producto_id`, `nombre`, `costo`, `unidad`,
 -- Estructura de tabla para la tabla `nacionalidades`
 --
 
-DROP TABLE IF EXISTS `nacionalidades`;
 CREATE TABLE `nacionalidades` (
   `cod_nacionalidad` int(11) NOT NULL,
   `nombre_nacionalidad` varchar(70) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `nacionalidades`:
---
 
 --
 -- Volcado de datos para la tabla `nacionalidades`
@@ -729,7 +643,6 @@ INSERT INTO `nacionalidades` (`cod_nacionalidad`, `nombre_nacionalidad`) VALUES
 -- Estructura de tabla para la tabla `otros_gastos`
 --
 
-DROP TABLE IF EXISTS `otros_gastos`;
 CREATE TABLE `otros_gastos` (
   `id` int(11) NOT NULL,
   `producto_id` int(11) DEFAULT NULL,
@@ -738,29 +651,10 @@ CREATE TABLE `otros_gastos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- RELACIONES PARA LA TABLA `otros_gastos`:
---
-
---
 -- Volcado de datos para la tabla `otros_gastos`
 --
 
 INSERT INTO `otros_gastos` (`id`, `producto_id`, `nombre`, `costo`) VALUES
-(2, 15, 'vnvbn', 4.0000000),
-(3, 16, 'CBCVB', 1.0000000),
-(40, 57, '', 1.0000000),
-(66, 82, 'gg', 1.0000000),
-(72, 98, 'Desechables', 0.0500000),
-(97, 138, 'gg', 123.0000000),
-(101, 142, '', 0.0000000),
-(102, 143, '', 0.0000000),
-(103, 144, '', 0.0000000),
-(104, 145, '', 0.0000000),
-(105, 146, '', 0.0000000),
-(106, 147, '', 0.0000000),
-(107, 148, '', 0.0000000),
-(108, 149, '', 0.0000000),
-(109, 150, '', 0.0000000),
 (118, 154, 'Fundas', 0.0200000),
 (119, 154, 'Etiquetas', 0.0100000),
 (146, 153, 'Botellas', 1.0300000),
@@ -776,7 +670,6 @@ INSERT INTO `otros_gastos` (`id`, `producto_id`, `nombre`, `costo`) VALUES
 -- Estructura de tabla para la tabla `persona`
 --
 
-DROP TABLE IF EXISTS `persona`;
 CREATE TABLE `persona` (
   `cod_persona` int(11) NOT NULL,
   `ci_persona` varchar(12) NOT NULL,
@@ -809,10 +702,6 @@ CREATE TABLE `persona` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- RELACIONES PARA LA TABLA `persona`:
---
-
---
 -- Volcado de datos para la tabla `persona`
 --
 
@@ -830,7 +719,6 @@ INSERT INTO `persona` (`cod_persona`, `ci_persona`, `cod_tipoced_persona`, `nom_
 -- Estructura de tabla para la tabla `productos`
 --
 
-DROP TABLE IF EXISTS `productos`;
 CREATE TABLE `productos` (
   `id` int(11) NOT NULL,
   `id_persona` int(11) NOT NULL,
@@ -846,30 +734,11 @@ CREATE TABLE `productos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- RELACIONES PARA LA TABLA `productos`:
---
-
---
 -- Volcado de datos para la tabla `productos`
 --
 
 INSERT INTO `productos` (`id`, `id_persona`, `nombre`, `margen_beneficio`, `utilidad_dis`, `utilidad_venta`, `impuestos`, `costo_produccion`, `costo_fabrica`, `costo_distribucion`, `pvp`) VALUES
-(18, 105, 'Raspado de Hielo', 25.00, 0, 0, 15.00, 0.35, 0.35, 0.35, 0.35),
-(57, 105, 'Capuchino', 35.00, 0, 0, 15.00, 3.00, 4.05, 6.29, 9.76),
-(82, 106, 'paraguas', 123.00, 0, 0, 123.00, 4.00, 8.92, 44.36, 220.59),
-(98, 105, 'Salchi papa', 30.00, 0, 0, 15.00, 0.42, 0.55, 0.82, 1.22),
 (134, 210, 'papitas', 30.00, 39, 20, 12.00, 0.26, 0.34, 0.41, 0.62),
-(138, 105, 'prueba1', 12.00, 0, 0, 11.00, 349.00, 41.88, 46.49, 52.07),
-(139, 105, 'prueba2', 123.00, 0, 0, 99.00, 122.00, 150.06, 298.62, 665.92),
-(142, 105, 'vcxbx', 35.00, 0, 0, 15.00, 1.00, 0.35, 0.40, 0.54),
-(143, 105, 'carlos', 35.00, 0, 0, 15.00, 1.00, 0.35, 0.40, 0.54),
-(144, 105, 'fjdfjd', 35.00, 0, 0, 15.00, 1.00, 0.35, 0.40, 0.54),
-(145, 105, 'zfjxjgxjn', 35.00, 0, 0, 15.00, 1.00, 0.35, 0.40, 0.54),
-(146, 105, 's<nzdfnzd', 35.00, 0, 0, 15.00, 1.00, 0.35, 0.40, 0.54),
-(147, 105, 'dfbz z', 35.00, 0, 0, 15.00, 1.00, 0.35, 0.40, 0.54),
-(148, 105, 'rdhdj', 35.00, 0, 0, 15.00, 1.00, 0.35, 0.40, 0.54),
-(149, 105, 'erajteszgn', 35.00, 0, 0, 15.00, 1.00, 0.35, 0.40, 0.54),
-(150, 105, 'zdfnmfg', 35.00, 0, 0, 15.00, 1.00, 0.35, 0.40, 0.54),
 (151, 210, 'papitas2', 35.00, 0, 0, 12.00, 0.26, 0.35, 0.39, 0.52),
 (152, 105, 'Vino de mortiño', 44.50, 0, 0, 12.00, 4.47, 6.45, 7.23, 10.44),
 (153, 210, 'Vino Artesanal', 44.50, 0, 0, 12.00, 4.41, 6.37, 8.53, 13.46),
@@ -881,15 +750,10 @@ INSERT INTO `productos` (`id`, `id_persona`, `nombre`, `margen_beneficio`, `util
 -- Estructura de tabla para la tabla `provincias`
 --
 
-DROP TABLE IF EXISTS `provincias`;
 CREATE TABLE `provincias` (
   `cod_provincia` int(11) NOT NULL,
   `nombre_provincia` varchar(35) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `provincias`:
---
 
 --
 -- Volcado de datos para la tabla `provincias`
@@ -927,7 +791,6 @@ INSERT INTO `provincias` (`cod_provincia`, `nombre_provincia`) VALUES
 -- Estructura de tabla para la tabla `registropr_inicial`
 --
 
-DROP TABLE IF EXISTS `registropr_inicial`;
 CREATE TABLE `registropr_inicial` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `producto_id` int(11) NOT NULL,
@@ -937,17 +800,12 @@ CREATE TABLE `registropr_inicial` (
   `fecha` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- RELACIONES PARA LA TABLA `registropr_inicial`:
---
-
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `registro_final`
 --
 
-DROP TABLE IF EXISTS `registro_final`;
 CREATE TABLE `registro_final` (
   `id_final` int(11) NOT NULL,
   `id_inicial` int(11) NOT NULL,
@@ -956,17 +814,12 @@ CREATE TABLE `registro_final` (
   `productos_regalados` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- RELACIONES PARA LA TABLA `registro_final`:
---
-
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `resultados_inventario`
 --
 
-DROP TABLE IF EXISTS `resultados_inventario`;
 CREATE TABLE `resultados_inventario` (
   `id_resuldatos` int(11) NOT NULL,
   `id_final` int(11) NOT NULL,
@@ -975,25 +828,16 @@ CREATE TABLE `resultados_inventario` (
   `productos_no_vendidos` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- RELACIONES PARA LA TABLA `resultados_inventario`:
---
-
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `roles`
 --
 
-DROP TABLE IF EXISTS `roles`;
 CREATE TABLE `roles` (
   `cod_rol` int(11) NOT NULL,
   `tipo_rol` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `roles`:
---
 
 --
 -- Volcado de datos para la tabla `roles`
@@ -1009,15 +853,10 @@ INSERT INTO `roles` (`cod_rol`, `tipo_rol`) VALUES
 -- Estructura de tabla para la tabla `tipocedula`
 --
 
-DROP TABLE IF EXISTS `tipocedula`;
 CREATE TABLE `tipocedula` (
   `cod_tipoced` int(11) NOT NULL,
   `tipo` varchar(35) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `tipocedula`:
---
 
 --
 -- Volcado de datos para la tabla `tipocedula`
@@ -1102,22 +941,7 @@ ALTER TABLE `provincias`
 -- Indices de la tabla `registropr_inicial`
 --
 ALTER TABLE `registropr_inicial`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `producto_id` (`producto_id`);
-
---
--- Indices de la tabla `registro_final`
---
-ALTER TABLE `registro_final`
-  ADD PRIMARY KEY (`id_final`),
-  ADD KEY `id` (`id_inicial`);
-
---
--- Indices de la tabla `resultados_inventario`
---
-ALTER TABLE `resultados_inventario`
-  ADD PRIMARY KEY (`id_resuldatos`),
-  ADD KEY `id_final` (`id_final`);
+  ADD KEY `producto_id` (`producto_id`);
 
 --
 -- Indices de la tabla `roles`
@@ -1190,24 +1014,6 @@ ALTER TABLE `provincias`
   MODIFY `cod_provincia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
--- AUTO_INCREMENT de la tabla `registropr_inicial`
---
-ALTER TABLE `registropr_inicial`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT de la tabla `registro_final`
---
-ALTER TABLE `registro_final`
-  MODIFY `id_final` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `resultados_inventario`
---
-ALTER TABLE `resultados_inventario`
-  MODIFY `id_resuldatos` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT de la tabla `roles`
 --
 ALTER TABLE `roles`
@@ -1230,10 +1036,50 @@ ALTER TABLE `ciudades`
   ADD CONSTRAINT `ciudades_ibfk_1` FOREIGN KEY (`cod_ciudad_provincia`) REFERENCES `provincias` (`cod_provincia`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Filtros para la tabla `costos_indirectos`
+--
+ALTER TABLE `costos_indirectos`
+  ADD CONSTRAINT `costos_indirectos_ibfk_1` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Filtros para la tabla `mano_de_obra`
 --
 ALTER TABLE `mano_de_obra`
-  ADD CONSTRAINT `mano_de_obra_ibfk_1` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `mano_de_obra_ibfk_1` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `materias_primas`
+--
+ALTER TABLE `materias_primas`
+  ADD CONSTRAINT `materias_primas_ibfk_1` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `otros_gastos`
+--
+ALTER TABLE `otros_gastos`
+  ADD CONSTRAINT `otros_gastos_ibfk_1` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `persona`
+--
+ALTER TABLE `persona`
+  ADD CONSTRAINT `persona_ibfk_1` FOREIGN KEY (`cod_rol_persona`) REFERENCES `roles` (`cod_rol`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `persona_ibfk_2` FOREIGN KEY (`cod_tipoced_persona`) REFERENCES `tipocedula` (`cod_tipoced`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `persona_ibfk_3` FOREIGN KEY (`cod_nacionalidad_persona`) REFERENCES `nacionalidades` (`cod_nacionalidad`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `persona_ibfk_5` FOREIGN KEY (`cod_provincia_persona`) REFERENCES `provincias` (`cod_provincia`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `persona_ibfk_6` FOREIGN KEY (`cod_ciudad_persona`) REFERENCES `ciudades` (`cod_ciudad`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `productos`
+--
+ALTER TABLE `productos`
+  ADD CONSTRAINT `productos_ibfk_1` FOREIGN KEY (`id_persona`) REFERENCES `persona` (`cod_persona`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `registropr_inicial`
+--
+ALTER TABLE `registropr_inicial`
+  ADD CONSTRAINT `registropr_inicial_ibfk_1` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
