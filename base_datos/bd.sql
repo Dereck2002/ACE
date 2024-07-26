@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 25-07-2024 a las 05:51:32
+-- Tiempo de generación: 26-07-2024 a las 02:11:46
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -361,6 +361,26 @@ INSERT INTO `costos_indirectos` (`id`, `producto_id`, `nombre`, `costo`) VALUES
 (254, 134, 'luz', 0.0004000),
 (256, 134, 'agua', 0.0001000),
 (258, 134, 'gas', 0.0056000);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `inventarios`
+--
+
+CREATE TABLE `inventarios` (
+  `id` int(11) NOT NULL,
+  `producto_id` int(11) NOT NULL,
+  `cantidad_inicial` int(11) NOT NULL,
+  `precio_venta` decimal(10,2) NOT NULL,
+  `cantidad_vendida` int(11) DEFAULT NULL,
+  `dinero_total` decimal(10,2) DEFAULT NULL,
+  `muestras` int(11) DEFAULT NULL,
+  `ganancias_perdidas` decimal(10,2) DEFAULT NULL,
+  `perdidas_productos_regalados` decimal(10,2) DEFAULT NULL,
+  `productos_no_vendidos` int(11) DEFAULT NULL,
+  `fecha_registro` date DEFAULT curdate()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -788,49 +808,6 @@ INSERT INTO `provincias` (`cod_provincia`, `nombre_provincia`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `registropr_inicial`
---
-
-CREATE TABLE `registropr_inicial` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `producto_id` int(11) NOT NULL,
-  `nombre` varchar(255) NOT NULL,
-  `cantidad_inicial` int(11) NOT NULL,
-  `precio_venta` decimal(10,2) NOT NULL,
-  `fecha` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `registro_final`
---
-
-CREATE TABLE `registro_final` (
-  `id_final` int(11) NOT NULL,
-  `id_inicial` int(11) NOT NULL,
-  `cantidad_vendida` int(11) NOT NULL,
-  `dinero_total` decimal(10,2) NOT NULL,
-  `productos_regalados` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `resultados_inventario`
---
-
-CREATE TABLE `resultados_inventario` (
-  `id_resuldatos` int(11) NOT NULL,
-  `id_final` int(11) NOT NULL,
-  `ganancia_o_perdida` decimal(10,2) NOT NULL,
-  `perdida_regalados` decimal(10,2) NOT NULL,
-  `productos_no_vendidos` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `roles`
 --
 
@@ -881,6 +858,13 @@ ALTER TABLE `ciudades`
 -- Indices de la tabla `costos_indirectos`
 --
 ALTER TABLE `costos_indirectos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `producto_id` (`producto_id`);
+
+--
+-- Indices de la tabla `inventarios`
+--
+ALTER TABLE `inventarios`
   ADD PRIMARY KEY (`id`),
   ADD KEY `producto_id` (`producto_id`);
 
@@ -938,12 +922,6 @@ ALTER TABLE `provincias`
   ADD PRIMARY KEY (`cod_provincia`);
 
 --
--- Indices de la tabla `registropr_inicial`
---
-ALTER TABLE `registropr_inicial`
-  ADD KEY `producto_id` (`producto_id`);
-
---
 -- Indices de la tabla `roles`
 --
 ALTER TABLE `roles`
@@ -970,6 +948,12 @@ ALTER TABLE `ciudades`
 --
 ALTER TABLE `costos_indirectos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=261;
+
+--
+-- AUTO_INCREMENT de la tabla `inventarios`
+--
+ALTER TABLE `inventarios`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `mano_de_obra`
@@ -1042,6 +1026,12 @@ ALTER TABLE `costos_indirectos`
   ADD CONSTRAINT `costos_indirectos_ibfk_1` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Filtros para la tabla `inventarios`
+--
+ALTER TABLE `inventarios`
+  ADD CONSTRAINT `inventarios_ibfk_1` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`);
+
+--
 -- Filtros para la tabla `mano_de_obra`
 --
 ALTER TABLE `mano_de_obra`
@@ -1074,12 +1064,6 @@ ALTER TABLE `persona`
 --
 ALTER TABLE `productos`
   ADD CONSTRAINT `productos_ibfk_1` FOREIGN KEY (`id_persona`) REFERENCES `persona` (`cod_persona`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `registropr_inicial`
---
-ALTER TABLE `registropr_inicial`
-  ADD CONSTRAINT `registropr_inicial_ibfk_1` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
