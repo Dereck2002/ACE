@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth/auth.service';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder} from '@angular/forms';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { HttpClient } from '@angular/common/http';
 import { AlertController, NavController } from '@ionic/angular';
+
 
 @Component({
   selector: 'app-registroinventario',
@@ -13,14 +14,15 @@ import { AlertController, NavController } from '@ionic/angular';
 })
 export class RegistroinventarioPage implements OnInit {
   codigo: string = '';
-  productos: any = [];
-  Productos: any = [];
+  productos: any[] = [];
+  Productos: any[] = [];
   searchTerm: string = '';
 
   initial = {
     product: '', // ID del producto seleccionado
     quantity: 0, // Cantidad inicial
     price: 0, // Precio de venta inicial
+    fechaRegistro: '', // Fecha de registro
   };
 
   final = {
@@ -43,15 +45,17 @@ export class RegistroinventarioPage implements OnInit {
     private http: HttpClient,
     public navCtrl: NavController,
     private alertController: AlertController
-  ) {
-    this.authService.getSession('productos').then((res: any) => {
-      this.codigo = res.codigo;
-      this.lproductos(this.codigo);
-    });
-  }
+  ) {}
 
   ngOnInit() {
-    // Puedes inicializar aquí el formulario si es necesario
+    // Inicializa la fecha de registro con la fecha actual
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Meses de 1 a 12
+    const day = String(today.getDate()).padStart(2, '0'); // Día del mes
+
+    this.initial.fechaRegistro = `${year}-${month}-${day}`;
+    this.ionViewWillEnter(); // Cargar productos al inicializar
   }
 
   async ionViewWillEnter() {
@@ -75,7 +79,7 @@ export class RegistroinventarioPage implements OnInit {
 
     // Busca el objeto producto correspondiente al id seleccionado
     const selectedProduct = this.productos.find(
-      (product) => product.id === parseInt(this.initial.product)
+      (product) => product.id === parseInt(this.initial.product, 10)
     );
 
     if (!selectedProduct) {
@@ -98,29 +102,43 @@ export class RegistroinventarioPage implements OnInit {
     this.results.remainingProducts =
       this.initial.quantity - this.final.sold - this.final.gifted;
 
+    this.final.totalMoney = totalIncome; // Asegúrate de que el totalMoney esté calculado antes de guardar
+
     this.guardarDatos();
   }
 
   guardarDatos() {
-    let datos = {
+    const datos = {
       accion: 'guardar_inventario',
-      nombre: this.initial.product,
-      cantidad_inicial: this.initial.quantity,
-      precio_venta: this.initial.price,
-      cantidad_vendida: this.final.sold,
-      dinero_total: this.final.totalMoney,
-      productos_regalados: this.final.gifted,
+      producto_id: this.initial.product,  // ID del producto
+      cantidad_inicial: this.initial.quantity,  // Cantidad inicial
+      precio_venta: this.initial.price,  // Precio de venta
+      cantidad_vendida: this.final.sold,  // Cantidad vendida
+      dinero_total: this.final.totalMoney,  // Total dinero
+      muestras: this.final.gifted,  // Cantidad de muestras
+      ganancias_perdidas: this.results.profitLoss,  // Ganancias/perdidas
+      perdidas_productos_regalados: this.results.giftedLoss,  // Pérdidas por productos regalados
+      productos_no_vendidos: this.results.remainingProducts,  // Productos no vendidos
+      fecha_registro: this.initial.fechaRegistro,  // Fecha de registro
     };
-
+  
     this.http
       .post<any>('http://localhost/ACE/WsMunicipioIonic/ws_gad.php', datos)
       .subscribe(
         (response) => {
-          // Manejo de la respuesta del servidor
+          if (response.estado) {
+            // Manejo de la respuesta exitosa
+            console.log('Datos guardados exitosamente:', response.mensaje);
+            this.authService.showToast(response.mensaje);
+          } else {
+            // Manejo de la respuesta de error
+            console.error('Error al guardar los datos:', response.mensaje);
+            this.authService.showToast(response.mensaje);
+          }
         },
         (error) => {
           console.error('Error en la solicitud:', error);
-          // Manejo de errores de conexión u otros errores HTTP
+          this.authService.showToast('Error en la solicitud. Por favor, intenta de nuevo.');
         }
       );
   }
@@ -137,6 +155,8 @@ export class RegistroinventarioPage implements OnInit {
       } else {
         this.authService.showToast(res.mensaje);
       }
+    }, (error) => {
+      console.error('Error en la solicitud:', error);
     });
   }
 
@@ -146,18 +166,39 @@ export class RegistroinventarioPage implements OnInit {
       return producto.nombre.toLowerCase().includes(searchTerm);
     });
   }
-
+  
   updatePrice() {
-    const selectedProduct = this.productos.find(
-      (product) => product.id === parseInt(this.initial.product)
-    );
-    if (selectedProduct) {
-      this.initial.price = selectedProduct.pvp; // Asignar el precio de venta (pvp)
+    if (!this.initial.product) {
+      console.warn('No se ha seleccionado ningún producto.');
+      return;
     }
+  
+    const selectedProduct = this.productos.find(
+      (product) => product.codigo === this.initial.product // Asegúrate de que coincida el campo correcto
+    );
+  
+    if (selectedProduct) {
+      console.log('Producto seleccionado:', selectedProduct);
+      
+      if (selectedProduct.pvp !== undefined) {
+        this.initial.price = parseFloat(selectedProduct.pvp); // Convertir a número
+        console.log('Precio actualizado:', this.initial.price);
+      } else {
+        console.warn('El campo del precio no está definido para el producto seleccionado.');
+      }
+    } else {
+      console.warn('Producto no encontrado.');
+    }
+  
     this.updateTotalMoney();
   }
-
+  
   updateTotalMoney() {
-    this.final.totalMoney = this.final.sold * this.initial.price;
+    // Asegúrate de que this.final.sold y this.initial.price tengan valores válidos
+    if (this.final.sold >= 0 && this.initial.price >= 0) {
+      this.final.totalMoney = this.final.sold * this.initial.price;
+    } else {
+      console.warn('Cantidad vendida o precio no válidos.');
+    }
   }
 }
