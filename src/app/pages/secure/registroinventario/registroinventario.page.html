@@ -23,8 +23,7 @@
       <ion-item>
         <ion-label position="floating">Producto</ion-label>
         <ion-select [(ngModel)]="initial.product" (ionChange)="updatePrice()">
-          <ion-select-option *ngFor="let product of productos" [value]="product.id">{{ product.nombre
-            }}</ion-select-option>
+          <ion-select-option *ngFor="let product of productos" [value]="product.codigo">{{ product.nombre }}</ion-select-option>
         </ion-select>
       </ion-item>
       <ion-item>
@@ -34,6 +33,10 @@
       <ion-item>
         <ion-label position="floating">Precio de Venta</ion-label>
         <ion-input type="number" [(ngModel)]="initial.price" readonly></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Fecha de Registro</ion-label>
+        <ion-input type="text" [value]="initial.fechaRegistro" readonly></ion-input>
       </ion-item>
       <ion-button expand="block" (click)="registerInitial()">Registrar</ion-button>
     </ion-card-content>

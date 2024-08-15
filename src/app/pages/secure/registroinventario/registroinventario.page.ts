@@ -19,8 +19,10 @@ export class RegistroinventarioPage implements OnInit {
 
   initial = {
     product: '', // ID del producto seleccionado
+    productName: '', // Nombre del producto
     quantity: 0, // Cantidad inicial
     price: 0, // Precio de venta inicial
+    fechaRegistro: '', // Fecha de registro
   };
 
   final = {
@@ -51,7 +53,13 @@ export class RegistroinventarioPage implements OnInit {
   }
 
   ngOnInit() {
-    // Puedes inicializar aquí el formulario si es necesario
+    // Inicializa la fecha de registro con la fecha actual
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Meses de 1 a 12
+    const day = String(today.getDate()).padStart(2, '0'); // Día del mes
+
+    this.initial.fechaRegistro = `${year}-${month}-${day}`;
   }
 
   async ionViewWillEnter() {
@@ -72,55 +80,63 @@ export class RegistroinventarioPage implements OnInit {
       console.error('Por favor selecciona un producto.');
       return;
     }
-
+  
+    // Asegúrate de que `this.initial.product` sea un número
+    const productId = parseInt(this.initial.product, 10);
+  
+    console.log('ID del producto seleccionado:', productId);
+    console.log('Lista de productos:', this.productos);
+  
     // Busca el objeto producto correspondiente al id seleccionado
     const selectedProduct = this.productos.find(
-      (product) => product.id === parseInt(this.initial.product)
+      (product) => parseInt(product.codigo, 10) === productId
     );
-
+  
     if (!selectedProduct) {
       console.error('No se encontró el producto seleccionado en la lista.');
       return;
     }
-
+  
     // Asigna el nombre del producto seleccionado al objeto inicial
-    this.initial.product = selectedProduct.nombre;
-
+    this.initial.productName = selectedProduct.nombre;
+    this.initial.price = parseFloat(selectedProduct.pvp);
+  
     // Llama al método para guardar los datos iniciales
     this.guardarDatos();
   }
 
-  registerFinal() {
-    const totalIncome = this.final.sold * this.initial.price;
-    const giftedValue = this.final.gifted * this.initial.price;
-    this.results.profitLoss = totalIncome - giftedValue;
-    this.results.giftedLoss = giftedValue;
-    this.results.remainingProducts =
-      this.initial.quantity - this.final.sold - this.final.gifted;
-
-    this.guardarDatos();
-  }
 
   guardarDatos() {
     let datos = {
       accion: 'guardar_inventario',
-      nombre: this.initial.product,
+      producto_id: this.initial.product, // Asegúrate de que esto sea el ID correcto del producto
       cantidad_inicial: this.initial.quantity,
       precio_venta: this.initial.price,
       cantidad_vendida: this.final.sold,
       dinero_total: this.final.totalMoney,
-      productos_regalados: this.final.gifted,
+      muestras: this.final.gifted,
+      ganancias_perdidas: this.results.profitLoss,
+      perdidas_productos_regalados: this.results.giftedLoss,
+      productos_no_vendidos: this.results.remainingProducts,
+      fecha_registro: this.initial.fechaRegistro, // Agregar la fecha de registro
     };
-
+  
+    console.log('Datos a guardar:', datos); // Verifica los datos que se envían
+  
     this.http
       .post<any>('http://localhost/ACE/WsMunicipioIonic/ws_gad.php', datos)
       .subscribe(
         (response) => {
-          // Manejo de la respuesta del servidor
+          console.log('Datos guardados correctamente:', response);
+          if (response.estado) {
+            this.authService.showToast('Datos guardados correctamente.');
+          } else {
+            this.authService.showToast(response.mensaje);
+          }
         },
         (error) => {
           console.error('Error en la solicitud:', error);
-          // Manejo de errores de conexión u otros errores HTTP
+          this.authService.showToast('Error al guardar los datos. Intenta de nuevo.');
         }
       );
   }
@@ -134,6 +150,7 @@ export class RegistroinventarioPage implements OnInit {
       if (res.estado === true) {
         this.productos = res.datos;
         this.Productos = res.datos; // Inicialmente muestra todos los productos
+        console.log('Productos cargados:', this.productos); // Verifica los productos cargados
       } else {
         this.authService.showToast(res.mensaje);
       }
@@ -146,18 +163,37 @@ export class RegistroinventarioPage implements OnInit {
       return producto.nombre.toLowerCase().includes(searchTerm);
     });
   }
-
+  
   updatePrice() {
-    const selectedProduct = this.productos.find(
-      (product) => product.id === parseInt(this.initial.product)
-    );
-    if (selectedProduct) {
-      this.initial.price = selectedProduct.pvp; // Asignar el precio de venta (pvp)
+    if (!this.initial.product) {
+      console.warn('No se ha seleccionado ningún producto.');
+      return;
     }
+  
+    const selectedProduct = this.productos.find(
+      (product) => product.codigo === this.initial.product // Asegúrate de que coincida el campo correcto
+    );
+  
+    if (selectedProduct) {
+      console.log('Producto seleccionado:', selectedProduct);
+      
+      if (selectedProduct.pvp !== undefined) {
+        this.initial.price = parseFloat(selectedProduct.pvp); // Convertir a número
+        console.log('Precio actualizado:', this.initial.price);
+      } else {
+        console.warn('El campo del precio no está definido para el producto seleccionado.');
+      }
+    }
+  
     this.updateTotalMoney();
   }
-
+  
   updateTotalMoney() {
-    this.final.totalMoney = this.final.sold * this.initial.price;
+    // Asegúrate de que `this.final.sold` y `this.initial.price` tengan valores válidos
+    if (this.final.sold >= 0 && this.initial.price >= 0) {
+      this.final.totalMoney = this.final.sold * this.initial.price;
+    } else {
+      console.warn('Cantidad vendida o precio no válidos.');
+    }
   }
-}
+}  

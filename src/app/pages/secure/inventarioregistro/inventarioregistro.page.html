@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/inventariomenu"></ion-back-button>
     </ion-buttons>
-    <ion-title color="light"> Editar inventario </ion-title>
+    <ion-title color="light"> Registro inventario </ion-title>
     <ion-buttons slot="primary">
       <ion-button color="secondary" (click)="filterProductos($event)">
         <ion-icon slot="icon-only" name="filter"></ion-icon>
@@ -16,15 +16,25 @@
   <!-- Registro Inicial -->
   <ion-card>
     <ion-card-header>
-      <ion-card-title>Editar Registro Inicial</ion-card-title>
+      <ion-card-title>Registro Inicial</ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <ion-item>
         <ion-label position="floating">Producto</ion-label>
-        <ion-input type="text" [value]="nombre" readonly></ion-input>
+        <ion-select
+          [(ngModel)]="productId"
+          (ionChange)="onProductChange($event)"
+        >
+          <ion-select-option
+            *ngFor="let product of productos"
+            [value]="product.id"
+          >
+            {{ product.nombre }}
+          </ion-select-option>
+        </ion-select>
       </ion-item>
       <ion-item>
-        <ion-label position="floating">Editar Cantidad Inicial</ion-label>
+        <ion-label position="floating">Cantidad Inicial</ion-label>
         <ion-input type="number" [(ngModel)]="initialQuantity"></ion-input>
       </ion-item>
       <ion-item>
@@ -36,28 +46,6 @@
         <ion-input type="text" [value]="date" readonly></ion-input>
       </ion-item>
       <ion-button expand="full" (click)="saveProduct()">Guardar</ion-button>
-    </ion-card-content>
-  </ion-card>
-
-  <!-- Registro Final -->
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Editar Registro Final</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-item>
-        <ion-label position="floating">Cantidad Vendida</ion-label>
-        <ion-input type="number" [(ngModel)]="selledQuantity"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Productos de muestra</ion-label>
-        <ion-input type="number" [(ngModel)]="giftProducts"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Productos desechados</ion-label>
-        <ion-input type="number" [(ngModel)]="wasteProducts"></ion-input>
-      </ion-item>
-      <ion-button expand="full" (click)="saveFinal()">Guardar</ion-button>
     </ion-card-content>
   </ion-card>
 </ion-content>
