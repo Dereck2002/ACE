@@ -40,6 +40,10 @@ const routes: Routes = [
   {
     path: 'inventariomenu',
     loadChildren: () => import('./inventariomenu/inventariomenu.module').then( m => m.InventariomenuPageModule)
+  },
+  {
+    path: 'inventarioregistro',
+    loadChildren: () => import('./inventarioregistro/inventarioregistro.module').then( m => m.InventarioregistroPageModule)
   }
 
 ];
