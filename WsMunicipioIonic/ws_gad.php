@@ -914,4 +914,84 @@ function calculateResults($mysqli, $producto_id, $cantidad_vendida, $dinero_tota
     } else {
         return array('estado' => false, 'mensaje' => 'Error al obtener los datos iniciales del producto.');
     }
+
+    if (isset($_POST['accion'])) {
+        if ($_POST['accion'] == 'guardar_inventario') {
+            if (
+                isset($_POST['producto_id']) && isset($_POST['cantidad_inicial']) && isset($_POST['precio_venta'])
+                && isset($_POST['cantidad_vendida']) && isset($_POST['dinero_total']) && isset($_POST['muestras'])
+                && isset($_POST['ganancias_perdidas']) && isset($_POST['perdidas_productos_regalados']) && isset($_POST['productos_no_vendidos'])
+                && isset($_POST['fecha_registro'])
+                && !empty($_POST['producto_id']) && !empty($_POST['cantidad_inicial']) && !empty($_POST['precio_venta'])
+                && !empty($_POST['cantidad_vendida']) && !empty($_POST['dinero_total']) && !empty($_POST['muestras'])
+                && !empty($_POST['ganancias_perdidas']) && !empty($_POST['perdidas_productos_regalados']) && !empty($_POST['productos_no_vendidos'])
+                && !empty($_POST['fecha_registro'])
+            ) {
+                $producto_id = mysqli_real_escape_string($mysqli, $_POST['producto_id']);
+                $cantidad_inicial = (int)$_POST['cantidad_inicial'];
+                $precio_venta = (float)$_POST['precio_venta'];
+                $cantidad_vendida = (int)$_POST['cantidad_vendida'];
+                $dinero_total = (float)$_POST['dinero_total'];
+                $muestras = (int)$_POST['muestras'];
+                $ganancias_perdidas = (float)$_POST['ganancias_perdidas'];
+                $perdidas_productos_regalados = (float)$_POST['perdidas_productos_regalados'];
+                $productos_no_vendidos = (int)$_POST['productos_no_vendidos'];
+                $fecha_registro = mysqli_real_escape_string($mysqli, $_POST['fecha_registro']);
+    
+                // Inserta el nuevo inventario en la base de datos
+                $query = "INSERT INTO inventarios (producto_id, cantidad_inicial, precio_venta, cantidad_vendida, dinero_total, muestras, ganancias_perdidas, perdidas_productos_regalados, productos_no_vendidos, fecha_registro) VALUES ('$producto_id', $cantidad_inicial, $precio_venta, $cantidad_vendida, $dinero_total, $muestras, $ganancias_perdidas, $perdidas_productos_regalados, $productos_no_vendidos, '$fecha_registro')";
+                $rs = mysqli_query($mysqli, $query);
+    
+                if ($rs) {
+                    $respuesta = json_encode(array('estado' => true, 'mensaje' => "Inventario guardado correctamente."));
+                } else {
+                    $respuesta = json_encode(array('estado' => false, 'mensaje' => "Error al guardar el inventario."));
+                }
+                echo $respuesta;
+            } else {
+                $respuesta = json_encode(array('estado' => false, 'mensaje' => "Datos incompletos para guardar el inventario."));
+                echo $respuesta;
+            }
+        } else {
+            $respuesta = json_encode(array('estado' => false, 'mensaje' => "Acción no especificada o desconocida"));
+            echo $respuesta;
+        }
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => "Acción no especificada"));
+        echo $respuesta;
+    }
+
+// Consulta SQL para obtener el nombre y el pvp del producto
+$query = "SELECT nombre, pvp FROM productos WHERE id = $producto_id";
+$result = mysqli_query($mysqli, $query);
+
+if ($result) {
+    if ($row = mysqli_fetch_assoc($result)) {
+        $nombre_producto = $row['nombre'];
+        $pvp_producto = $row['pvp'];
+
+        // Devuelve el nombre y el pvp como parte de la respuesta
+        $respuesta = array(
+            'estado' => true,
+            'nombre' => $nombre_producto,
+            'pvp' => $pvp_producto
+        );
+    } else {
+        // Producto no encontrado
+        $respuesta = array(
+            'estado' => false,
+            'mensaje' => 'Producto no encontrado'
+        );
+    }
+} else {
+    // Error en la consulta SQL
+    $respuesta = array(
+        'estado' => false,
+        'mensaje' => 'Error en la consulta SQL'
+    );
+    echo json_encode($respuesta);
+exit;
+}
+
+echo json_encode($respuesta);
 }
