@@ -1,22 +1,19 @@
 <ion-tabs>
-
   <ion-tab-bar color="secondary" slot="bottom">
-
     <ion-tab-button tab="home">
       <ion-icon name="home"></ion-icon>
       <ion-label>Inicio</ion-label>
     </ion-tab-button>
-    
+
     <ion-tab-button tab="listacostos">
       <ion-icon name="cash-outline"></ion-icon>
       <ion-label>Costos</ion-label>
     </ion-tab-button>
 
     <!-- Placeholder for fab button -->
-    <ion-tab-button class="ion-tab-button-placeholder">
-    </ion-tab-button>
+    <ion-tab-button class="ion-tab-button-placeholder"> </ion-tab-button>
 
-    <ion-tab-button tab="payments">
+    <ion-tab-button tab="inventariomenu">
       <ion-icon name="swap-horizontal"></ion-icon>
       <ion-label>Inventario</ion-label>
     </ion-tab-button>
@@ -25,13 +22,17 @@
       <ion-icon name="color-palette-outline"></ion-icon>
       <ion-label>Reportes</ion-label>
     </ion-tab-button>
-
   </ion-tab-bar>
 
-  <ion-fab class="ion-fab-custom" vertical="bottom" horizontal="center" slot="fixed" (click)="selectAction()">
+  <ion-fab
+    class="ion-fab-custom"
+    vertical="bottom"
+    horizontal="center"
+    slot="fixed"
+    (click)="selectAction()"
+  >
     <ion-fab-button color="danger">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>
-
 </ion-tabs>

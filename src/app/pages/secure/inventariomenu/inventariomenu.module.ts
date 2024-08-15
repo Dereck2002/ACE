@@ -4,17 +4,17 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { EditinventarioPageRoutingModule } from './editinventario-routing.module';
+import { InventariomenuPageRoutingModule } from './inventariomenu-routing.module';
 
-import { EditinventarioPage } from './editinventario.page';
+import { InventariomenuPage } from './inventariomenu.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    EditinventarioPageRoutingModule,
+    InventariomenuPageRoutingModule,
   ],
-  declarations: [EditinventarioPage],
+  declarations: [InventariomenuPage],
 })
-export class EditinventarioPageModule {}
+export class InventariomenuPageModule {}
