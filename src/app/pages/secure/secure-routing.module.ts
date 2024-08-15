@@ -36,6 +36,10 @@ const routes: Routes = [
   {
     path: 'editinventario',
     loadChildren: () => import('./editinventario/editinventario.module').then( m => m.EditinventarioPageModule)
+  },
+  {
+    path: 'inventariomenu',
+    loadChildren: () => import('./inventariomenu/inventariomenu.module').then( m => m.InventariomenuPageModule)
   }
 
 ];

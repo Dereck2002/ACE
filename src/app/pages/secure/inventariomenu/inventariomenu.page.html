@@ -1,0 +1,122 @@
+<ion-header collapse="fade" [translucent]="true">
+  <ion-toolbar color="dark">
+    <ion-title color="light"> Inventario Menu </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-searchbar
+    class="searchbar-spacing"
+    color="medium"
+    [(ngModel)]="searchTerm"
+    (ionInput)="filterProductos($event)"
+    placeholder="Buscar producto"
+  ></ion-searchbar>
+
+  <ion-button
+    color="danger"
+    [routerLink]="['/inventarioregistro', { accion: 'nuevo' }]"
+  >
+    <ion-icon color="light" name="duplicate-outline"></ion-icon>
+    <strong>Registrar Inventario</strong>
+  </ion-button>
+
+  <ion-grid class="transparent-grid custom-table">
+    <!-- Fila para la fecha actual -->
+    <ion-row>
+      <ion-col class="header col-label" color="light">Fecha</ion-col>
+      <ion-col class="data col-value"> {{ currentDate }} </ion-col>
+    </ion-row>
+    <br />
+
+    <!-- Fila para cada producto y su detalle -->
+    <ng-container *ngFor="let producto of productos">
+      <ion-row class="header-row">
+        <ion-col class="header col-label" color="light">Producto</ion-col>
+        <ion-col class="data col-value">
+          {{ producto.nombre }}
+          <ion-button
+            size="small"
+            fill="clear"
+            color="primary"
+            (click)="toggleProductInfo(producto)"
+          >
+            <ion-icon
+              slot="icon-only"
+              [name]="productInfoVisible[producto.id] ? 'chevron-up-outline' : 'chevron-down-outline'"
+            ></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+
+      <!-- Detalles del producto, visibles solo si está seleccionado -->
+      <ion-row *ngIf="productInfoVisible[producto.id]">
+        <ion-col class="header col-label" color="light"
+          >Cantidad inicial</ion-col
+        >
+        <ion-col class="data col-value"
+          >{{ producto.RI_CANTIDAD_INICIAL }}</ion-col
+        >
+      </ion-row>
+
+      <ion-row *ngIf="productInfoVisible[producto.id]">
+        <ion-col class="header col-label" color="light">Precio</ion-col>
+        <ion-col class="data col-value">{{ producto.pvp }}</ion-col>
+      </ion-row>
+
+      <ion-row *ngIf="productInfoVisible[producto.id]">
+        <ion-col class="header col-label" color="light"
+          >Cantidad vendida</ion-col
+        >
+        <ion-col class="data col-value"
+          >{{ producto.RF_CANTIDAD_VENDIDA }}</ion-col
+        >
+      </ion-row>
+
+      <ion-row *ngIf="productInfoVisible[producto.id]">
+        <ion-col class="header col-label" color="light">Ganancia</ion-col>
+        <ion-col class="data col-value"
+          >{{ producto.RS_GANANCIA_PERDIDA }}</ion-col
+        >
+      </ion-row>
+      <ion-row *ngIf="productInfoVisible[producto.id]">
+        <ion-col class="header col-label" color="light">Desechos</ion-col>
+        <ion-col class="data col-value"
+          >{{ producto.TOTAL_MUESTRA_DESECHADOS}}</ion-col
+        >
+      </ion-row>
+
+      <ion-row *ngIf="productInfoVisible[producto.id]">
+        <ion-col class="header col-label" color="light">Perdida</ion-col>
+        <ion-col class="data col-value"
+          >{{ producto.RS_TOTAL_PERDIDA }}</ion-col
+        >
+      </ion-row>
+
+      <ion-row *ngIf="productInfoVisible[producto.id]">
+        <ion-col class="header col-label" color="light">Opciones</ion-col>
+        <ion-col class="data col-value">
+          <div class="action-buttons">
+            <!-- ESTE ES EL BOTON DE editar, -->
+            <ion-button
+              size="small"
+              fill="clear"
+              color="tertiary"
+              [routerLink]="['/editinventario', { ri_codigo: producto.RI_CODIGO, rf_codigo: producto.RF_CODIGO }]"
+            >
+              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+            </ion-button>
+            <ion-button
+              size="small"
+              fill="clear"
+              color="danger"
+              (click)="eliminarProducto(producto.RI_CODIGO)"
+            >
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ng-container>
+  </ion-grid>
+</ion-content>
