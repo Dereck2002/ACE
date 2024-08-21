@@ -12,13 +12,10 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Home</ion-title>
+      <ion-title size="large">Dashboard</ion-title>
     </ion-toolbar>
     <ion-toolbar>
-      <ion-searchbar
-        showCancelButton="focus"
-        placeholder="Company, category, expense ..."
-      ></ion-searchbar>
+      <ion-searchbar showCancelButton="focus" placeholder="Company, category, expense ..."></ion-searchbar>
     </ion-toolbar>
   </ion-header>
 
@@ -52,18 +49,9 @@
     <h3 class="productos-vendidos-title">Mis Productos más vendidos</h3>
 
     <div class="pie-chart">
-      <ngx-charts-pie-chart
-        [results]="data"
-        [view]="view"
-        [gradient]="gradient"
-        [showLegend]="showLegend"
-        [showLabels]="showLabels"
-        [isDoughnut]="isDoughnut"
-        [scheme]="colorScheme"
-        (select)="onSelect($event)"
-        (activate)="onActivate($event)"
-        (deactivate)="onDeactivate($event)"
-      >
+      <ngx-charts-pie-chart [results]="data" [view]="view" [gradient]="gradient" [showLegend]="showLegend"
+        [showLabels]="showLabels" [isDoughnut]="isDoughnut" [scheme]="colorScheme" (select)="onSelect($event)"
+        (activate)="onActivate($event)" (deactivate)="onDeactivate($event)">
         <ng-template #tooltipTemplate let-model="model">
           <div class="custom-tooltip">
             <p><strong>{{ model.name }}</strong></p>
@@ -99,10 +87,7 @@
     </ion-list-header>
 
     <!-- Skeletons -->
-    <ion-list
-      class="item-card-list animate_animated animate_fadeIn"
-      *ngIf="!content_loaded"
-    >
+    <ion-list class="item-card-list animate_animated animate_fadeIn" *ngIf="!content_loaded">
       <ion-item lines="none" color="primary" *ngFor="let i of [].constructor(3)">
         <ion-avatar slot="start">
           <ion-skeleton-text animated></ion-skeleton-text>
@@ -118,11 +103,7 @@
       </ion-item>
     </ion-list>
 
-    <ion-list
-      class="item-card-list animate_animated animate_fadeIn"
-      *ngIf="content_loaded"
-      lines="none"
-    >
+    <ion-list class="item-card-list animate_animated animate_fadeIn" *ngIf="content_loaded" lines="none">
       <ion-item color="primary" button detail>
         <ion-label color="medium">
           <h3>$12,123.99</h3>
@@ -155,11 +136,7 @@
     </ion-list-header>
 
     <!-- Skeletons -->
-    <ion-list
-      class="list-custom animate_animated animate_fadeIn"
-      lines="full"
-      *ngIf="!content_loaded"
-    >
+    <ion-list class="list-custom animate_animated animate_fadeIn" lines="full" *ngIf="!content_loaded">
       <ion-item color="primary" *ngFor="let i of [].constructor(3)">
         <ion-label color="medium">
           <h3>
@@ -173,11 +150,7 @@
       </ion-item>
     </ion-list>
 
-    <ion-list
-      class="list-custom animate_animated animate_fadeIn"
-      lines="full"
-      *ngIf="content_loaded"
-    >
+    <ion-list class="list-custom animate_animated animate_fadeIn" lines="full" *ngIf="content_loaded">
       <ion-item color="primary" button detail="false">
         <ion-avatar slot="start" class="ion-avatar-default-icon">
           <ion-icon color="tertiary" size="large" name="cafe-outline"></ion-icon>
