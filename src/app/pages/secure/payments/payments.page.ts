@@ -24,19 +24,28 @@ export class PaymentsPage implements OnInit {
 
   constructor(
     private authService: AuthService,
-    public navCtrl: NavController,
-    private alertController: AlertController,
+    private router: Router,
+    private formBuilder: FormBuilder,
     private toastService: ToastService,
-    private router: Router
-  ) {}
+    private http: HttpClient,
+    public navCtrl: NavController,
+    private alertController: AlertController
+  ) {
+    this.authService.getSession('productos').then((res: any) => {
+      this.codigo = res.codigo;
+      this.productosInventario(this.codigo);
+    });
+  }
 
-  ngOnInit() {}
+  ngOnInit() {
+    // Puedes inicializar aquí el formulario si es necesario
+  }
 
   async ionViewWillEnter() {
     try {
       const res = await this.authService.getSession('codigo');
       this.codigo = res;
-      await this.lproductos(this.codigo);
+      await this.productosInventario(this.codigo);
     } catch (error) {
       console.error('Error al inicializar los datos', error);
       this.authService.showToast(
@@ -45,16 +54,16 @@ export class PaymentsPage implements OnInit {
     }
   }
 
-  lproductos(codigo: string) {
+  productosInventario(codigo: string) {
     let datos = {
-      accion: 'lproductos',
+      accion: 'productosInventario',
       cod_persona: this.codigo,
     };
     this.authService.postData(datos).subscribe((res: any) => {
       if (res.estado === true) {
         this.productos = res.datos;
         this.Productos = res.datos; // Inicialmente muestra todos los productos
-        this.calculatePagination();
+        this.calculatePagination(); // Llama a la función para calcular la página actual
       } else {
         this.authService.showToast(res.mensaje);
       }
@@ -86,11 +95,6 @@ export class PaymentsPage implements OnInit {
     }
   }
 
-  irEditar(codigo: string) {
-    this.navCtrl.navigateRoot(['/editproducto']);
-    this.authService.creatSession('id', codigo);
-  }
-
   filterProductos(event: any) {
     const searchTerm = event.target.value.toLowerCase();
     this.Productos = this.productos.filter((producto: any) => {
@@ -98,7 +102,6 @@ export class PaymentsPage implements OnInit {
     });
   }
 
-  // Metodo para eliminar un producto de la lista
   async eliminarProducto(productoId: string) {
     const alert = await this.alertController.create({
       header: 'Confirmar eliminación',
@@ -115,7 +118,7 @@ export class PaymentsPage implements OnInit {
           text: 'Eliminar',
           handler: async () => {
             let datos = {
-              accion: 'eliminarProducto',
+              accion: 'eliminarProductoInventario',
               productoId: productoId,
               cod_persona: this.codigo,
             };
@@ -126,7 +129,7 @@ export class PaymentsPage implements OnInit {
                 .toPromise();
               if (res.estado) {
                 this.authService.showToast2('Producto eliminado con éxito');
-                this.lproductos(this.codigo); // Actualiza la lista de productos
+                this.productosInventario(this.codigo); // Actualiza la lista de productos
                 window.location.reload();
               } else {
                 this.authService.showToast(res.mensaje);
@@ -142,5 +145,11 @@ export class PaymentsPage implements OnInit {
     });
 
     await alert.present();
+  }
+
+  // Método para navegar a la página de edición del producto
+  editarProducto(codigo: string) {
+    this.navCtrl.navigateRoot(['/editinventario']);
+    this.authService.creatSession('id', codigo);
   }
 }

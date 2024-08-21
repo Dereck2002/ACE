@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 26-07-2024 a las 02:11:46
+-- Tiempo de generación: 16-08-2024 a las 04:48:07
 -- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Versión de PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -20,6 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `appemp`
 --
+CREATE DATABASE IF NOT EXISTS `appemp` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `appemp`;
 
 -- --------------------------------------------------------
 
@@ -349,9 +351,6 @@ INSERT INTO `costos_indirectos` (`id`, `producto_id`, `nombre`, `costo`) VALUES
 (170, 151, 'luz', 0.0004000),
 (171, 151, 'agua', 0.0001000),
 (172, 151, 'gas', 0.0056000),
-(179, 152, 'Luz', 0.0020000),
-(180, 152, 'Agua', 0.0008000),
-(181, 152, 'Gas', 0.0002000),
 (185, 154, 'Luz', 0.0004000),
 (186, 154, 'Agua', 0.0001000),
 (187, 154, 'Gas', 0.0056000),
@@ -365,21 +364,61 @@ INSERT INTO `costos_indirectos` (`id`, `producto_id`, `nombre`, `costo`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `inventarios`
+-- Estructura de tabla para la tabla `inventario_registro_final`
 --
 
-CREATE TABLE `inventarios` (
-  `id` int(11) NOT NULL,
-  `producto_id` int(11) NOT NULL,
-  `cantidad_inicial` int(11) NOT NULL,
-  `precio_venta` decimal(10,2) NOT NULL,
-  `cantidad_vendida` int(11) DEFAULT NULL,
-  `dinero_total` decimal(10,2) DEFAULT NULL,
-  `muestras` int(11) DEFAULT NULL,
-  `ganancias_perdidas` decimal(10,2) DEFAULT NULL,
-  `perdidas_productos_regalados` decimal(10,2) DEFAULT NULL,
-  `productos_no_vendidos` int(11) DEFAULT NULL,
-  `fecha_registro` date DEFAULT curdate()
+CREATE TABLE `inventario_registro_final` (
+  `RF_CODIGO` int(11) NOT NULL,
+  `RF_CANTIDAD_VENDIDA` int(11) NOT NULL,
+  `RF_DINERO_TOTAL` decimal(10,2) NOT NULL,
+  `RF_PRODUCTOS_MUESTRA` int(11) NOT NULL,
+  `RF_PRODUCTOS_DESECHADOS` int(11) NOT NULL,
+  `RI_CODIGO` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `inventario_registro_final`
+--
+
+INSERT INTO `inventario_registro_final` (`RF_CODIGO`, `RF_CANTIDAD_VENDIDA`, `RF_DINERO_TOTAL`, `RF_PRODUCTOS_MUESTRA`, `RF_PRODUCTOS_DESECHADOS`, `RI_CODIGO`) VALUES
+(1, 12, 161.52, 1, 1, 1),
+(2, 12, 6.24, 1, 1, 13),
+(3, 10, 6.20, 1, 1, 14);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `inventario_registro_inicial`
+--
+
+CREATE TABLE `inventario_registro_inicial` (
+  `RI_CODIGO` int(11) NOT NULL,
+  `RI_CANTIDAD_INICIAL` int(11) NOT NULL,
+  `RI_FECHA` date NOT NULL,
+  `PROD_CODIGO` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `inventario_registro_inicial`
+--
+
+INSERT INTO `inventario_registro_inicial` (`RI_CODIGO`, `RI_CANTIDAD_INICIAL`, `RI_FECHA`, `PROD_CODIGO`) VALUES
+(1, 12, '2024-08-02', 153),
+(13, 12, '2024-08-02', 154),
+(14, 12, '2024-08-02', 134);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `inventario_registro_resultado`
+--
+
+CREATE TABLE `inventario_registro_resultado` (
+  `RS_CODIGO` int(11) NOT NULL,
+  `RS_GANANCIA_PERDIDA` decimal(10,2) NOT NULL,
+  `RS_PERDIDA_REGALADOS` decimal(10,2) NOT NULL,
+  `RS_PRODUCTOS_NO_VENDIDOS` decimal(10,2) NOT NULL,
+  `RF_CODIGO` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -402,8 +441,6 @@ CREATE TABLE `mano_de_obra` (
 INSERT INTO `mano_de_obra` (`id`, `producto_id`, `nombre`, `costo`) VALUES
 (159, 151, 'operario freidor', 0.0300000),
 (160, 151, 'operario pelador', 0.0300000),
-(165, 152, 'elaboración', 0.6000000),
-(166, 152, 'Auxiliar', 1.0700000),
 (169, 154, 'Pelador', 0.0300000),
 (170, 154, 'Freidor', 0.0300000),
 (191, 153, '1 Elaboracion', 0.6000000),
@@ -435,11 +472,6 @@ INSERT INTO `materias_primas` (`id`, `producto_id`, `nombre`, `costo`, `unidad`,
 (228, 151, 'sal', 0.0004000, 'g', 10),
 (229, 151, 'salsa de tomate', 0.0100000, 'mL', 5),
 (230, 151, 'Aceite', 0.0500000, 'unidad', 1),
-(241, 152, 'Mortiño', 0.5800000, 'lb', 1),
-(242, 152, 'Azucar', 0.3100000, 'g', 500),
-(243, 152, 'Agua', 0.1300000, 'L', 1),
-(244, 152, 'Levadura', 0.0227000, 'g', 500),
-(245, 152, 'metabisulfito de sodio', 0.0100000, 'g', 500),
 (251, 154, 'papas', 0.1200000, 'g', 200),
 (252, 154, 'sal', 0.0000000, 'g', 10),
 (253, 154, 'salsa de tomate', 0.0100000, 'unidad', 1),
@@ -760,7 +792,6 @@ CREATE TABLE `productos` (
 INSERT INTO `productos` (`id`, `id_persona`, `nombre`, `margen_beneficio`, `utilidad_dis`, `utilidad_venta`, `impuestos`, `costo_produccion`, `costo_fabrica`, `costo_distribucion`, `pvp`) VALUES
 (134, 210, 'papitas', 30.00, 39, 20, 12.00, 0.26, 0.34, 0.41, 0.62),
 (151, 210, 'papitas2', 35.00, 0, 0, 12.00, 0.26, 0.35, 0.39, 0.52),
-(152, 105, 'Vino de mortiño', 44.50, 0, 0, 12.00, 4.47, 6.45, 7.23, 10.44),
 (153, 210, 'Vino Artesanal', 44.50, 0, 0, 12.00, 4.41, 6.37, 8.53, 13.46),
 (154, 210, 'Papitas 3', 30.00, 0, 0, 12.00, 0.28, 0.36, 0.40, 0.52);
 
@@ -862,11 +893,25 @@ ALTER TABLE `costos_indirectos`
   ADD KEY `producto_id` (`producto_id`);
 
 --
--- Indices de la tabla `inventarios`
+-- Indices de la tabla `inventario_registro_final`
 --
-ALTER TABLE `inventarios`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `producto_id` (`producto_id`);
+ALTER TABLE `inventario_registro_final`
+  ADD PRIMARY KEY (`RF_CODIGO`),
+  ADD KEY `RI_CODIGO` (`RI_CODIGO`);
+
+--
+-- Indices de la tabla `inventario_registro_inicial`
+--
+ALTER TABLE `inventario_registro_inicial`
+  ADD PRIMARY KEY (`RI_CODIGO`),
+  ADD KEY `PROD_CODIGO` (`PROD_CODIGO`);
+
+--
+-- Indices de la tabla `inventario_registro_resultado`
+--
+ALTER TABLE `inventario_registro_resultado`
+  ADD PRIMARY KEY (`RS_CODIGO`),
+  ADD KEY `RF_CODIGO` (`RF_CODIGO`);
 
 --
 -- Indices de la tabla `mano_de_obra`
@@ -950,10 +995,22 @@ ALTER TABLE `costos_indirectos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=261;
 
 --
--- AUTO_INCREMENT de la tabla `inventarios`
+-- AUTO_INCREMENT de la tabla `inventario_registro_final`
 --
-ALTER TABLE `inventarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `inventario_registro_final`
+  MODIFY `RF_CODIGO` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `inventario_registro_inicial`
+--
+ALTER TABLE `inventario_registro_inicial`
+  MODIFY `RI_CODIGO` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
+-- AUTO_INCREMENT de la tabla `inventario_registro_resultado`
+--
+ALTER TABLE `inventario_registro_resultado`
+  MODIFY `RS_CODIGO` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `mano_de_obra`
@@ -1026,10 +1083,22 @@ ALTER TABLE `costos_indirectos`
   ADD CONSTRAINT `costos_indirectos_ibfk_1` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Filtros para la tabla `inventarios`
+-- Filtros para la tabla `inventario_registro_final`
 --
-ALTER TABLE `inventarios`
-  ADD CONSTRAINT `inventarios_ibfk_1` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`);
+ALTER TABLE `inventario_registro_final`
+  ADD CONSTRAINT `inventario_registro_final_ibfk_1` FOREIGN KEY (`RI_CODIGO`) REFERENCES `inventario_registro_inicial` (`RI_CODIGO`) ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `inventario_registro_inicial`
+--
+ALTER TABLE `inventario_registro_inicial`
+  ADD CONSTRAINT `inventario_registro_inicial_ibfk_1` FOREIGN KEY (`PROD_CODIGO`) REFERENCES `productos` (`id`) ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `inventario_registro_resultado`
+--
+ALTER TABLE `inventario_registro_resultado`
+  ADD CONSTRAINT `inventario_registro_resultado_ibfk_1` FOREIGN KEY (`RF_CODIGO`) REFERENCES `inventario_registro_final` (`RF_CODIGO`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `mano_de_obra`
