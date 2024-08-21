@@ -1,0 +1,52 @@
+.header {
+  font-weight: bold;
+  background-color: #000000; /* Negro para el encabezado */
+  color: #ffffff; /* Blanco para el texto del encabezado */
+}
+
+.data {
+  padding: 8px;
+  background-color: #e0e0e0; /* Gris claro para el fondo de los datos */
+  color: #000000; /* Negro para el texto de los datos */
+}
+
+.header-row ion-col,
+.data-row ion-col {
+  border: 1px solid #666666; /* Gris oscuro para el borde */
+  border-width: 0 0 1px 0;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.header-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.col-label {
+  flex: 1;
+}
+
+.col-value {
+  flex: 3;
+  text-align: left;
+}
+
+.transparent-grid {
+  width: 100%;
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 16px;
+}
+ion-button[color="danger"] {
+  --background: #ff4d4d; /* Rojo para el fondo del botón */
+  --color: #ffffff; /* Blanco para el texto del botón */
+}
