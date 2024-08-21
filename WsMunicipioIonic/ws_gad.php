@@ -9,11 +9,6 @@ header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Allow-Methods: PUT,GET,POST');
 header('Access-Control-Allow-Headers: Origin, Content-Type, Authorization, Accept, X-Requested-With, x-xsrf-token');
 header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Max-Age: 86400');
-date_default_timezone_set('America/Caracas');
-$fecha = date("Y-m-d H:i:s");
-$fecha2 = date("Y-m-d");
-$hora = date("H:i:s");
 require 'vendor/autoload.php';
 
 $respuesta = "";
@@ -592,36 +587,9 @@ if ($post['accion'] == 'consultarDatoProductos') {
         $respuesta = json_encode(array('estado' => false, 'mensaje' => "Error en la consulta"));
         error_log("Error en la preparación de la consulta: " . mysqli_error($mysqli));
     }
-    $query = "SELECT nombre, pvp FROM productos WHERE id = $producto_id";
-    $result = mysqli_query($mysqli, $query);
 
-    if ($result) {
-        if ($row = mysqli_fetch_assoc($result)) {
-            $nombre_producto = $row['nombre'];
-            $pvp_producto = $row['pvp'];
-
-            // Devuelve el nombre y el pvp como parte de la respuesta
-            $respuesta = array(
-                'estado' => true,
-                'nombre' => $nombre_producto,
-                'pvp' => $pvp_producto
-            );
-        } else {
-            // Producto no encontrado
-            $respuesta = array(
-                'estado' => false,
-                'mensaje' => 'Producto no encontrado'
-            );
-        }
-    } else {
-        // Error en la consulta SQL
-        $respuesta = array(
-            'estado' => false,
-            'mensaje' => 'Error en la consulta SQL'
-        );
-    }
-
-    echo json_encode($respuesta);
+    // Envía la respuesta
+    echo $respuesta;
 }
 
 if ($post['accion'] == 'eliminarProducto') {
@@ -950,23 +918,43 @@ if ($post['accion'] == 'guardar_inventario') {
 
 // Cargar productos
 if ($post['accion'] == 'cargar_productos') {
-    $sentencia = "SELECT id, nombre, pvp FROM productos";
-    $rs = mysqli_query($mysqli, $sentencia);
+    if (isset($post['id_persona'])) {
+        $id_persona = $post['id_persona'];
+        error_log("ID Persona recibido: " . $id_persona); // Depuración
 
-    if (mysqli_num_rows($rs) > 0) {
-        $datos = array();
-        while ($row = mysqli_fetch_array($rs)) {
-            $datos[] = array(
-                'id' => $row['id'],
-                'nombre' => $row['nombre'],
-                'pvp' => $row['pvp']
-            );
+        // Consulta para obtener productos
+        $sentencia = "SELECT id, nombre, pvp FROM productos WHERE id_persona = ?";
+        $stmt = $mysqli->prepare($sentencia);
+        if (!$stmt) {
+            error_log("Error en la preparación de la consulta: " . $mysqli->error);
         }
-        $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
+        $stmt->bind_param('i', $id_persona);
+        
+        if (!$stmt->execute()) {
+            error_log("Error en la ejecución de la consulta: " . $stmt->error);
+        }
+        
+        $rs = $stmt->get_result();
+
+        if ($rs->num_rows > 0) {
+            $datos = array();
+            while ($row = $rs->fetch_assoc()) {
+                $datos[] = array(
+                    'id' => $row['id'],
+                    'nombre' => $row['nombre'],
+                    'pvp' => $row['pvp']
+                );
+            }
+            $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
+        } else {
+            $respuesta = json_encode(array('estado' => false, 'mensaje' => "No se encontraron productos"));
+        }
+        echo $respuesta;
+
+        $stmt->close();
     } else {
-        $respuesta = json_encode(array('estado' => false, 'mensaje' => "No se encontraron productos"));
+        echo json_encode(array('estado' => false, 'mensaje' => "ID de persona no proporcionado."));
     }
-    echo $respuesta;
 }
 if ($post['accion'] == 'obtener_cantidad_inicial') {
     $producto_id = $post['producto_id'];
@@ -1035,7 +1023,10 @@ if ($post['accion'] == 'cargar_productos2') {
     // Obtener la fecha actual en formato 'Y-m-d'
     $fecha_actual = date('Y-m-d');
 
-    // Consulta con INNER JOIN y filtro por la fecha actual
+    // Obtener el id_persona del post
+    $id_persona = isset($post['id_persona']) ? $post['id_persona'] : '';
+
+    // Consulta con INNER JOIN y filtro por la fecha actual y id_persona
     $sentencia = "
         SELECT 
             p.id, 
@@ -1061,7 +1052,8 @@ if ($post['accion'] == 'cargar_productos2') {
         INNER JOIN 
             inventario_registro_resultado irr ON irf.RF_CODIGO = irr.RF_CODIGO
         WHERE 
-            iri.RI_FECHA = '$fecha_actual'
+            iri.RI_FECHA = '$fecha_actual' AND
+            p.id_persona = '$id_persona'
     ";
 
     $rs = mysqli_query($mysqli, $sentencia);

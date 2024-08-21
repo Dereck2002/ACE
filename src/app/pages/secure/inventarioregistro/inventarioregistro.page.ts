@@ -15,6 +15,7 @@ export class InventarioregistroPage implements OnInit {
   selectedPvp: string;
   productos: any[] = []; // Arreglo para almacenar los productos
   initialRecordId: number; // Para almacenar el ID del registro inicial
+  idPersona: string; 
 
   constructor(
     private http: HttpClient,
@@ -24,17 +25,20 @@ export class InventarioregistroPage implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.idPersona = localStorage.getItem('CapacitorStorage.codigo');
+    console.log("ID Persona:", this.idPersona);
     this.loadProducts();
     this.setCurrentDate();
   }
-
   loadProducts() {
     this.http
       .post<any>('http://localhost/ACE/WsMunicipioIonic/ws_gad.php', {
         accion: 'cargar_productos',
+        id_persona: this.idPersona
       })
       .subscribe(
         (response) => {
+          console.log('Respuesta del servidor:', response); // Depuración
           if (response.estado) {
             this.productos = response.datos;
           } else {

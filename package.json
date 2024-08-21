@@ -32,6 +32,7 @@
     "@capacitor/storage": "^1.2.5",
     "@ionic/angular": "^6.5.2",
     "@ionic/pwa-elements": "^3.3.0",
+    "@ionic/storage-angular": "^4.0.0",
     "animate.css": "^4.1.1",
     "chart.js": "^4.2.0",
     "date-fns": "^2.29.3",

@@ -115,4 +115,5 @@ export class AuthService {
     this.toastQueue.push({ message, duration: 500, position: 'top', color: 'success' });
     this.processQueue();
   }
+
 }
