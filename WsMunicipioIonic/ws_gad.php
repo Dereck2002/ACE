@@ -9,11 +9,6 @@ header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Allow-Methods: PUT,GET,POST');
 header('Access-Control-Allow-Headers: Origin, Content-Type, Authorization, Accept, X-Requested-With, x-xsrf-token');
 header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Max-Age: 86400');
-date_default_timezone_set('America/Caracas');
-$fecha = date("Y-m-d H:i:s");
-$fecha2 = date("Y-m-d");
-$hora = date("H:i:s");
 require 'vendor/autoload.php';
 
 $respuesta = "";
@@ -592,36 +587,9 @@ if ($post['accion'] == 'consultarDatoProductos') {
         $respuesta = json_encode(array('estado' => false, 'mensaje' => "Error en la consulta"));
         error_log("Error en la preparación de la consulta: " . mysqli_error($mysqli));
     }
-    $query = "SELECT nombre, pvp FROM productos WHERE id = $producto_id";
-    $result = mysqli_query($mysqli, $query);
 
-    if ($result) {
-        if ($row = mysqli_fetch_assoc($result)) {
-            $nombre_producto = $row['nombre'];
-            $pvp_producto = $row['pvp'];
-
-            // Devuelve el nombre y el pvp como parte de la respuesta
-            $respuesta = array(
-                'estado' => true,
-                'nombre' => $nombre_producto,
-                'pvp' => $pvp_producto
-            );
-        } else {
-            // Producto no encontrado
-            $respuesta = array(
-                'estado' => false,
-                'mensaje' => 'Producto no encontrado'
-            );
-        }
-    } else {
-        // Error en la consulta SQL
-        $respuesta = array(
-            'estado' => false,
-            'mensaje' => 'Error en la consulta SQL'
-        );
-    }
-
-    echo json_encode($respuesta);
+    // Envía la respuesta
+    echo $respuesta;
 }
 
 if ($post['accion'] == 'eliminarProducto') {
