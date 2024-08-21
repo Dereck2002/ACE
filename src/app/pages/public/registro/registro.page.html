@@ -20,39 +20,40 @@
     </div>
 
     <form class="form-default" [formGroup]="registro_form" (submit)="registrar()">
-     <ion-item color="medium" class="animate_animated animate_fadeInUp">
-  <ion-label >
-    <ion-icon name="card" item-start></ion-icon>
-    Tipo de Documento
-  </ion-label>
-  <ion-select formControlName="tipo_documento" placeholder="Seleccionar" [(ngModel)]="sel_tipoced" value="1">
-    <ion-select-option value="1">Cédula Ecuatoriana</ion-select-option>
-    <ion-select-option value="2">Cédula Extranjera</ion-select-option>
-  </ion-select>
-</ion-item>
+      <ion-item color="medium" class="animate_animated animate_fadeInUp">
+        <ion-label>
+          <ion-icon name="card" item-start></ion-icon>
+          Tipo de Documento
+        </ion-label>
+        <ion-select formControlName="tipo_documento" placeholder="Seleccionar" [(ngModel)]="sel_tipoced" value="1">
+          <ion-select-option value="1">Cédula Ecuatoriana</ion-select-option>
+          <ion-select-option value="2">Cédula Extranjera</ion-select-option>
+        </ion-select>
+      </ion-item>
 
-<ion-item *ngIf="sel_tipoced === '1'" color="medium" class="animate_animated animate_fadeInUp">
-  <ion-label position="floating">
-    <ion-icon name="person" item-start></ion-icon>
-    Número de Cédula
-  </ion-label>
-  <ion-input formControlName="cedula" type="text" [(ngModel)]="txt_cedula" pattern="[0-9]*" required title="mínimo 10 caracteres" maxlength="10"></ion-input>
-  <div *ngIf="registro_form.get('cedula').errors && registro_form.get('cedula').dirty">
-    <div style="color: #797773;" *ngIf="registro_form.get('cedula').errors.cedulaEcuatoriana">
-      La cédula no es válida.
-    </div>
-  </div>
-</ion-item>
+      <ion-item *ngIf="sel_tipoced === '1'" color="medium" class="animate_animated animate_fadeInUp">
+        <ion-label position="floating">
+          <ion-icon name="person" item-start></ion-icon>
+          Número de Cédula
+        </ion-label>
+        <ion-input formControlName="cedula" type="text" [(ngModel)]="txt_cedula" pattern="[0-9]*" required
+          title="mínimo 10 caracteres" maxlength="10"></ion-input>
+        <div *ngIf="registro_form.get('cedula').errors && registro_form.get('cedula').dirty">
+          <div style="color: #797773;" *ngIf="registro_form.get('cedula').errors.cedulaEcuatoriana">
+            La cédula no es válida.
+          </div>
+        </div>
+      </ion-item>
 
-<ion-item *ngIf="sel_tipoced === '2'" color="medium" class="animate_animated animate_fadeInUp">
-  <ion-label position="floating">
-    <ion-icon name="person" item-start></ion-icon>
-    Número de Documento Extranjero
-  </ion-label>
-  <ion-input formControlName="2" type="text" [(ngModel)]="txt_cedula"></ion-input>
-  <div *ngIf="registro_form.get('2').errors && registro_form.get('2').dirty">
-  </div>
-</ion-item>
+      <ion-item *ngIf="sel_tipoced === '2'" color="medium" class="animate_animated animate_fadeInUp">
+        <ion-label position="floating">
+          <ion-icon name="person" item-start></ion-icon>
+          Número de Documento Extranjero
+        </ion-label>
+        <ion-input formControlName="2" type="text" [(ngModel)]="txt_cedula"></ion-input>
+        <div *ngIf="registro_form.get('2').errors && registro_form.get('2').dirty">
+        </div>
+      </ion-item>
 
       <ion-item color="medium" class="animate_animated animate_fadeInUp">
         <ion-label position="floating">
@@ -76,33 +77,34 @@
           <ion-icon name="calendar" item-start></ion-icon>
           Fecha de Nacimiento
         </ion-label>
-        <ion-input required color="dark" formControlName="fecha_nacimiento" type="date" [(ngModel)]="txt_fecha_nacimiento" placeholder="Selecciona Su Fecha De Nacimiento"></ion-input>
+        <ion-input required color="dark" formControlName="fecha_nacimiento" type="date"
+          [(ngModel)]="txt_fecha_nacimiento" placeholder="Selecciona Su Fecha De Nacimiento"></ion-input>
       </ion-item>
-     
- <!--     <ion-item color="dark" class="animate_animated animate_fadeInUp">
+
+      <!--     <ion-item color="dark" class="animate_animated animate_fadeInUp">
         <ion-label position="floating">
           <ion-icon name="calendar" item-start></ion-icon>
           Edad
         </ion-label>
         <ion-input required color="light" formControlName="edad" type="text" [(ngModel)]="txt_edad" placeholder="Ingrese su Edad"></ion-input>
       </ion-item> -->
-      
+
       <ion-item color="medium" class="animate_animated animate_fadeInUp">
         <ion-label>
           <ion-icon name="person-outline" item-start></ion-icon>
           Estado Civil
         </ion-label>
         <ion-select formControlName="ecivil" [(ngModel)]="sel_ecivil">
-              <ion-select-option value="soltero">Soltero/a</ion-select-option>
-              <ion-select-option value="casado">Casado/a</ion-select-option>
-              <ion-select-option value="viudo">Viudo/a</ion-select-option>
-              <ion-select-option value="divorciado">Divorciado/a</ion-select-option>
-              <ion-select-option value="Union de hecho">Unión de hecho</ion-select-option>
-              <ion-select-option value="otro">Otro</ion-select-option>
+          <ion-select-option value="soltero">Soltero/a</ion-select-option>
+          <ion-select-option value="casado">Casado/a</ion-select-option>
+          <ion-select-option value="viudo">Viudo/a</ion-select-option>
+          <ion-select-option value="divorciado">Divorciado/a</ion-select-option>
+          <ion-select-option value="Union de hecho">Unión de hecho</ion-select-option>
+          <ion-select-option value="otro">Otro</ion-select-option>
         </ion-select>
       </ion-item>
       <!-- Campo de texto adicional para "Otro" -->
-      <ion-item *ngIf="sel_ecivil === 'otro'" >
+      <ion-item *ngIf="sel_ecivil === 'otro'">
         <ion-label position="floating" color="dark" class="animate_animated animate_fadeInUp">
           Especifique su estado civil
         </ion-label>
@@ -122,15 +124,15 @@
           <ion-select-option value="otro">Otro</ion-select-option>
         </ion-select>
       </ion-item>
-      
-     <!-- Campo de texto adicional para "Otro" -->
-     <ion-item *ngIf="sel_etnia === 'otro'" >
-      <ion-label position="floating" color="dark" class="animate_animated animate_fadeInUp">
-        Especifique su Etnia
-      </ion-label>
-      <ion-input formControlName="otraetnia" [(ngModel)]="txt_otra_etnia"></ion-input>
-    </ion-item>
-      
+
+      <!-- Campo de texto adicional para "Otro" -->
+      <ion-item *ngIf="sel_etnia === 'otro'">
+        <ion-label position="floating" color="dark" class="animate_animated animate_fadeInUp">
+          Especifique su Etnia
+        </ion-label>
+        <ion-input formControlName="otraetnia" [(ngModel)]="txt_otra_etnia"></ion-input>
+      </ion-item>
+
 
       <ion-item color="medium" class="animate_animated animate_fadeInUp">
         <ion-label>
@@ -142,7 +144,7 @@
           <ion-select-option value="No">No</ion-select-option>
         </ion-select>
       </ion-item>
-      
+
       <!-- Mostrar campos adicionales si se selecciona "Sí" -->
       <div *ngIf="sel_discapacidad === 'Si'">
         <ion-item>
@@ -150,115 +152,123 @@
             <ion-icon name="eye-outline" item-start></ion-icon>
             Tipo de discapacidad
           </ion-label>
-          <ion-input required color="dark" formControlName="tipodis" type="text" [(ngModel)]="txt_tipodis" placeholder="Ingrese el tipo de discapacidad"></ion-input>
+          <ion-input required color="dark" formControlName="tipodis" type="text" [(ngModel)]="txt_tipodis"
+            placeholder="Ingrese el tipo de discapacidad"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label>
             <ion-icon name="stats-chart-outline" item-start></ion-icon>
             Porcentaje
           </ion-label>
-          <ion-input required color="dark" formControlName="porcentajedis" type="text" [(ngModel)]="txt_porcentajedis" placeholder="Ingrese el porsentaje de discapacidad"></ion-input>
+          <ion-input required color="dark" formControlName="porcentajedis" type="text" [(ngModel)]="txt_porcentajedis"
+            placeholder="Ingrese el porsentaje de discapacidad"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label>
             <ion-icon name="card-outline" item-start></ion-icon>
             N° Carnet
           </ion-label>
-          <ion-input required color="dark" formControlName="ncarnetdis" type="text" [(ngModel)]="txt_ncarnetdis" placeholder="Ingrese el numero de carnet"></ion-input>
+          <ion-input required color="dark" formControlName="ncarnetdis" type="text" [(ngModel)]="txt_ncarnetdis"
+            placeholder="Ingrese el numero de carnet"></ion-input>
         </ion-item>
       </div>
-      
-     
+
+
       <ion-item color="medium" class="animate_animated animate_fadeInUp">
-        <ion-label >
+        <ion-label>
           <ion-icon name="briefcase-outline" item-start></ion-icon>
           Ocupación
         </ion-label>
         <ion-select formControlName="ocupacion" [(ngModel)]="sel_ocupacion">
           <ion-select-option value="Sin Empleo">Sin Empleo</ion-select-option>
-              <ion-select-option value="Ama de casa">Ama de casa</ion-select-option>
-              <ion-select-option value="Estudiante">Estudiante</ion-select-option>
-              <ion-select-option value="Dependiente privado">Dependiente privado</ion-select-option>
-              <ion-select-option value="Servidor Público">Servidor Público</ion-select-option>
-              <ion-select-option value="Artesano">Artesano</ion-select-option>
-              <ion-select-option value="Jornalero">Jornalero</ion-select-option>
-              <ion-select-option value="Emprendedor">Emprendedor</ion-select-option>
-              <ion-select-option value="Jubilado">Jubilado</ion-select-option>
-              <ion-select-option value="otro">Otro</ion-select-option>
+          <ion-select-option value="Ama de casa">Ama de casa</ion-select-option>
+          <ion-select-option value="Estudiante">Estudiante</ion-select-option>
+          <ion-select-option value="Dependiente privado">Dependiente privado</ion-select-option>
+          <ion-select-option value="Servidor Público">Servidor Público</ion-select-option>
+          <ion-select-option value="Artesano">Artesano</ion-select-option>
+          <ion-select-option value="Jornalero">Jornalero</ion-select-option>
+          <ion-select-option value="Emprendedor">Emprendedor</ion-select-option>
+          <ion-select-option value="Jubilado">Jubilado</ion-select-option>
+          <ion-select-option value="otro">Otro</ion-select-option>
         </ion-select>
       </ion-item>
 
-            <!-- Campo de texto adicional para "Otro" -->
-      <ion-item *ngIf="sel_ocupacion === 'otro'" >
+      <!-- Campo de texto adicional para "Otro" -->
+      <ion-item *ngIf="sel_ocupacion === 'otro'">
         <ion-label position="floating" color="dark" class="animate_animated animate_fadeInUp">
           Especifique su ocupación
         </ion-label>
         <ion-input formControlName="otraocupacion" [(ngModel)]="txt_otra_ocupacion"></ion-input>
       </ion-item>
-      
+
       <ion-item color="medium" class="animate_animated animate_fadeInUp">
-        <ion-label >
+        <ion-label>
           <ion-icon name="flag-outline" item-start></ion-icon>
           Nacionalidad
         </ion-label>
         <ion-select formControlName="nacionalidad" [(ngModel)]="sel_nacionalidad">
-            <ion-select-option *ngFor="let nac of nacionalidades" value={{nac.codigo}}>{{nac.nombre}}</ion-select-option>
+          <ion-select-option *ngFor="let nac of nacionalidades" value={{nac.codigo}}>{{nac.nombre}}</ion-select-option>
         </ion-select>
       </ion-item>
-  
-    <ion-item color="medium" class="animate_animated animate_fadeInUp">
-      <ion-label >
-        <ion-icon name="map-outline" item-start></ion-icon>
-        Provincia
-      </ion-label>
-      <ion-select formControlName="provincia" [(ngModel)]="sel_provincia">
-        <ion-select-option *ngFor="let prov of provincias" value={{prov.codigo}}>{{prov.nombre}}</ion-select-option>
-      </ion-select>
-    </ion-item>
-    
-    <!-- Mostrar campos adicionales si se selecciona una ciudad -->
-    <div *ngIf="sel_provincia">
-      <ion-item >    
-        <ion-label color="dark" class="animate_animated animate_fadeInUp">
-          <ion-icon  name="flag-outline" item-start></ion-icon>
-          Ciudad
+
+      <ion-item color="medium" class="animate_animated animate_fadeInUp">
+        <ion-label>
+          <ion-icon name="map-outline" item-start></ion-icon>
+          Provincia
         </ion-label>
-        <ion-select formControlName="ciudad" [(ngModel)]="sel_ciudad">
-          <ion-select-option *ngFor="let ciu of ciudades" value={{ciu.codigo}}>{{ciu.nombre}}</ion-select-option></ion-select>
+        <ion-select formControlName="provincia" [(ngModel)]="sel_provincia">
+          <ion-select-option *ngFor="let prov of provincias" value={{prov.codigo}}>{{prov.nombre}}</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <!-- Mostrar campos adicionales si se selecciona una ciudad -->
+      <div *ngIf="sel_provincia">
+        <ion-item>
+          <ion-label color="dark" class="animate_animated animate_fadeInUp">
+            <ion-icon name="flag-outline" item-start></ion-icon>
+            Ciudad
+          </ion-label>
+          <ion-select formControlName="ciudad" [(ngModel)]="sel_ciudad">
+            <ion-select-option *ngFor="let ciu of ciudades"
+              value={{ciu.codigo}}>{{ciu.nombre}}</ion-select-option></ion-select>
         </ion-item>
-      <ion-item>
-        <ion-label>
-          <ion-icon name="compass-outline" item-start></ion-icon>
-          Parroquia
-        </ion-label>
-        <ion-input required color="dark" formControlName="parroquia" type="text" [(ngModel)]="txt_parroquia" placeholder="Selecciona una Parroquia"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label>
-          <ion-icon name="compass-outline" item-start></ion-icon>
-          Barrio
-        </ion-label>
-        <ion-input required color="dark" formControlName="barrio" type="text" [(ngModel)]="txt_barrio" placeholder="Ingrese el barrio"></ion-input>
-      </ion-item>
+        <ion-item>
+          <ion-label>
+            <ion-icon name="compass-outline" item-start></ion-icon>
+            Parroquia
+          </ion-label>
+          <ion-input required color="dark" formControlName="parroquia" type="text" [(ngModel)]="txt_parroquia"
+            placeholder="Selecciona una Parroquia"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            <ion-icon name="compass-outline" item-start></ion-icon>
+            Barrio
+          </ion-label>
+          <ion-input required color="dark" formControlName="barrio" type="text" [(ngModel)]="txt_barrio"
+            placeholder="Ingrese el barrio"></ion-input>
+        </ion-item>
 
-    <ion-item>
-      <ion-label>
-        <ion-icon name="compass-outline" item-start></ion-icon>
-        Calle Principal
-      </ion-label>
-      <ion-input required color="dark" formControlName="calle1" type="text" [(ngModel)]="txt_calle1" placeholder="Ingrese la calle principal"></ion-input>
-    </ion-item>
+        <ion-item>
+          <ion-label>
+            <ion-icon name="compass-outline" item-start></ion-icon>
+            Calle Principal
+          </ion-label>
+          <ion-input required color="dark" formControlName="calle1" type="text" [(ngModel)]="txt_calle1"
+            placeholder="Ingrese la calle principal"></ion-input>
+        </ion-item>
 
-    <ion-item>
-      <ion-label>
-        <ion-icon name="compass-outline" item-start></ion-icon>
-        Calle Secundaria
-      </ion-label>
-      <ion-input required color="dark" formControlName="calle2" type="text" [(ngModel)]="txt_calle2" placeholder="Ingrese la calle secundaria"></ion-input>
-    </ion-item>
+        <ion-item>
+          <ion-label>
+            <ion-icon name="compass-outline" item-start></ion-icon>
+            Calle Secundaria
+          </ion-label>
+          <ion-input required color="dark" formControlName="calle2" type="text" [(ngModel)]="txt_calle2"
+            placeholder="Ingrese la calle secundaria"></ion-input>
+        </ion-item>
 
-    </div>
-     
+      </div>
+
       <ion-item color="medium" class="animate_animated animate_fadeInUp">
         <ion-label>
           <ion-icon name="add-circle" item-start></ion-icon>
@@ -272,13 +282,13 @@
       </ion-item>
 
       <!-- Campo de texto adicional para "Otro" -->
-      <ion-item *ngIf="sel_genero === 'otro'" >
+      <ion-item *ngIf="sel_genero === 'otro'">
         <ion-label position="floating" color="dark" class="animate_animated animate_fadeInUp">
           Especifique su género
         </ion-label>
         <ion-input formControlName="otrogenero" [(ngModel)]="txt_otro_genero"></ion-input>
       </ion-item>
-     
+
       <ion-item color="medium" class="animate_animated animate_fadeInUp">
         <ion-label>
           <ion-icon name="school" item-start></ion-icon>
@@ -286,14 +296,14 @@
         </ion-label>
         <ion-select formControlName="neducacion" [(ngModel)]="sel_neducacion">
           <ion-select-option value="Educacion basica">Educacion básica</ion-select-option>
-    <ion-select-option value="Bachillerato">Bachillerato</ion-select-option>
-    <ion-select-option value="Superior Incompleto">Superior Incompleto</ion-select-option>
-    <ion-select-option value="Tercer Nivel">Tercer Nivel</ion-select-option>
-    <ion-select-option value="Cuarto Nivel">Cuarto Nivel</ion-select-option>
-    <ion-select-option value="Ninguno">Ninguno</ion-select-option>
+          <ion-select-option value="Bachillerato">Bachillerato</ion-select-option>
+          <ion-select-option value="Superior Incompleto">Superior Incompleto</ion-select-option>
+          <ion-select-option value="Tercer Nivel">Tercer Nivel</ion-select-option>
+          <ion-select-option value="Cuarto Nivel">Cuarto Nivel</ion-select-option>
+          <ion-select-option value="Ninguno">Ninguno</ion-select-option>
         </ion-select>
       </ion-item>
-      
+
       <ion-item color="medium" class="animate_animated animate_fadeInUp">
         <ion-label position="floating">
           <ion-icon name="mail" item-start></ion-icon>
@@ -301,7 +311,7 @@
         </ion-label>
         <ion-input required color="dark" formControlName="correo" type="email" [(ngModel)]="txt_correo"></ion-input>
       </ion-item>
- 
+
       <ion-item color="medium" class="animate_animated animate_fadeInUp">
         <ion-label position="floating">
           <ion-icon name="call" item-start></ion-icon>
@@ -309,58 +319,54 @@
         </ion-label>
         <ion-input required color="dark" formControlName="telefono" type="text" [(ngModel)]="txt_telefono"></ion-input>
       </ion-item>
- 
+
       <ion-item color="medium" class="animate_animated animate_fadeInUp">
         <ion-label position="floating">
           <ion-icon name="lock-closed-outline"></ion-icon>
           Contraseña
         </ion-label>
-        <ion-input
-          required
-          color="dark"
-          formControlName="clave"
-          [type]="claveType"
-          placeholder="Ingrese su contraseña, minimo 8 digitos"
-          [(ngModel)]="txt_clave">
+        <ion-input required color="dark" formControlName="clave" [type]="claveType"
+          placeholder="Ingrese su contraseña, minimo 8 digitos" [(ngModel)]="txt_clave">
         </ion-input>
-        <ion-button
-          fill="clear"
-          size="small"
-          slot="end"
-          (mousedown)="togglePasswordVisibility(true)"
-          (mouseup)="togglePasswordVisibility(false)"
-          (mouseleave)="togglePasswordVisibility(false)">
+        <ion-button fill="clear" size="small" slot="end" (mousedown)="togglePasswordVisibility(true)"
+          (mouseup)="togglePasswordVisibility(false)" (mouseleave)="togglePasswordVisibility(false)">
           <ion-icon name="eye-outline"></ion-icon>
         </ion-button>
       </ion-item>
-      
+
       <ion-item color="medium" class="animate_animated animate_fadeInUp">
         <ion-label position="floating">
           <ion-icon name="lock-closed-outline"></ion-icon>
           Confirmar contraseña
         </ion-label>
-        <ion-input
-          required
-          color="dark"
-          formControlName="conf_clave"
-          [type]="confClaveType"
+        <ion-input required color="dark" formControlName="conf_clave" [type]="confClaveType"
           placeholder="Confirmar contraseña">
         </ion-input>
-        <ion-button
-          fill="clear"
-          size="small"
-          slot="end"
-          (mousedown)="toggleConfirmPasswordVisibility(true)"
-          (mouseup)="toggleConfirmPasswordVisibility(false)"
-          (mouseleave)="toggleConfirmPasswordVisibility(false)">
+        <ion-button fill="clear" size="small" slot="end" (mousedown)="toggleConfirmPasswordVisibility(true)"
+          (mouseup)="toggleConfirmPasswordVisibility(false)" (mouseleave)="toggleConfirmPasswordVisibility(false)">
           <ion-icon name="eye-outline"></ion-icon>
         </ion-button>
       </ion-item>
-      
-      
-    <ion-button class="ion-margin-top" type="submit" value="btn_reg" expand="block" size="large" color="danger" >
+
+      <!-- Check terminos y Condiciones -->
+      <ion-item class="animate_animated animate_fadeInUp">
+        <ion-label style="display: flex; align-items: center; justify-content: space-around;">
+          <ion-checkbox [(ngModel)]="check_terminos" formControlName="terminos_condiciones"></ion-checkbox>
+          Acepto los Términos y Condiciones
+        </ion-label>
+        <!-- (click)="openModal('terminos-condiciones')" -->
+      </ion-item>
+      <div *ngIf="submit_attempt && registro_form.get('terminos_condiciones').invalid">
+        <ion-text color="danger">Debe aceptar los términos y condiciones.</ion-text>
+      </div>
+      <div class="ion-text-center ion-margin-top">
+        <strong><a (click)="openModal('terminos-condiciones')" color="black">Leer Términos y Condiciones
+            &raquo;</a></strong>
+      </div>
+
+      <ion-button class="ion-margin-top" type="submit" value="btn_reg" expand="block" size="large" color="danger">
         Regístrarse
-      </ion-button> 
+      </ion-button>
     </form>
 
     <div class="ion-text-center ion-margin-top">
