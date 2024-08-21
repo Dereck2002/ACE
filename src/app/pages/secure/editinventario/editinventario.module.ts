@@ -13,8 +13,8 @@ import { EditinventarioPage } from './editinventario.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    EditinventarioPageRoutingModule
+    EditinventarioPageRoutingModule,
   ],
-  declarations: [EditinventarioPage]
+  declarations: [EditinventarioPage],
 })
 export class EditinventarioPageModule {}
