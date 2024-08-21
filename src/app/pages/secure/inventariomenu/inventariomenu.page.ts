@@ -12,10 +12,7 @@ export class InventariomenuPage implements OnInit {
   currentDate: string;
   productos: any[] = [];
   productInfoVisible: { [key: number]: boolean } = {};
-<<<<<<< HEAD
   idPersona: string; 
-=======
->>>>>>> main
 
   constructor(
     private http: HttpClient,
@@ -24,7 +21,6 @@ export class InventariomenuPage implements OnInit {
   ) {}
 
   ngOnInit() {
-<<<<<<< HEAD
     this.idPersona = localStorage.getItem('CapacitorStorage.codigo');
     console.log("ID Persona:", this.idPersona);
     this.currentDate = this.getCurrentDate();
@@ -47,21 +43,6 @@ export class InventariomenuPage implements OnInit {
       .post<any>('http://localhost/ACE/WsMunicipioIonic/ws_gad.php', {
         accion: 'cargar_productos2',
         id_persona: this.idPersona // Incluye el id_persona aquí
-=======
-    this.setCurrentDate(); // Usa el mismo método para obtener la fecha
-    this.loadProducts();
-  }
-
-  setCurrentDate() {
-    const today = new Date().toISOString().split('T')[0]; // Obtener la fecha en formato YYYY-MM-DD
-    this.currentDate = today;
-  }
-
-  loadProducts() {
-    this.http
-      .post<any>('http://localhost/ACE/WsMunicipioIonic/ws_gad.php', {
-        accion: 'cargar_productos2',
->>>>>>> main
       })
       .subscribe(
         (response) => {
