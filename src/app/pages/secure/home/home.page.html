@@ -48,7 +48,15 @@
 
     <h3 class="productos-vendidos-title">Mis Productos más vendidos</h3>
 
-    <div class="pie-chart">
+    <div class="chart-container">
+      <canvas id="myChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="myChart2"></canvas>
+    </div>
+
+    <!-- <div class="pie-chart">
       <ngx-charts-pie-chart [results]="data" [view]="view" [gradient]="gradient" [showLegend]="showLegend"
         [showLabels]="showLabels" [isDoughnut]="isDoughnut" [scheme]="colorScheme" (select)="onSelect($event)"
         (activate)="onActivate($event)" (deactivate)="onDeactivate($event)">
@@ -59,7 +67,7 @@
           </div>
         </ng-template>
       </ngx-charts-pie-chart>
-    </div>
+    </div> -->
 
     <table class="tabla-ventas">
       <thead>
