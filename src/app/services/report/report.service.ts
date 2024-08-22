@@ -16,7 +16,7 @@ export class ReportService {
     public toastCtrl: ToastController,
     private router: Router,
     public navCtrl: NavController
-  ) {}
+  ) { }
 
   getDataReport(body: {}) {
     const head = new HttpHeaders({

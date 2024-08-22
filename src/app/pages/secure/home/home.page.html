@@ -28,7 +28,7 @@
         </div>
         <div style="color: black" class="profits-card-result">
           <ion-icon name="logo-usd"></ion-icon>
-          <p>100</p>
+          <p>{{ totalGanancias }}</p>
         </div>
       </div>
       <div class="grid-item">
@@ -37,7 +37,7 @@
           <h3>Productos vendidos</h3>
         </div>
         <div style="color: black" class="profits-card-result">
-          <p>39</p>
+          <p>{{ totalCantidadVendida }}</p> <!-- Muestra el total de productos vendidos -->
         </div>
       </div>
       <!-- <div class="grid-item">
@@ -56,20 +56,7 @@
       <canvas id="myChart2"></canvas>
     </div>
 
-    <!-- <div class="pie-chart">
-      <ngx-charts-pie-chart [results]="data" [view]="view" [gradient]="gradient" [showLegend]="showLegend"
-        [showLabels]="showLabels" [isDoughnut]="isDoughnut" [scheme]="colorScheme" (select)="onSelect($event)"
-        (activate)="onActivate($event)" (deactivate)="onDeactivate($event)">
-        <ng-template #tooltipTemplate let-model="model">
-          <div class="custom-tooltip">
-            <p><strong>{{ model.name }}</strong></p>
-            <p>{{ model.value | number }}</p>
-          </div>
-        </ng-template>
-      </ngx-charts-pie-chart>
-    </div> -->
-
-    <table class="tabla-ventas">
+    <!-- <table class="tabla-ventas">
       <thead>
         <tr>
           <th>Color</th>
@@ -88,14 +75,14 @@
           <td style="text-align: center;">{{ producto.value }}</td>
         </tr>
       </tbody>
-    </table>
+    </table> -->
 
-    <ion-list-header>
+    <!-- <ion-list-header>
       <ion-label color="primary">Card/List Sample</ion-label>
-    </ion-list-header>
+    </ion-list-header> -->
 
     <!-- Skeletons -->
-    <ion-list class="item-card-list animate_animated animate_fadeIn" *ngIf="!content_loaded">
+    <!-- <ion-list class="item-card-list animate_animated animate_fadeIn" *ngIf="!content_loaded">
       <ion-item lines="none" color="primary" *ngFor="let i of [].constructor(3)">
         <ion-avatar slot="start">
           <ion-skeleton-text animated></ion-skeleton-text>
@@ -109,9 +96,9 @@
           </p>
         </ion-label>
       </ion-item>
-    </ion-list>
+    </ion-list> -->
 
-    <ion-list class="item-card-list animate_animated animate_fadeIn" *ngIf="content_loaded" lines="none">
+    <!-- <ion-list class="item-card-list animate_animated animate_fadeIn" *ngIf="content_loaded" lines="none">
       <ion-item color="primary" button detail>
         <ion-label color="medium">
           <h3>$12,123.99</h3>
@@ -132,19 +119,19 @@
           <p>PayPal</p>
         </ion-label>
       </ion-item>
-    </ion-list>
+    </ion-list> -->
 
-    <hr />
+    <!-- <hr />
 
     <ion-list-header>
       <ion-label color="primary">Card/List Sample 2</ion-label>
       <ion-button color="medium" *ngIf="content_loaded">
         See All <ion-icon slot="end" name="arrow-forward"></ion-icon>
       </ion-button>
-    </ion-list-header>
+    </ion-list-header> -->
 
     <!-- Skeletons -->
-    <ion-list class="list-custom animate_animated animate_fadeIn" lines="full" *ngIf="!content_loaded">
+    <!--  <ion-list class="list-custom animate_animated animate_fadeIn" lines="full" *ngIf="!content_loaded">
       <ion-item color="primary" *ngFor="let i of [].constructor(3)">
         <ion-label color="medium">
           <h3>
@@ -156,9 +143,9 @@
         </ion-label>
         <ion-skeleton-text slot="end" animated style="width: 10%"></ion-skeleton-text>
       </ion-item>
-    </ion-list>
+    </ion-list> -->
 
-    <ion-list class="list-custom animate_animated animate_fadeIn" lines="full" *ngIf="content_loaded">
+    <!-- <ion-list class="list-custom animate_animated animate_fadeIn" lines="full" *ngIf="content_loaded">
       <ion-item color="primary" button detail="false">
         <ion-avatar slot="start" class="ion-avatar-default-icon">
           <ion-icon color="tertiary" size="large" name="cafe-outline"></ion-icon>
@@ -194,6 +181,6 @@
         </ion-label>
         <ion-badge color="danger" mode="ios" slot="end">- $1800.00</ion-badge>
       </ion-item>
-    </ion-list>
+    </ion-list> -->
   </div>
 </ion-content>

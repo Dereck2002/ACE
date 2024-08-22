@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/services/auth/auth.service';
-import { Chart, ChartTypeRegistry } from 'chart.js';
+import { Chart } from 'chart.js';
 import { ReportService } from 'src/app/services/report/report.service';
 
 @Component({
@@ -10,21 +10,11 @@ import { ReportService } from 'src/app/services/report/report.service';
 })
 export class HomePage implements OnInit {
   content_loaded = false;
-  data: any[] = [];
-  view: any[] = [700, 400];
   productos = [];
-  myChart: Chart;
+  totalGanancias: number = 0;
+  totalCantidadVendida: number = 0; // Total de cantidad vendida
+  myChart: Chart<'bar'> | null = null;
   myChart2: Chart<'pie'> | null = null;
-
-  // options
-  gradient = true;
-  showLegend = true;
-  showLabels = true;
-  isDoughnut = false;
-
-  colorScheme = {
-    domain: [],
-  };
 
   constructor(
     private authService: AuthService,
@@ -50,11 +40,12 @@ export class HomePage implements OnInit {
 
     return colores;
   }
+
   private async getData() {
     const userCode = localStorage.getItem('CapacitorStorage.codigo');
     const datos = {
       accion: 'report',
-      id_persona: userCode,
+      id_persona: 210,
       page: 1,
       items_per_page: 1000000000,
       dateFrom: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
@@ -62,6 +53,7 @@ export class HomePage implements OnInit {
         .split('T')[0],
       dateTo: new Date().toISOString().split('T')[0],
     };
+
     this.reportService.getDataReport(datos).subscribe((res: any) => {
       if (res.estado) {
         const products = res?.productos;
@@ -70,18 +62,35 @@ export class HomePage implements OnInit {
           this.productos = products
             .sort((a, b) => b.RF_CANTIDAD_VENDIDA - a.RF_CANTIDAD_VENDIDA)
             .slice(0, 4);
+
+          const colors = this.generarColoresHexadecimales(
+            (this.productos || []).length
+          );
+
+          this.productos = this.productos.map((d, index) => ({
+            name: d.nombre,
+            value: d.RF_CANTIDAD_VENDIDA,
+            ganancias: d.cuanto_gana,
+            color: colors[index],
+          }));
+
+          // Calcular el total de ganancias
+          this.totalGanancias = this.productos.reduce(
+            (total, producto) => total + producto.ganancias,
+            0
+          );
+
+          // Calcular el total de cantidad vendida
+          this.totalCantidadVendida = this.productos.reduce(
+            (total, producto) => total + producto.value,
+            0
+          );
+
+          this.generarChart();
+          this.generarChartPastel();
+        } else {
+          this.authService.showToast(res.mensaje);
         }
-
-        const colors = this.generarColoresHexadecimales(
-          (this.productos || []).length
-        );
-
-        this.productos = this.productos.map((d, index) => ({
-          name: d.nombre,
-          value: d.RF_CANTIDAD_VENDIDA,
-          color: colors[index],
-        }));
-        this.generarChart();
       } else {
         this.authService.showToast(res.mensaje);
       }
@@ -93,33 +102,19 @@ export class HomePage implements OnInit {
     setTimeout(() => {
       this.content_loaded = true;
     }, 2000);
-
-    this.graficoPastel();
-  }
-
-  onSelect(data): void {
-    console.log('Item clicked', JSON.parse(JSON.stringify(data)));
-  }
-
-  onActivate(data): void {
-    console.log('Activate', JSON.parse(JSON.stringify(data)));
-  }
-
-  onDeactivate(data): void {
-    console.log('Deactivate', JSON.parse(JSON.stringify(data)));
   }
 
   generarChart() {
     const canvas = document.getElementById('myChart') as HTMLCanvasElement;
     const ctx = canvas.getContext('2d');
 
-    this.myChart = new Chart(ctx, {
+    this.myChart = new Chart<'bar'>(ctx, {
       type: 'bar',
       data: {
         labels: this.productos.map((x) => x.name),
         datasets: [
           {
-            label: 'Productos mas vendidos',
+            label: 'Productos más vendidos',
             data: this.productos.map((x) => x.value),
             backgroundColor: this.productos.map((x) => x.color),
             borderColor: this.productos.map((x) => x.color),
@@ -137,46 +132,32 @@ export class HomePage implements OnInit {
     });
   }
 
-  graficoPastel() {
+  generarChartPastel() {
     const canvas = document.getElementById('myChart2') as HTMLCanvasElement;
     const ctx = canvas.getContext('2d');
 
     this.myChart2 = new Chart<'pie'>(ctx, {
-      type: 'pie', // Especifica el tipo de gráfico
+      type: 'pie',
       data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'], // Etiquetas de las secciones del pastel
+        labels: this.productos.map((x) => x.name),
         datasets: [
           {
-            label: 'My Dataset',
-            data: [12, 19, 3, 5, 2, 3], // Datos para cada sección del pastel
-            backgroundColor: [
-              'rgba(255, 99, 132, 0.2)',
-              'rgba(54, 162, 235, 0.2)',
-              'rgba(255, 206, 86, 0.2)',
-              'rgba(75, 192, 192, 0.2)',
-              'rgba(153, 102, 255, 0.2)',
-              'rgba(255, 159, 64, 0.2)',
-            ],
-            borderColor: [
-              'rgba(255, 99, 132, 1)',
-              'rgba(54, 162, 235, 1)',
-              'rgba(255, 206, 86, 1)',
-              'rgba(75, 192, 192, 1)',
-              'rgba(153, 102, 255, 1)',
-              'rgba(255, 159, 64, 1)',
-            ],
+            label: 'Ganancias por producto',
+            data: this.productos.map((x) => x.ganancias),
+            backgroundColor: this.productos.map((x) => x.color),
+            borderColor: this.productos.map((x) => x.color),
             borderWidth: 1,
           },
         ],
       },
       options: {
-        responsive: true, // Hace que el gráfico sea responsivo
+        responsive: true,
         plugins: {
           legend: {
-            position: 'top', // Posición de la leyenda
+            position: 'top',
           },
           tooltip: {
-            enabled: true, // Habilita o deshabilita los tooltips
+            enabled: true,
           },
         },
       },
