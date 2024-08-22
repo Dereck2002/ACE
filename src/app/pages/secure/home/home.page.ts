@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { Chart, ChartTypeRegistry } from 'chart.js';
-
+import { ReportService } from 'src/app/services/report/report.service';
 
 @Component({
   selector: 'app-home',
@@ -26,13 +26,16 @@ export class HomePage implements OnInit {
     domain: [],
   };
 
-  constructor(private authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+    private reportService: ReportService
+  ) {
     this.getData();
   }
 
   private generarColoresHexadecimales(cantidad: number): string[] {
     const colores: string[] = [];
-    const letrasHex = '89ABCDEF'; // Evitar 01234567 para obtener colores más brillantes
+    const letrasHex = '89ABCDEF';
 
     while (colores.length < cantidad) {
       let color = '#';
@@ -50,34 +53,35 @@ export class HomePage implements OnInit {
   private async getData() {
     const userCode = localStorage.getItem('CapacitorStorage.codigo');
     const datos = {
-      accion: 'lproductos',
-      cod_persona: userCode,
+      accion: 'report',
+      id_persona: userCode,
+      page: 1,
+      items_per_page: 1000000000,
+      dateFrom: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+        .toISOString()
+        .split('T')[0],
+      dateTo: new Date().toISOString().split('T')[0],
     };
+    this.reportService.getDataReport(datos).subscribe((res: any) => {
+      if (res.estado) {
+        const products = res?.productos;
 
-    this.authService.postData(datos).subscribe((res: any) => {
-      if (res.estado === true) {
+        if (products && Array.isArray(products)) {
+          this.productos = products
+            .sort((a, b) => b.RF_CANTIDAD_VENDIDA - a.RF_CANTIDAD_VENDIDA)
+            .slice(0, 4);
+        }
+
         const colors = this.generarColoresHexadecimales(
-          (res?.datos || []).length
+          (this.productos || []).length
         );
 
-        const data = (res?.datos || []).sort(
-          (a, b) => b.utilidad_venta - a.utilidad_venta
-        );
-
-        this.colorScheme.domain = colors;
-
-        // Asignar datos y colores a 'single' para el gráfico
-        this.data = data.map((d, index) => ({
+        this.productos = this.productos.map((d, index) => ({
           name: d.nombre,
-          value: d.utilidad_venta,
+          value: d.RF_CANTIDAD_VENDIDA,
           color: colors[index],
         }));
-
-        // Asignar datos y colores a 'productos' para la tabla
-        this.productos = data.map((x, index) => ({
-          ...x,
-          color: colors[index], // Asegúrate de incluir los colores si los has generado
-        }));
+        this.generarChart();
       } else {
         this.authService.showToast(res.mensaje);
       }
@@ -90,7 +94,6 @@ export class HomePage implements OnInit {
       this.content_loaded = true;
     }, 2000);
 
-    this.generarChart();
     this.graficoPastel();
   }
 
@@ -113,36 +116,24 @@ export class HomePage implements OnInit {
     this.myChart = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-        datasets: [{
-          label: '# of Votes',
-          data: [12, 19, 3, 5, 2, 3],
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(255, 206, 86, 0.2)',
-            'rgba(75, 192, 192, 0.2)',
-            'rgba(153, 102, 255, 0.2)',
-            'rgba(255, 159, 64, 0.2)'
-          ],
-          borderColor: [
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 159, 64, 1)'
-          ],
-          borderWidth: 1
-        }]
+        labels: this.productos.map((x) => x.name),
+        datasets: [
+          {
+            label: 'Productos mas vendidos',
+            data: this.productos.map((x) => x.value),
+            backgroundColor: this.productos.map((x) => x.color),
+            borderColor: this.productos.map((x) => x.color),
+            borderWidth: 1,
+          },
+        ],
       },
       options: {
         scales: {
           y: {
-            beginAtZero: true
-          }
-        }
-      }
+            beginAtZero: true,
+          },
+        },
+      },
     });
   }
 
@@ -154,27 +145,29 @@ export class HomePage implements OnInit {
       type: 'pie', // Especifica el tipo de gráfico
       data: {
         labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'], // Etiquetas de las secciones del pastel
-        datasets: [{
-          label: 'My Dataset',
-          data: [12, 19, 3, 5, 2, 3], // Datos para cada sección del pastel
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(255, 206, 86, 0.2)',
-            'rgba(75, 192, 192, 0.2)',
-            'rgba(153, 102, 255, 0.2)',
-            'rgba(255, 159, 64, 0.2)'
-          ],
-          borderColor: [
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 159, 64, 1)'
-          ],
-          borderWidth: 1
-        }]
+        datasets: [
+          {
+            label: 'My Dataset',
+            data: [12, 19, 3, 5, 2, 3], // Datos para cada sección del pastel
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+              'rgba(255, 159, 64, 0.2)',
+            ],
+            borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)',
+            ],
+            borderWidth: 1,
+          },
+        ],
       },
       options: {
         responsive: true, // Hace que el gráfico sea responsivo
@@ -185,8 +178,8 @@ export class HomePage implements OnInit {
           tooltip: {
             enabled: true, // Habilita o deshabilita los tooltips
           },
-        }
-      }
+        },
+      },
     });
   }
 }
