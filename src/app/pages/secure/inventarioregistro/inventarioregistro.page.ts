@@ -61,7 +61,7 @@ export class InventarioregistroPage implements OnInit {
     const product = this.productos.find((p) => p.id === this.productId);
     if (product) {
       this.selectedPvp = product.pvp;
-      this.loadInitialQuantity(this.productId); // Nueva función para obtener la cantidad inicial
+      this.loadInitialQuantity(this.productId); // Nueva función para obtener la cantidad inicia
     }
   }
 
