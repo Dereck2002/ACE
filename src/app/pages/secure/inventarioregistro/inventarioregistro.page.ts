@@ -15,7 +15,8 @@ export class InventarioregistroPage implements OnInit {
   selectedPvp: string;
   productos: any[] = []; // Arreglo para almacenar los productos
   initialRecordId: number; // Para almacenar el ID del registro inicial
-  idPersona: string; 
+  idPersona: string;
+  isDateModalOpen = false; // Calendario
 
   constructor(
     private http: HttpClient,
@@ -26,15 +27,16 @@ export class InventarioregistroPage implements OnInit {
 
   ngOnInit() {
     this.idPersona = localStorage.getItem('CapacitorStorage.codigo');
-    console.log("ID Persona:", this.idPersona);
+    console.log('ID Persona:', this.idPersona);
     this.loadProducts();
     this.setCurrentDate();
   }
+
   loadProducts() {
     this.http
       .post<any>('http://localhost/ACE/WsMunicipioIonic/ws_gad.php', {
         accion: 'cargar_productos',
-        id_persona: this.idPersona
+        id_persona: this.idPersona,
       })
       .subscribe(
         (response) => {
@@ -51,9 +53,38 @@ export class InventarioregistroPage implements OnInit {
       );
   }
 
+  //--------------------------Funciones necesarias para el calendario-------------------------
+  openDateModal() {
+    this.isDateModalOpen = true;
+  }
+
+  closeDateModal() {
+    this.isDateModalOpen = false;
+  }
+
+  onDateModalDismiss(event: any) {
+    const selectedDate = event.detail?.value;
+    if (selectedDate) {
+      this.date = selectedDate.split('T')[0];
+    } else {
+      console.log('Modal cerrado sin seleccionar fecha');
+    }
+    this.closeDateModal();
+  }
+
+  confirmDate(selectedDate: string) {
+    this.date = selectedDate.split('T')[0];
+    this.closeDateModal();
+  }
+
+  //----------------------------------------------------------------------------------------
+
   setCurrentDate() {
-    const today = new Date().toISOString().split('T')[0]; // Obtener la fecha en formato YYYY-MM-DD
-    this.date = today;
+    const today = new Date();
+    const offset = today.getTimezoneOffset(); // Obtener el desfase horario en minutos
+    const localDate = new Date(today.getTime() - offset * 60 * 1000); // Ajustar la fecha para la zona local
+    const formattedDate = localDate.toISOString().split('T')[0]; // Obtener la fecha en formato YYYY-MM-DD
+    this.date = formattedDate;
   }
 
   onProductChange(event: any) {
@@ -61,7 +92,7 @@ export class InventarioregistroPage implements OnInit {
     const product = this.productos.find((p) => p.id === this.productId);
     if (product) {
       this.selectedPvp = product.pvp;
-      this.loadInitialQuantity(this.productId); // Nueva función para obtener la cantidad inicia
+      this.loadInitialQuantity(this.productId); // Nueva función para obtener la cantidad inicial
     }
   }
 
@@ -91,9 +122,9 @@ export class InventarioregistroPage implements OnInit {
   saveProduct() {
     const datos = {
       accion: 'guardar_inventario',
-      producto_id: this.productId, // ID del producto
-      cantidad_inicial: this.initialQuantity, // Cantidad inicial
-      fecha_registro: this.date, // Fecha de registro
+      producto_id: this.productId,
+      cantidad_inicial: this.initialQuantity,
+      fecha_registro: this.date,
     };
 
     this.http
@@ -106,7 +137,7 @@ export class InventarioregistroPage implements OnInit {
               window.location.reload(); // Recargar la página después de redirigir
             });
           } else {
-            console.error('Error al guardar los datos:', response.mensaje);
+            await this.showToast(response.mensaje); // Mostrar mensaje de error
           }
         },
         (error) => {
@@ -120,7 +151,7 @@ export class InventarioregistroPage implements OnInit {
       message,
       duration: 2000,
       position: 'top',
-      color: 'success',
+      color: 'danger', // Cambia el color a rojo para los mensajes de error
     });
     toast.present();
   }

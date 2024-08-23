@@ -41,11 +41,50 @@
         <ion-label position="floating">PVP</ion-label>
         <ion-input type="number" [value]="selectedPvp" readonly></ion-input>
       </ion-item>
+
+      <!-- Nuevo formato de fecha para el guardado -->
       <ion-item>
         <ion-label position="floating">Fecha (YYYY-MM-DD)</ion-label>
-        <ion-input type="text" [value]="date" readonly></ion-input>
+        <ion-input type="text" [(ngModel)]="date"></ion-input>
+        <ion-button fill="clear" (click)="openDateModal()" slot="end">
+          <ion-icon name="calendar"></ion-icon>
+        </ion-button>
       </ion-item>
+
       <ion-button expand="full" (click)="saveProduct()">Guardar</ion-button>
     </ion-card-content>
   </ion-card>
+
+  <!-- modal estilo del calendario -->
+  <ion-modal
+    [isOpen]="isDateModalOpen"
+    (ionModalDidDismiss)="onDateModalDismiss($event)"
+  >
+    <ng-template>
+      <div
+        style="
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+        "
+      >
+        <ion-datetime
+          #dateTimeControl
+          displayFormat="YYYY-MM-DD"
+          pickerFormat="YYYY-MM-DD"
+          time-zone="local"
+          presentation="date"
+        >
+        </ion-datetime>
+      </div>
+      <ion-footer>
+        <ion-toolbar>
+          <ion-button expand="full" (click)="confirmDate(dateTimeControl.value)"
+            >Aceptar</ion-button
+          >
+        </ion-toolbar>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
 </ion-content>
