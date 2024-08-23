@@ -1019,13 +1019,13 @@ if ($post['accion'] == 'ultimo_registro_inicial') {
     echo $respuesta;
 }
 if ($post['accion'] == 'cargar_productos2') {
-    // Obtener la fecha actual en formato 'Y-m-d'
-    $fecha_actual = date('Y-m-d');
+    // Obtener la fecha proporcionada o usar la fecha actual si no se proporciona
+    $fecha = isset($post['fecha']) ? $post['fecha'] : date('Y-m-d');
 
     // Obtener el id_persona del post
     $id_persona = isset($post['id_persona']) ? $post['id_persona'] : '';
 
-    // Consulta con INNER JOIN y filtro por la fecha actual y id_persona
+    // Consulta con INNER JOIN y filtro por la fecha y id_persona
     $sentencia = "
         SELECT 
             p.id, 
@@ -1051,7 +1051,7 @@ if ($post['accion'] == 'cargar_productos2') {
         INNER JOIN 
             inventario_registro_resultado irr ON irf.RF_CODIGO = irr.RF_CODIGO
         WHERE 
-            iri.RI_FECHA = '$fecha_actual' AND
+            iri.RI_FECHA = '$fecha' AND
             p.id_persona = '$id_persona'
     ";
 
@@ -1083,15 +1083,16 @@ if ($post['accion'] == 'cargar_productos2') {
                 'RS_CODIGO' => $row['RS_CODIGO'],
                 'RS_GANANCIA_PERDIDA' => $row['RS_GANANCIA_PERDIDA'],
                 'RS_TOTAL_PERDIDA' => $row['RS_TOTAL_PERDIDA'],
-                'TOTAL_MUESTRA_DESECHADOS' => $total_muestra_desechados
+                'total_muestra_desechados' => $total_muestra_desechados,
             );
         }
         $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
     } else {
-        $respuesta = json_encode(array('estado' => false, 'mensaje' => "No se encontraron productos para la fecha actual"));
+        $respuesta = json_encode(array('estado' => true, 'datos' => array()));
     }
     echo $respuesta;
 }
+
 
 if ($post['accion'] == 'cargar_productos3') {
     $ri_codigo = $post['ri_codigo'];
