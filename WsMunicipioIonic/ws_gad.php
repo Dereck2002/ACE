@@ -382,6 +382,7 @@ if ($post['accion'] == 'lprovincia') {
 if ($post['accion'] == 'guardar_costos_produccion') {
     $codigo_persona = ($post['codigo']);
     $producto = mysqli_real_escape_string($mysqli, $post['nombre']);
+    $tproducto = (float)$post['tproducto'];  // Nuevo campo tproducto
     $materias_primas = $post['materiasPrimas'];
     $mano_de_obra = $post['manoDeObraList'];
     $costos_indirectos = $post['costosIndirectosList'];
@@ -400,7 +401,6 @@ if ($post['accion'] == 'guardar_costos_produccion') {
     $result = mysqli_query($mysqli, $query);
 
     if (mysqli_num_rows($result) > 0) {
-        // Si el producto ya existe, envía una respuesta indicando que ya está registrado
         $respuesta = json_encode(array('estado' => false, 'mensaje' => 'El producto ya existe en la base de datos.'));
         echo $respuesta;
         exit;
@@ -410,24 +410,28 @@ if ($post['accion'] == 'guardar_costos_produccion') {
     mysqli_begin_transaction($mysqli);
 
     // Inserta el producto en la tabla productos
-    $query = "INSERT INTO productos (id_persona, nombre, margen_beneficio, utilidad_dis, utilidad_venta,impuestos, costo_produccion, costo_fabrica, costo_distribucion, pvp)
-              VALUES ('$codigo_persona','$producto', $margen_beneficio, $utilidad_dis, $utilidad_venta, $impuestos, $costo_produccion, $costo_fabrica, $costo_distribucion, $pvp)";
+    $query = "INSERT INTO productos (id_persona, nombre, tproducto, margen_beneficio, utilidad_dis, utilidad_venta, impuestos, costo_produccion, costo_fabrica, costo_distribucion, pvp)
+              VALUES ('$codigo_persona', '$producto', $tproducto, $margen_beneficio, $utilidad_dis, $utilidad_venta, $impuestos, $costo_produccion, $costo_fabrica, $costo_distribucion, $pvp)";
 
     if (mysqli_query($mysqli, $query)) {
         $producto_id = mysqli_insert_id($mysqli);
         $error_occurred = false;
 
         // Función para ejecutar las inserciones
-        function insert_data($mysqli, $producto_id, $data, $table, $include_unidad_cantidad = false)
+        function insert_data($mysqli, $producto_id, $data, $table, $include_unidad_cantidad = false, $include_vtotal = false)
         {
             foreach ($data as $item) {
                 $nombre = mysqli_real_escape_string($mysqli, $item['nombre']);
                 $costo = (float)$item['costo'];
                 $unidad = $include_unidad_cantidad ? mysqli_real_escape_string($mysqli, $item['unidad']) : null;
                 $cantidad = $include_unidad_cantidad ? (float)$item['cantidad'] : null;
+                $vtotal = $include_vtotal ? (float)$item['vtotal'] : null;  // Nuevo campo vtotal
+                
+
                 $query = $include_unidad_cantidad
-                    ? "INSERT INTO $table (producto_id, nombre, costo, unidad, cantidad) VALUES ($producto_id, '$nombre', $costo, '$unidad', $cantidad)"
+                    ? "INSERT INTO $table (producto_id, nombre, vtotal, costo, unidad, cantidad) VALUES ($producto_id, '$nombre', $vtotal, $costo, '$unidad', $cantidad)"
                     : "INSERT INTO $table (producto_id, nombre, costo) VALUES ($producto_id, '$nombre', $costo)";
+
                 if (!mysqli_query($mysqli, $query)) {
                     error_log("Error al insertar en $table: " . mysqli_error($mysqli));
                     return false;
@@ -436,8 +440,8 @@ if ($post['accion'] == 'guardar_costos_produccion') {
             return true;
         }
 
-        // Inserta las materias primas
-        if (!insert_data($mysqli, $producto_id, $materias_primas, 'materias_primas', true)) {
+        // Inserta las materias primas con el campo vtotal
+        if (!insert_data($mysqli, $producto_id, $materias_primas, 'materias_primas', true, true)) {
             $error_occurred = true;
             error_log("Error al insertar materias primas");
         }
@@ -473,7 +477,6 @@ if ($post['accion'] == 'guardar_costos_produccion') {
         $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al guardar el producto.'));
     }
 
-    // Envía la respuesta
     echo $respuesta;
 }
 

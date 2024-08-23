@@ -25,11 +25,14 @@ export class ChartsPage implements OnInit {
   txt_producto: string = '';
   utilidadv: number = 0;
   utilidadc: number = 0;
-  materiasPrimas: Array<{ nombre: string; costo: number; unidad: string; cantidad?: number }> = [{ nombre: '', costo: 0, unidad: '' }];
+  materiasPrimas: Array<{ nombre: string; costo: number; unidad: string; cantidad?: number; vtotal?: number }> = [{ nombre: '', costo: 0, unidad: '', vtotal: 0 }];
   manoDeObraList: Array<{ nombre: string; costo: number }> = [{ nombre: '', costo: 0 }];
   costosIndirectosList: Array<{ nombre: string; costo: number }> = [{ nombre: '', costo: 0 }];
   otrosGastoList: Array<{ nombre: string; costo: number }> = [{ nombre: '', costo: 0 }];
   @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
+  tipoRegistro: string = 'unico'; // 'unico' o 'varios'
+  tproducto: number | null = null;
+  vtotal: number | null = null;
 
   public barChartOptions: ChartConfiguration['options'] = {
     elements: {
@@ -197,7 +200,7 @@ export class ChartsPage implements OnInit {
   }
 
   calcular() {
-    // Función para limpiar números
+    // Función para limpiar números y convertir a float
     const limpiarNumero = (valor: any): number => {
       if (typeof valor === 'string') {
         valor = valor.replace(/[^0-9.-]+/g, ''); // Eliminar caracteres no numéricos
@@ -205,8 +208,27 @@ export class ChartsPage implements OnInit {
       return parseFloat(valor) || 0; // Convertir a número y manejar NaN
     };
   
-    // Calcular el costo de las materias primas
-    const costoMateriasPrimas = this.materiasPrimas.reduce((total, materia) => total + limpiarNumero(materia.costo), 0);
+    // Verificar si 'cantidadProductos' está definido y tiene un valor válido
+    const cantidadProductos = limpiarNumero(this.tproducto) || 1;
+  
+    // Calcular el costo unitario para cada materia prima basado en el tipo de registro
+    this.materiasPrimas.forEach(materia => {
+      if (cantidadProductos === 1) {
+        // Si solo hay un producto, usar directamente el valor de 'costo'
+        materia.costo = limpiarNumero(materia.costo);
+      } else {
+        // Si hay varios productos, calcular el costo unitario usando 'vtotal'
+        const valorTotalMateria = limpiarNumero(materia.vtotal) || 0;
+        materia.costo = cantidadProductos > 0 ? valorTotalMateria / cantidadProductos : 0;
+      }
+    });
+  
+    // Calcular el costo total de las materias primas usando el costo unitario
+    const costoMateriasPrimas = this.materiasPrimas.reduce((total, materia) => {
+      const costoUnitario = limpiarNumero(materia.costo);
+      const cantidadMateria = limpiarNumero(materia.cantidad) || 1; // Por defecto 1 si no está definido
+      return total + (costoUnitario * cantidadMateria);
+    }, 0);
   
     // Calcular el costo de la mano de obra
     const totalManoDeObra = this.manoDeObraList.reduce((total, mano) => total + limpiarNumero(mano.costo), 0);
@@ -218,7 +240,7 @@ export class ChartsPage implements OnInit {
     const totalOtrosGastos = this.otrosGastoList.reduce((total, costo) => total + limpiarNumero(costo.costo), 0);
   
     // Calcular el costo de producción
-    this.costoProduccion = parseFloat((costoMateriasPrimas + totalManoDeObra + totalCostosIndirectos + totalOtrosGastos - 0.02).toFixed(2));
+    this.costoProduccion = parseFloat((costoMateriasPrimas + totalManoDeObra + totalCostosIndirectos + totalOtrosGastos).toFixed(2));
   
     // Calcular el costo de fábrica
     const beneficio = parseFloat((this.costoProduccion * (this.margenBeneficio / 100)).toFixed(2));
@@ -233,6 +255,9 @@ export class ChartsPage implements OnInit {
     const impuestosCalculados = parseFloat((this.costoDistribucion * (this.impuestos / 100)).toFixed(2));
     this.pvp = parseFloat((this.costoDistribucion + utilidadComercial + impuestosCalculados).toFixed(2));
   
+    // Mostrar en consola para verificar
+    console.log('Cantidad de productos:', cantidadProductos);
+    console.log('Costo Unitario por materia prima:', this.materiasPrimas.map(m => m.costo));
     console.log('Costo de materias primas:', costoMateriasPrimas);
     console.log('Total de mano de obra:', totalManoDeObra);
     console.log('Total de costos indirectos:', totalCostosIndirectos);
@@ -241,6 +266,7 @@ export class ChartsPage implements OnInit {
     console.log('Costo de fábrica:', this.costoFabrica);
     console.log('Costo de distribución:', this.costoDistribucion);
     console.log('PVP:', this.pvp);
+    console.log('Valor de tproducto:', this.tproducto);
   }
   createBarChart() {
     let helperService = this.helperService;
@@ -281,6 +307,7 @@ export class ChartsPage implements OnInit {
       accion: "guardar_costos_produccion",
       codigo: this.codigo,
       nombre: this.txt_producto,
+      tproducto: this.tproducto,
       margenBeneficio: this.margenBeneficio,
       impuestos: this.impuestos,
       costoProduccion: this.costoProduccion,
@@ -314,10 +341,10 @@ export class ChartsPage implements OnInit {
 
   unidadChange(event, index) {
     if (event.detail.value === 'unidad') {
-      this.materiasPrimas[index].cantidad = 1;
+      this.materiasPrimas[index].cantidad = 1; // Asigna una cantidad por defecto
     } else {
-      this.materiasPrimas[index].cantidad = null;
+      this.materiasPrimas[index].cantidad = null; // No asigna cantidad si la unidad no es 'unidad'
     }
-    this.calcular();
+    this.calcular(); // Recalcula después de cambiar la unidad
   }
 }
