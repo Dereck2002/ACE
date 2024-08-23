@@ -380,102 +380,111 @@ if ($post['accion'] == 'lprovincia') {
 }
 
 if ($post['accion'] == 'guardar_costos_produccion') {
-    $codigo_persona = ($post['codigo']);
+    $codigo_persona = mysqli_real_escape_string($mysqli, $post['codigo']);
     $producto = mysqli_real_escape_string($mysqli, $post['nombre']);
-    $materias_primas = $post['materiasPrimas'];
-    $mano_de_obra = $post['manoDeObraList'];
-    $costos_indirectos = $post['costosIndirectosList'];
-    $otros_gastos = $post['otrosGastoList']; // Cambiado de otrosCostosList a otrosGastoList
-    $margen_beneficio = (float)$post['margenBeneficio'];
-    $utilidad_venta = (float)$post['utilidad_venta'];
-    $utilidad_dis = (float)$post['utilidad_dis'];
-    $impuestos = (float)$post['impuestos'];
-    $costo_produccion = (float)$post['costoProduccion'];
-    $costo_fabrica = (float)$post['costoFabrica'];
-    $costo_distribucion = (float)$post['costoDistribucion'];
-    $pvp = (float)$post['pvp'];
-
+    $materias_primas = $post['materiasPrimas'] ?? [];
+    $mano_de_obra = $post['manoDeObraList'] ?? [];
+    $costos_indirectos = $post['costosIndirectosList'] ?? [];
+    $otros_gastos = $post['otrosGastoList'] ?? []; 
+    $margen_beneficio = (float)($post['margenBeneficio'] ?? 0);
+    $utilidad_venta = (float)($post['utilidad_venta'] ?? 0);
+    $utilidad_dis = (float)($post['utilidad_dis'] ?? 0);
+    $impuestos = (float)($post['impuestos'] ?? 0);
+    $costo_produccion = (float)($post['costoProduccion'] ?? 0);
+    $costo_fabrica = (float)($post['costoFabrica'] ?? 0);
+    $costo_distribucion = (float)($post['costoDistribucion'] ?? 0);
+    $pvp = (float)($post['pvp'] ?? 0);
+  
     // Verifica si el producto ya existe
     $query = "SELECT DISTINCT id FROM productos WHERE id_persona = '$codigo_persona' AND nombre = '$producto'";
     $result = mysqli_query($mysqli, $query);
-
+  
     if (mysqli_num_rows($result) > 0) {
-        // Si el producto ya existe, envía una respuesta indicando que ya está registrado
-        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'El producto ya existe en la base de datos.'));
-        echo $respuesta;
-        exit;
+      // Si el producto ya existe, envía una respuesta indicando que ya está registrado
+      $respuesta = json_encode(array('estado' => false, 'mensaje' => 'El producto ya existe en la base de datos.'));
+      echo $respuesta;
+      exit;
     }
-
+  
     // Inicia una transacción
     mysqli_begin_transaction($mysqli);
-
+  
     // Inserta el producto en la tabla productos
-    $query = "INSERT INTO productos (id_persona, nombre, margen_beneficio, utilidad_dis, utilidad_venta,impuestos, costo_produccion, costo_fabrica, costo_distribucion, pvp)
-              VALUES ('$codigo_persona','$producto', $margen_beneficio, $utilidad_dis, $utilidad_venta, $impuestos, $costo_produccion, $costo_fabrica, $costo_distribucion, $pvp)";
-
+    $query = "INSERT INTO productos (id_persona, nombre, margen_beneficio, utilidad_dis, utilidad_venta, impuestos, costo_produccion, costo_fabrica, costo_distribucion, pvp)
+              VALUES ('$codigo_persona', '$producto', $margen_beneficio, $utilidad_dis, $utilidad_venta, $impuestos, $costo_produccion, $costo_fabrica, $costo_distribucion, $pvp)";
+  
     if (mysqli_query($mysqli, $query)) {
-        $producto_id = mysqli_insert_id($mysqli);
-        $error_occurred = false;
-
-        // Función para ejecutar las inserciones
-        function insert_data($mysqli, $producto_id, $data, $table, $include_unidad_cantidad = false)
-        {
-            foreach ($data as $item) {
-                $nombre = mysqli_real_escape_string($mysqli, $item['nombre']);
-                $costo = (float)$item['costo'];
-                $unidad = $include_unidad_cantidad ? mysqli_real_escape_string($mysqli, $item['unidad']) : null;
-                $cantidad = $include_unidad_cantidad ? (float)$item['cantidad'] : null;
-                $query = $include_unidad_cantidad
-                    ? "INSERT INTO $table (producto_id, nombre, costo, unidad, cantidad) VALUES ($producto_id, '$nombre', $costo, '$unidad', $cantidad)"
-                    : "INSERT INTO $table (producto_id, nombre, costo) VALUES ($producto_id, '$nombre', $costo)";
-                if (!mysqli_query($mysqli, $query)) {
-                    error_log("Error al insertar en $table: " . mysqli_error($mysqli));
-                    return false;
-                }
-            }
-            return true;
+      $producto_id = mysqli_insert_id($mysqli);
+      $error_occurred = false;
+  
+      // Función para ejecutar las inserciones
+      function insert_data($mysqli, $producto_id, $data, $table, $include_tproducto = false, $include_unidad_cantidad = false)
+      {
+        foreach ($data as $item) {
+          $nombre = mysqli_real_escape_string($mysqli, $item['nombre'] ?? '');
+          $costo = (float)($item['costo'] ?? 0);
+          $tproducto = $include_tproducto ? mysqli_real_escape_string($mysqli, $item['tproducto'] ?? '') : '';
+          $vtotal = (float)($item['vtotal'] ?? 0);
+          $unidad = $include_unidad_cantidad ? mysqli_real_escape_string($mysqli, $item['unidad'] ?? '') : null;
+          $cantidad = $include_unidad_cantidad ? (float)($item['cantidad'] ?? 0) : null;
+          $query = $include_tproducto
+              ? ($include_unidad_cantidad
+                  ? "INSERT INTO $table (producto_id, nombre, tproducto, vtotal, costo, unidad, cantidad) VALUES ($producto_id, '$nombre', '$tproducto', $vtotal, $costo, '$unidad', $cantidad)"
+                  : "INSERT INTO $table (producto_id, nombre, tproducto, costo) VALUES ($producto_id, '$nombre', '$tproducto', $costo)")
+              : ($include_unidad_cantidad
+                  ? "INSERT INTO $table (producto_id, nombre, costo, unidad, cantidad) VALUES ($producto_id, '$nombre', $costo, '$unidad', $cantidad)"
+                  : "INSERT INTO $table (producto_id, nombre, costo) VALUES ($producto_id, '$nombre', $costo)");
+  
+          if (!mysqli_query($mysqli, $query)) {
+            error_log("Error al insertar en $table: " . mysqli_error($mysqli));
+            return false;
+          }
         }
-
-        // Inserta las materias primas
-        if (!insert_data($mysqli, $producto_id, $materias_primas, 'materias_primas', true)) {
-            $error_occurred = true;
-            error_log("Error al insertar materias primas");
-        }
-
-        // Inserta la mano de obra
-        if (!$error_occurred && !insert_data($mysqli, $producto_id, $mano_de_obra, 'mano_de_obra')) {
-            $error_occurred = true;
-            error_log("Error al insertar mano de obra");
-        }
-
-        // Inserta los costos indirectos
-        if (!$error_occurred && !insert_data($mysqli, $producto_id, $costos_indirectos, 'costos_indirectos')) {
-            $error_occurred = true;
-            error_log("Error al insertar costos indirectos");
-        }
-
-        // Inserta los otros gastos
-        if (!$error_occurred && !insert_data($mysqli, $producto_id, $otros_gastos, 'otros_gastos')) {
-            $error_occurred = true;
-            error_log("Error al insertar otros gastos");
-        }
-
-        if ($error_occurred) {
-            mysqli_rollback($mysqli);
-            $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al guardar algunos de los datos.'));
-        } else {
-            mysqli_commit($mysqli);
-            $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Producto guardado correctamente.'));
-        }
-    } else {
+        return true;
+      }
+  
+      // Inserta las materias primas
+      if (!insert_data($mysqli, $producto_id, $materias_primas, 'materias_primas', true, true)) {
+        $error_occurred = true;
+        error_log("Error al insertar materias primas");
+      }
+  
+      // Inserta la mano de obra
+      if (!$error_occurred && !insert_data($mysqli, $producto_id, $mano_de_obra, 'mano_de_obra')) {
+        $error_occurred = true;
+        error_log("Error al insertar mano de obra");
+      }
+  
+      // Inserta los costos indirectos
+      if (!$error_occurred && !insert_data($mysqli, $producto_id, $costos_indirectos, 'costos_indirectos')) {
+        $error_occurred = true;
+        error_log("Error al insertar costos indirectos");
+      }
+  
+      // Inserta los otros gastos
+      if (!$error_occurred && !insert_data($mysqli, $producto_id, $otros_gastos, 'otros_gastos')) {
+        $error_occurred = true;
+        error_log("Error al insertar otros gastos");
+      }
+  
+      if ($error_occurred) {
         mysqli_rollback($mysqli);
-        error_log("Error al insertar producto: " . mysqli_error($mysqli));
-        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al guardar el producto.'));
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al guardar algunos de los datos.'));
+      } else {
+        mysqli_commit($mysqli);
+        $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Producto guardado correctamente.'));
+      }
+    } else {
+      mysqli_rollback($mysqli);
+      error_log("Error al insertar producto: " . mysqli_error($mysqli));
+      $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al guardar el producto.'));
     }
-
+  
     // Envía la respuesta
     echo $respuesta;
-}
+  }
+  
+
 
 if ($post['accion'] == 'consultarDatoProductos') {
     $id_producto = (int)$post['id'];
