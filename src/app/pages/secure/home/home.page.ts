@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { Chart } from 'chart.js';
 import { ReportService } from 'src/app/services/report/report.service';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -16,11 +17,57 @@ export class HomePage implements OnInit {
   myChart: Chart<'bar'> | null = null;
   myChart2: Chart<'pie'> | null = null;
 
+  codigo: string = '';
+  searchTerm: string = '';
+  stockAlerts: string[] = [];
+
   constructor(
     private authService: AuthService,
-    private reportService: ReportService
+    private reportService: ReportService,
+    private alertController: AlertController,
   ) {
     this.getData();
+  }
+
+  async ionViewWillEnter() {
+    try {
+      const res = await this.authService.getSession('codigo');
+      this.codigo = res;
+      await this.verificarStock(this.codigo);
+    } catch (error) {
+      console.error('Error al inicializar los datos', error);
+      this.authService.showToast(
+        'Error al cargar los datos. Por favor, intenta de nuevo.'
+      );
+    }
+  }
+
+  verificarStock(codigo: string) {
+    let datos = {
+      accion: 'lproductos',
+      cod_persona: this.codigo,
+    };
+    this.authService.postData(datos).subscribe((res: any) => {
+      if (res.estado === true) {
+        // Verificar stock mínimo con lógica dinámica
+        this.stockAlerts = this.authService.checkStockMinimo(res.datos);
+        if (this.stockAlerts.length > 0) {
+          this.showStockAlert();
+        }
+      } else {
+        this.authService.showToast(res.mensaje);
+      }
+    });
+  }
+
+  async showStockAlert() {
+    const alert = await this.alertController.create({
+      header: 'Alertas de Stock',
+      message: this.stockAlerts.join('<br>'),
+      buttons: ['OK']
+    });
+
+    await alert.present();
   }
 
   private generarColoresHexadecimales(cantidad: number): string[] {

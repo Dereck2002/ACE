@@ -273,7 +273,6 @@ if ($post['accion'] == 'nueva_contrasena') {
     echo $respuesta;
 }
 
-
 if ($post['accion'] == 'lproductos') {
     $sentencia = sprintf("SELECT id, nombre, pvp  from productos where id_persona='%s'", $post['cod_persona']);
     //echo $sentencia;
@@ -929,11 +928,11 @@ if ($post['accion'] == 'cargar_productos') {
             error_log("Error en la preparación de la consulta: " . $mysqli->error);
         }
         $stmt->bind_param('i', $id_persona);
-        
+
         if (!$stmt->execute()) {
             error_log("Error en la ejecución de la consulta: " . $stmt->error);
         }
-        
+
         $rs = $stmt->get_result();
 
         if ($rs->num_rows > 0) {
