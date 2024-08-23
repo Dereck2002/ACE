@@ -157,7 +157,7 @@ if ($post['accion'] == 'recuperar_contrasena') {
                 $mail->Port = 587;
 
                 // Habilita el modo de depuración
-                $mail->SMTPDebug = 2; // 0 = off (producción), 1 = mensajes del cliente, 2 = mensajes del cliente y del servidor
+                $mail->SMTPDebug = 0; // 0 = off (producción), 1 = mensajes del cliente, 2 = mensajes del cliente y del servidor
                 $mail->Debugoutput = 'html'; // Formato de salida de la depuración
 
                 $mail->setFrom('flowltm@gmail.com', 'CAAAAAA');
@@ -272,7 +272,6 @@ if ($post['accion'] == 'nueva_contrasena') {
     }
     echo $respuesta;
 }
-
 
 if ($post['accion'] == 'lproductos') {
     $sentencia = sprintf("SELECT id, nombre, pvp  from productos where id_persona='%s'", $post['cod_persona']);
@@ -929,11 +928,11 @@ if ($post['accion'] == 'cargar_productos') {
             error_log("Error en la preparación de la consulta: " . $mysqli->error);
         }
         $stmt->bind_param('i', $id_persona);
-        
+
         if (!$stmt->execute()) {
             error_log("Error en la ejecución de la consulta: " . $stmt->error);
         }
-        
+
         $rs = $stmt->get_result();
 
         if ($rs->num_rows > 0) {
