@@ -86,7 +86,7 @@ export class EditinventarioPage implements OnInit {
       );
   }
 
-  saveProduct() {
+  async saveProduct() {
     if (this.selectedProduct) {
       const updateData = {
         accion: 'actualizar_cantidad_inicial',
@@ -122,8 +122,24 @@ export class EditinventarioPage implements OnInit {
     }
   }
 
-  saveFinal() {
+  async saveFinal() {
     if (this.selectedProduct) {
+      if (this.selledQuantity > this.initialQuantity) {
+        await this.showToast(
+          'La cantidad final no debe exceder el valor de la cantida Inicial.'
+        );
+        return;
+      }
+
+      const totalUsed =
+        this.selledQuantity + this.giftProducts + this.wasteProducts;
+      if (totalUsed > this.initialQuantity) {
+        await this.showToast(
+          'La cantidad final no debe exceder el valor de la cantida Inicial.'
+        );
+        return;
+      }
+
       const updateData = {
         accion: 'actualizar_registro_final',
         rf_codigo: this.selectedProduct.RF_CODIGO,
