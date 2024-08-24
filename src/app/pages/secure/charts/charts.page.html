@@ -108,14 +108,39 @@
           <ion-button color="danger" size="small" (click)="quitarManoDeObra(i)" class="remove-button">
             <ion-icon name="close-outline"></ion-icon>
           </ion-button>
+          
           <ion-item>
             <ion-label position="floating">Nombre de Mano de Obra</ion-label>
             <ion-input [(ngModel)]="manoDeObraList[i].nombre" (ionChange)="calcular()"></ion-input>
           </ion-item>
+    
+          <!-- Campo para Sueldo Mensual -->
+          <ion-item>
+            <ion-label position="floating" style="font-weight: normal;">Sueldo Mensual</ion-label>
+            <ion-input [(ngModel)]="manoDeObraList[i].sueldoMensual" type="number" (ionChange)="calcular()"></ion-input>
+          </ion-item>
+    
+          <!-- Selección de Tipo de Tiempo -->
+          <ion-item>
+            <ion-label position="floating" style="font-weight: normal;">Tipo de Tiempo</ion-label>
+            <ion-select [(ngModel)]="manoDeObraList[i].tipoTiempo">
+              <ion-select-option value="160">Tiempo Completo</ion-select-option>
+              <ion-select-option value="80">Medio Tiempo</ion-select-option>
+            </ion-select>
+          </ion-item>
+    
+          <!-- Campo para Cantidad de Horas Trabajadas -->
+          <ion-item>
+            <ion-label position="floating" style="font-weight: normal;">Cantidad de Horas Trabajadas</ion-label>
+            <ion-input [(ngModel)]="manoDeObraList[i].horasTrabajadas" type="number" (ionChange)="calcular()"></ion-input>
+          </ion-item>
+    
+          <!-- Campo para Costo -->
           <ion-item>
             <ion-label position="floating">Costo</ion-label>
             <ion-input [(ngModel)]="manoDeObraList[i].costo" type="number" (ionChange)="calcular()"></ion-input>
           </ion-item>
+          
         </ion-card>
         <div class="button-container">
           <ion-button color="tertiary" expand="small" (click)="agregarManoDeObra()">
@@ -124,6 +149,8 @@
         </div>
       </ion-card-content>
     </ion-card>
+    
+    
 
     <!-- Costos Indirectos de Fabricación -->
     <ion-card color="medium">
@@ -134,8 +161,7 @@
         <ion-card *ngFor="let costoIndirecto of costosIndirectosList; let i = index" class="bordes-item">
           <ion-button color="danger" size="small" (click)="quitarCostosIndirectos(i)" class="remove-button">
             <ion-icon name="close-outline"></ion-icon>
-          </ion-button>
-          
+          </ion-button> 
           <!-- Select para Nombre del Costo Indirecto -->
           <ion-item>
             <ion-label position="floating">Nombre del Costo Indirecto</ion-label>

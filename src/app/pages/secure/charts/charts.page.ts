@@ -25,8 +25,12 @@ export class ChartsPage implements OnInit {
   txt_producto: string = '';
   utilidadv: number = 0;
   utilidadc: number = 0;
-  materiasPrimas: Array<{ nombre: string; costo: number; unidad: string; cantidad?: number; vtotal?: number }> = [{ nombre: '', costo: 0, unidad: '', vtotal: 0 }];
-  manoDeObraList: Array<{ nombre: string; costo: number }> = [{ nombre: '', costo: 0 }];
+  materiasPrimas: Array<{ nombre: string; costo: number; unidad: string; cantidad?: number; vtotal: number }> = [
+    { nombre: '', costo: 0, unidad: '', vtotal: 0 }
+  ];
+  manoDeObraList: Array<{ nombre: string; costo: number; sueldoMensual?: number; tipoTiempo?: string; horasTrabajadas?: number }> = [
+    { nombre: '', costo: 0 }
+  ];
   costosIndirectosList: Array<{
     nombre: string;
     costo: number;
@@ -35,7 +39,9 @@ export class ChartsPage implements OnInit {
     horasUso?: number;
     litrosAgua?: number;
     produccionGas?: number;
-  }> = [{ nombre: '', costo: 0 }];
+  }> = [
+    { nombre: '', costo: 0 }
+  ];
   otrosGastoList: Array<{ nombre: string; costo: number }> = [{ nombre: '', costo: 0 }];
   @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
   tipoRegistro: string = 'unico'; // 'unico' o 'varios'
@@ -168,7 +174,7 @@ export class ChartsPage implements OnInit {
   }
 
   agregarMateriaPrima() {
-    this.materiasPrimas.push({ nombre: '', costo: 0, unidad: '' });
+    this.materiasPrimas.push({ nombre: '', costo: 0, unidad: '', vtotal: 0 });
   }
 
   quitarMateriaPrima(index: number) {
@@ -208,6 +214,21 @@ export class ChartsPage implements OnInit {
   }
 
   calcular() {
+    this.manoDeObraList.forEach((manoDeObra, index) => {
+      const sueldoMensual = manoDeObra.sueldoMensual || 0;
+      const tipoTiempo = +manoDeObra.tipoTiempo || 1; // Convertir a número
+      const horasTrabajadas = manoDeObra.horasTrabajadas || 0;
+      const cantidadProductos = this.tproducto || 1;
+  
+      if (cantidadProductos > 0 && tipoTiempo > 0) {
+        const costo = (sueldoMensual / tipoTiempo) * horasTrabajadas / cantidadProductos;
+        this.manoDeObraList[index].costo = costo;
+      } else {
+        this.manoDeObraList[index].costo = 0;
+      }
+    });
+
+    // Costos indirectos calculo para el costo unitario
     this.costosIndirectosList.forEach((costoIndirecto, i) => {
       if (this.tproducto > 0) {
         switch (costoIndirecto.nombre) {
@@ -403,4 +424,5 @@ export class ChartsPage implements OnInit {
   onCostoChange(costoIndirecto: any) {
     // Lógica para manejar el cambio de costo indirecto (ej: si es luz, internet, etc.)
   }
+
 }
