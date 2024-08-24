@@ -38,25 +38,14 @@
         <ion-card-title>Seleccione el tipo de registro</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <ion-radio-group [(ngModel)]="tipoRegistro" (ionChange)="calcular()">
-          <ion-item>
-            <ion-label>Un solo producto</ion-label>
-            <ion-radio slot="start" value="unico"></ion-radio>
-          </ion-item>
-          <ion-item>
-            <ion-label>Varios productos</ion-label>
-            <ion-radio slot="start" value="varios"></ion-radio>
-          </ion-item>
-        </ion-radio-group>
-    
-        <!-- Mostrar la caja de texto solo si se selecciona "varios productos" -->
-        <ion-item *ngIf="tipoRegistro === 'varios'">
+        <!-- Caja de texto siempre visible -->
+        <ion-item>
           <ion-label position="floating">Cantidad de productos</ion-label>
-          <ion-input [(ngModel)]="tproducto" type="number" ></ion-input>
+          <ion-input [(ngModel)]="tproducto" type="number"></ion-input>
         </ion-item>
       </ion-card-content>
     </ion-card>
-
+    
     <!-- Materia Prima -->
     <ion-card color="medium">
       <ion-card-header>
@@ -68,14 +57,14 @@
           <ion-button color="danger" size="small" (click)="quitarMateriaPrima(i)" class="remove-button">
             <ion-icon name="close-outline"></ion-icon>
           </ion-button>
-          <!-- Campo para valor total solo si se selecciona varios productos -->
+          <!-- Campo para valor total siempre visible -->
           <ion-item>
             <ion-label position="floating">Nombre de Materia Prima</ion-label>
             <ion-input [(ngModel)]="materiasPrimas[i].nombre" (ionChange)="calcular()"></ion-input>
           </ion-item>
-          <ion-item *ngIf="tipoRegistro === 'varios'">
+          <ion-item>
             <ion-label position="floating">Valor Total</ion-label>
-  <ion-input [(ngModel)]="materiasPrimas[i].vtotal" type="number" (ionChange)="calcular()"></ion-input>
+            <ion-input [(ngModel)]="materiasPrimas[i].vtotal" type="number" (ionChange)="calcular()"></ion-input>
           </ion-item>
           <ion-item>
             <ion-label position="floating">Costo</ion-label>
@@ -85,18 +74,14 @@
             <ion-label position="floating">Unidad de Medida</ion-label>
             <ion-select [(ngModel)]="materiasPrimas[i].unidad" (ionChange)="unidadChange($event, i)" interface="popover">
               <ion-select-option value="" disabled selected hidden>Seleccionar</ion-select-option>
-
               <ion-select-option value="unidad">Unidad (u)</ion-select-option>
-
               <ion-select-option value="kg">Kilogramos (kg)</ion-select-option>
               <ion-select-option value="g">Gramos (g)</ion-select-option>
               <ion-select-option value="lb">Libras (lb)</ion-select-option>
               <ion-select-option value="oz">Onzas (oz)</ion-select-option>
-
               <ion-select-option value="L">Litros (L)</ion-select-option>
               <ion-select-option value="mL">Mililitros (mL)</ion-select-option>
               <ion-select-option value="m³">Metros cúbicos (m³)</ion-select-option>
-
               <ion-select-option value="m">Metros (m)</ion-select-option>
               <ion-select-option value="cm">Centímetros (cm)</ion-select-option>
               <ion-select-option value="mm">Milímetros (mm)</ion-select-option>
@@ -111,6 +96,7 @@
         </div>
       </ion-card-content>
     </ion-card>
+    
 
     <!-- Mano de Obra -->
     <ion-card color="medium">
