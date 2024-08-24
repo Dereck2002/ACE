@@ -209,7 +209,7 @@ export class ChartsPage implements OnInit {
 
   calcular() {
     this.costosIndirectosList.forEach((costoIndirecto, i) => {
-      if (this.tipoRegistro === 'varios' && this.tproducto > 0) {
+      if (this.tproducto > 0) {
         switch (costoIndirecto.nombre) {
           case 'luz':
             // Cálculo para Luz
