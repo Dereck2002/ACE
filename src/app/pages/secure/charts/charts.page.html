@@ -123,7 +123,7 @@
           <!-- Selección de Tipo de Tiempo -->
           <ion-item>
             <ion-label position="floating" style="font-weight: normal;">Tipo de Tiempo</ion-label>
-            <ion-select [(ngModel)]="manoDeObraList[i].tipoTiempo">
+            <ion-select [(ngModel)]="manoDeObraList[i].tipoTiempo" (ionChange)="calcular()">
               <ion-select-option value="160">Tiempo Completo</ion-select-option>
               <ion-select-option value="80">Medio Tiempo</ion-select-option>
             </ion-select>
