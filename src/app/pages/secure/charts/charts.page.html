@@ -123,7 +123,7 @@
           <!-- Selección de Tipo de Tiempo -->
           <ion-item>
             <ion-label position="floating" style="font-weight: normal;">Tipo de Tiempo</ion-label>
-            <ion-select [(ngModel)]="manoDeObraList[i].tipoTiempo" (ionChange)="calcular()">
+            <ion-select [(ngModel)]="manoDeObraList[i].tipoTiempo">
               <ion-select-option value="160">Tiempo Completo</ion-select-option>
               <ion-select-option value="80">Medio Tiempo</ion-select-option>
             </ion-select>
@@ -217,31 +217,43 @@
     
 
     <!-- Otros Costos -->
-    <ion-card color="medium">
-      <ion-card-header>
-        <ion-card-title style="font-size: 22px; font-weight: bold;">Otros Costos</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-card *ngFor="let otroCosto of otrosGastoList; let i = index" class="bordes-item">
-          <ion-button color="danger" size="small" (click)="quitarGasto(i)" class="remove-button">
-            <ion-icon name="close-outline"></ion-icon>
-          </ion-button>
-          <ion-item>
-            <ion-label position="floating">Nombre de Gasto General</ion-label>
-            <ion-input [(ngModel)]="otrosGastoList[i].nombre" (ionChange)="calcular()"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-label position="floating">Costo</ion-label>
-            <ion-input [(ngModel)]="otrosGastoList[i].costo" type="number" (ionChange)="calcular()"></ion-input>
-          </ion-item>
-        </ion-card>
-        <div class="button-container">
-          <ion-button color="tertiary" expand="small" (click)="agregarGasto()">
-            <ion-icon style="margin-right: 5px;" name="add-circle-outline"></ion-icon>Agregar
-          </ion-button>
-        </div>
-      </ion-card-content>
+<ion-card color="medium">
+  <ion-card-header>
+    <ion-card-title style="font-size: 22px; font-weight: bold;">Otros Costos</ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <ion-card *ngFor="let otroCosto of otrosGastoList; let i = index" class="bordes-item">
+      <!-- Botón para eliminar -->
+      <ion-button color="danger" size="small" (click)="quitarGasto(i)" class="remove-button">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+      
+      <!-- Campo para el nombre del gasto general -->
+      <ion-item>
+        <ion-label position="floating">Nombre de Gasto General</ion-label>
+        <ion-input [(ngModel)]="otrosGastoList[i].nombre" (ionChange)="calcular()"></ion-input>
+      </ion-item>
+      
+      <!-- Campo para el valor total -->
+      <ion-item>
+        <ion-label position="floating">Valor Total</ion-label>
+        <ion-input [(ngModel)]="otrosGastoList[i].vtotal" type="number" (ionChange)="calcular()"></ion-input>
+      </ion-item>
+      
+      <!-- Campo para el costo -->
+      <ion-item>
+        <ion-label position="floating">Costo</ion-label>
+        <ion-input [(ngModel)]="otrosGastoList[i].costo" type="number" (ionChange)="calcular()"></ion-input>
+      </ion-item>
     </ion-card>
+    
+    <div class="button-container">
+      <ion-button color="tertiary" expand="small" (click)="agregarGasto()">
+        <ion-icon style="margin-right: 5px;" name="add-circle-outline"></ion-icon>Agregar
+      </ion-button>
+    </div>
+  </ion-card-content>
+</ion-card>
 
     <!-- Márgenes y impuestos -->
     <ion-card color="medium">
