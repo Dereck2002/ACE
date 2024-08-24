@@ -208,46 +208,6 @@ export class ChartsPage implements OnInit {
   }
 
   calcular() {
-    this.costosIndirectosList.forEach((costoIndirecto, i) => {
-      if (this.tipoRegistro === 'varios' && this.tproducto > 0) {
-        switch (costoIndirecto.nombre) {
-          case 'luz':
-            // Cálculo para Luz
-            const costoLuz = (0.09 * costoIndirecto.cantidadHoras) / this.tproducto;
-            this.costosIndirectosList[i].costo = costoLuz;
-            break;
-
-          case 'agua':
-            // Convertir litros a metros cúbicos y cálculo para Agua
-            const metrosCubicos = costoIndirecto.cantidadHoras / 1000;
-            const costoAgua = (0.72 * metrosCubicos) / this.tproducto;
-            this.costosIndirectosList[i].costo = costoAgua;
-            break;
-
-          case 'gas':
-            // Cálculo para Gas
-            if (costoIndirecto.produccionGas && costoIndirecto.produccionGas > 0) {
-              const costoGas = 21 / costoIndirecto.produccionGas;
-              this.costosIndirectosList[i].costo = costoGas;
-            }
-            break;
-
-          case 'telecomunicaciones':
-            // Cálculo para Telecomunicaciones
-            if (costoIndirecto.valorMensual && costoIndirecto.horasUso) {
-              const costoTelecom = ((costoIndirecto.valorMensual / 720) * costoIndirecto.horasUso) / this.tproducto;
-              this.costosIndirectosList[i].costo = costoTelecom;
-            }
-            break;
-
-          default:
-            // Caso por defecto si el nombre no coincide
-            this.costosIndirectosList[i].costo = 0;
-            break;
-        }
-      }
-    });
-
     // Función para limpiar números y convertir a float
     const limpiarNumero = (valor: any): number => {
       if (typeof valor === 'string') {

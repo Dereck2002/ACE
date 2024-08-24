@@ -156,7 +156,7 @@
             <ion-select [(ngModel)]="costosIndirectosList[i].nombre" (ionChange)="onCostoChange(costosIndirectosList[i])">
               <ion-select-option value="agua">Agua</ion-select-option>
               <ion-select-option value="luz">Luz</ion-select-option>
-              <ion-select-option value="telecomunicaciones">Telecomunicaciones</ion-select-option>
+              <ion-select-option value="internet">Internet</ion-select-option>
               <ion-select-option value="gas">Gas</ion-select-option>
             </ion-select>
           </ion-item>
@@ -167,12 +167,12 @@
             <ion-input [(ngModel)]="costosIndirectosList[i].cantidadHoras" type="number" (ionChange)="calcular()"></ion-input>
           </ion-item>
     
-          <!-- Campos de texto para telecomunicaciones -->
-          <ion-item *ngIf="costosIndirectosList[i].nombre === 'telecomunicaciones'">
+          <!-- Campos de texto para Internet -->
+          <ion-item *ngIf="costosIndirectosList[i].nombre === 'internet'">
             <ion-label position="floating">Valor Mensual</ion-label>
             <ion-input [(ngModel)]="costosIndirectosList[i].valorMensual" type="number" (ionChange)="calcular()"></ion-input>
           </ion-item>
-          <ion-item *ngIf="costosIndirectosList[i].nombre === 'telecomunicaciones'">
+          <ion-item *ngIf="costosIndirectosList[i].nombre === 'internet'">
             <ion-label position="floating">Horas de Uso</ion-label>
             <ion-input [(ngModel)]="costosIndirectosList[i].horasUso" type="number" (ionChange)="calcular()"></ion-input>
           </ion-item>
