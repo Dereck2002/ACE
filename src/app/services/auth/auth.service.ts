@@ -29,6 +29,21 @@ export class AuthService {
     return this.http.post(this.server, JSON.stringify(body), options);
   }
 
+  // Verifcar stock 
+  checkStockMinimo(productos: any[]): string[] {
+    let alertMessages: string[] = [];
+    // Define un umbral de stock bajo. Ajusta según tus necesidades.
+    const umbralCritico = 1000; // Por ejemplo, cualquier producto con pvp <= 1 es considerado crítico
+
+    productos.forEach((producto) => {
+      // Lógica para determinar si el producto es crítico
+      if (producto.pvp <= umbralCritico) {
+        alertMessages.push(`¡Atención! El stock del producto ${producto.nombre} es bajo.`);
+      }
+    });
+    return alertMessages;
+  }
+
   public uploadIMG(formData: FormData) {
     return this.http.post("http://localhost/ACE/WsMunicipioIonic/ws_img.php", formData);
   }

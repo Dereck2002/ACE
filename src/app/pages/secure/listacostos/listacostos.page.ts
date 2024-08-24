@@ -27,9 +27,9 @@ export class ListacostosPage implements OnInit {
     private alertController: AlertController,
     private toastService: ToastService,
     private router: Router
-  ) {}
+  ) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   async ionViewWillEnter() {
     try {

@@ -1,17 +1,11 @@
 <ion-header collapse="fade" [translucent]="true">
   <ion-toolbar color="dark">
-    <ion-title color="light"> Inventario Menu </ion-title>
+    <ion-title color="light">Inventario Menu</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-searchbar
-    class="searchbar-spacing"
-    color="medium"
-    [(ngModel)]="searchTerm"
-    (ionInput)="filterProductos($event)"
-    placeholder="Buscar producto"
-  ></ion-searchbar>
+  <br />
 
   <ion-button
     color="danger"
@@ -21,11 +15,13 @@
     <strong>Registrar Inventario</strong>
   </ion-button>
 
+  <ion-button (click)="openDateModal()">Seleccionar Fecha</ion-button>
+
   <ion-grid class="transparent-grid custom-table">
-    <!-- Fila para la fecha actual -->
+    <!-- Fila para la fecha seleccionada -->
     <ion-row>
       <ion-col class="header col-label" color="light">Fecha</ion-col>
-      <ion-col class="data col-value"> {{ currentDate }} </ion-col>
+      <ion-col class="data col-value">{{ selectedDate }}</ion-col>
     </ion-row>
     <br />
 
@@ -79,10 +75,11 @@
           >{{ producto.RS_GANANCIA_PERDIDA }}</ion-col
         >
       </ion-row>
+
       <ion-row *ngIf="productInfoVisible[producto.id]">
         <ion-col class="header col-label" color="light">Desechos</ion-col>
         <ion-col class="data col-value"
-          >{{ producto.TOTAL_MUESTRA_DESECHADOS}}</ion-col
+          >{{ producto.total_muestra_desechados }}</ion-col
         >
       </ion-row>
 
@@ -97,7 +94,7 @@
         <ion-col class="header col-label" color="light">Opciones</ion-col>
         <ion-col class="data col-value">
           <div class="action-buttons">
-            <!-- ESTE ES EL BOTON DE editar, -->
+            <!-- Botón de editar -->
             <ion-button
               size="small"
               fill="clear"
@@ -119,4 +116,28 @@
       </ion-row>
     </ng-container>
   </ion-grid>
+
+  <!-- Modal para seleccionar fecha -->
+  <ion-modal
+    [isOpen]="isDateModalOpen"
+    (ionModalDidDismiss)="onDateModalDismiss()"
+  >
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Seleccionar Fecha</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeDateModal()">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-datetime
+          [(ngModel)]="modalDate"
+          display-format="YYYY-MM-DD"
+        ></ion-datetime>
+        <ion-button expand="full" (click)="saveDate()">Guardar</ion-button>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

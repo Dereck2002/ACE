@@ -13,8 +13,8 @@
   <ion-searchbar class="searchbar-spacing" color="medium" [(ngModel)]="searchTerm" (ionInput)="filterProductos($event)"
     placeholder="Buscar producto"></ion-searchbar>
 
-  <ion-button color="tertiary" routerLink="/charts" class="floating-button button-spacing">
-    <ion-icon color="dark" name="duplicate-outline" class="icon-space"></ion-icon>
+  <ion-button color="danger" routerLink="/charts" class="floating-button button-spacing">
+    <ion-icon name="duplicate-outline" class="icon-space"></ion-icon>
     <strong>Nuevo Producto</strong>
   </ion-button>
 
@@ -36,7 +36,7 @@
       <ion-col class="data col-pvp">{{ producto.pvp }}</ion-col>
       <ion-col class="data col-acc actions">
         <div class="action-buttons">
-          <ion-button size="small" fill="clear" color="tertiary" (click)="irEditar(producto.codigo)">
+          <ion-button size="small" fill="clear" color="black" (click)="irEditar(producto.codigo)">
             <ion-icon slot="icon-only" name="create-outline"></ion-icon>
           </ion-button>
           <ion-button size="small" fill="clear" color="danger" (click)="eliminarProducto(producto.codigo)">

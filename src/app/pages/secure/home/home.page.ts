@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/services/auth/auth.service';
+import { Chart } from 'chart.js';
+import { ReportService } from 'src/app/services/report/report.service';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -8,27 +11,68 @@ import { AuthService } from 'src/app/services/auth/auth.service';
 })
 export class HomePage implements OnInit {
   content_loaded = false;
-  data: any[] = [];
-  view: any[] = [700, 400];
   productos = [];
+  totalGanancias: number = 0;
+  totalCantidadVendida: number = 0; // Total de cantidad vendida
+  myChart: Chart<'bar'> | null = null;
+  myChart2: Chart<'pie'> | null = null;
 
-  // options
-  gradient = true;
-  showLegend = true;
-  showLabels = true;
-  isDoughnut = false;
+  codigo: string = '';
+  searchTerm: string = '';
+  stockAlerts: string[] = [];
 
-  colorScheme = {
-    domain: [],
-  };
-
-  constructor(private authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+    private reportService: ReportService,
+    private alertController: AlertController,
+  ) {
     this.getData();
+  }
+
+  async ionViewWillEnter() {
+    try {
+      const res = await this.authService.getSession('codigo');
+      this.codigo = res;
+      await this.verificarStock(this.codigo);
+    } catch (error) {
+      console.error('Error al inicializar los datos', error);
+      this.authService.showToast(
+        'Error al cargar los datos. Por favor, intenta de nuevo.'
+      );
+    }
+  }
+
+  verificarStock(codigo: string) {
+    let datos = {
+      accion: 'lproductos',
+      cod_persona: this.codigo,
+    };
+    this.authService.postData(datos).subscribe((res: any) => {
+      if (res.estado === true) {
+        // Verificar stock mínimo con lógica dinámica
+        this.stockAlerts = this.authService.checkStockMinimo(res.datos);
+        if (this.stockAlerts.length > 0) {
+          this.showStockAlert();
+        }
+      } else {
+        this.authService.showToast(res.mensaje);
+      }
+    });
+  }
+
+  async showStockAlert() {
+    const alert = await this.alertController.create({
+      header: 'Alertas de Stock',
+      message: this.stockAlerts.join('<br>'),
+      buttons: ['OK']
+    });
+
+    await alert.present();
   }
 
   private generarColoresHexadecimales(cantidad: number): string[] {
     const colores: string[] = [];
-    const letrasHex = '89ABCDEF'; // Evitar 01234567 para obtener colores más brillantes
+    const letrasHex = '89ABCDEF';
 
     while (colores.length < cantidad) {
       let color = '#';
@@ -43,37 +87,57 @@ export class HomePage implements OnInit {
 
     return colores;
   }
+
   private async getData() {
     const userCode = localStorage.getItem('CapacitorStorage.codigo');
     const datos = {
-      accion: 'lproductos',
-      cod_persona: userCode,
+      accion: 'report',
+      id_persona: 210,
+      page: 1,
+      items_per_page: 1000000000,
+      dateFrom: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+        .toISOString()
+        .split('T')[0],
+      dateTo: new Date().toISOString().split('T')[0],
     };
 
-    this.authService.postData(datos).subscribe((res: any) => {
-      if (res.estado === true) {
-        const colors = this.generarColoresHexadecimales(
-          (res?.datos || []).length
-        );
+    this.reportService.getDataReport(datos).subscribe((res: any) => {
+      if (res.estado) {
+        const products = res?.productos;
 
-        const data = (res?.datos || []).sort(
-          (a, b) => b.utilidad_venta - a.utilidad_venta
-        );
+        if (products && Array.isArray(products)) {
+          this.productos = products
+            .sort((a, b) => b.RF_CANTIDAD_VENDIDA - a.RF_CANTIDAD_VENDIDA)
+            .slice(0, 4);
 
-        this.colorScheme.domain = colors;
+          const colors = this.generarColoresHexadecimales(
+            (this.productos || []).length
+          );
 
-        // Asignar datos y colores a 'single' para el gráfico
-        this.data = data.map((d, index) => ({
-          name: d.nombre,
-          value: d.utilidad_venta,
-          color: colors[index],
-        }));
+          this.productos = this.productos.map((d, index) => ({
+            name: d.nombre,
+            value: d.RF_CANTIDAD_VENDIDA,
+            ganancias: d.cuanto_gana,
+            color: colors[index],
+          }));
 
-        // Asignar datos y colores a 'productos' para la tabla
-        this.productos = data.map((x, index) => ({
-          ...x,
-          color: colors[index], // Asegúrate de incluir los colores si los has generado
-        }));
+          // Calcular el total de ganancias
+          this.totalGanancias = this.productos.reduce(
+            (total, producto) => total + producto.ganancias,
+            0
+          );
+
+          // Calcular el total de cantidad vendida
+          this.totalCantidadVendida = this.productos.reduce(
+            (total, producto) => total + producto.value,
+            0
+          );
+
+          this.generarChart();
+          this.generarChartPastel();
+        } else {
+          this.authService.showToast(res.mensaje);
+        }
       } else {
         this.authService.showToast(res.mensaje);
       }
@@ -87,15 +151,63 @@ export class HomePage implements OnInit {
     }, 2000);
   }
 
-  onSelect(data): void {
-    console.log('Item clicked', JSON.parse(JSON.stringify(data)));
+  generarChart() {
+    const canvas = document.getElementById('myChart') as HTMLCanvasElement;
+    const ctx = canvas.getContext('2d');
+
+    this.myChart = new Chart<'bar'>(ctx, {
+      type: 'bar',
+      data: {
+        labels: this.productos.map((x) => x.name),
+        datasets: [
+          {
+            label: 'Productos más vendidos',
+            data: this.productos.map((x) => x.value),
+            backgroundColor: this.productos.map((x) => x.color),
+            borderColor: this.productos.map((x) => x.color),
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+        },
+      },
+    });
   }
 
-  onActivate(data): void {
-    console.log('Activate', JSON.parse(JSON.stringify(data)));
-  }
+  generarChartPastel() {
+    const canvas = document.getElementById('myChart2') as HTMLCanvasElement;
+    const ctx = canvas.getContext('2d');
 
-  onDeactivate(data): void {
-    console.log('Deactivate', JSON.parse(JSON.stringify(data)));
+    this.myChart2 = new Chart<'pie'>(ctx, {
+      type: 'pie',
+      data: {
+        labels: this.productos.map((x) => x.name),
+        datasets: [
+          {
+            label: 'Ganancias por producto',
+            data: this.productos.map((x) => x.ganancias),
+            backgroundColor: this.productos.map((x) => x.color),
+            borderColor: this.productos.map((x) => x.color),
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          tooltip: {
+            enabled: true,
+          },
+        },
+      },
+    });
   }
 }

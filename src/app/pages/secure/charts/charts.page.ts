@@ -46,6 +46,9 @@ export class ChartsPage implements OnInit {
   tipoRegistro: string = 'unico'; // 'unico' o 'varios'
   tproducto: number | null = null;
   vtotal: number | null = null;
+  tipoRegistro: string = 'unico'; // 'unico' o 'varios'
+  tproducto: number | null = null;
+  vtotal: number | null = null;
 
   public barChartOptions: ChartConfiguration['options'] = {
     elements: {
@@ -214,6 +217,7 @@ export class ChartsPage implements OnInit {
 
   calcular() {
     // Función para limpiar números y convertir a float
+    // Función para limpiar números y convertir a float
     const limpiarNumero = (valor: any): number => {
       if (typeof valor === 'string') {
         valor = valor.replace(/[^0-9.-]+/g, ''); // Eliminar caracteres no numéricos
@@ -246,6 +250,7 @@ export class ChartsPage implements OnInit {
     const totalOtrosGastos = this.otrosGastoList.reduce((total, costo) => total + limpiarNumero(costo.costo), 0);
   
     // Calcular el costo de producción
+    this.costoProduccion = parseFloat((costoMateriasPrimas + totalManoDeObra + totalCostosIndirectos + totalOtrosGastos).toFixed(2));
     this.costoProduccion = parseFloat((costoMateriasPrimas + totalManoDeObra + totalCostosIndirectos + totalOtrosGastos).toFixed(2));
   
     // Calcular el costo de fábrica
@@ -347,9 +352,12 @@ export class ChartsPage implements OnInit {
   unidadChange(event, index) {
     if (event.detail.value === 'unidad') {
       this.materiasPrimas[index].cantidad = 1; // Asigna una cantidad por defecto
+      this.materiasPrimas[index].cantidad = 1; // Asigna una cantidad por defecto
     } else {
       this.materiasPrimas[index].cantidad = null; // No asigna cantidad si la unidad no es 'unidad'
+      this.materiasPrimas[index].cantidad = null; // No asigna cantidad si la unidad no es 'unidad'
     }
+    this.calcular(); // Recalcula después de cambiar la unidad
     this.calcular(); // Recalcula después de cambiar la unidad
   }
 }
