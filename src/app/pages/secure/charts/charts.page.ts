@@ -217,28 +217,12 @@ export class ChartsPage implements OnInit {
             this.costosIndirectosList[i].costo = costoLuz;
             break;
 
-            case 'agua':
-              // Convertir litros a metros cúbicos y cálculo para Agua
-              const metrosCubicos = costoIndirecto.cantidadHoras / 1000;
-            
-              // Revisa los valores intermedios
-              console.log('Cantidad de litros:', costoIndirecto.cantidadHoras);
-              console.log('Metros cúbicos calculados:', metrosCubicos);
-              console.log('tproducto:', this.tproducto);
-            
-              // Asegúrate de que tproducto es un valor válido
-              if (this.tproducto > 0) {
-                const costoAgua = (0.72 * metrosCubicos) / this.tproducto;
-            
-                // Revisa el costo final antes de asignarlo
-                console.log('Costo Agua calculado:', costoAgua);
-                
-                this.costosIndirectosList[i].costo = costoAgua;
-              } else {
-                console.warn('tproducto es 0 o menor, no se puede calcular el costo de agua.');
-                this.costosIndirectosList[i].costo = 0;
-              }
-              break;
+          case 'agua':
+            // Convertir litros a metros cúbicos y cálculo para Agua
+            const metrosCubicos = costoIndirecto.cantidadHoras / 1000;
+            const costoAgua = (0.72 * metrosCubicos) / this.tproducto;
+            this.costosIndirectosList[i].costo = costoAgua;
+            break;
 
           case 'gas':
             // Cálculo para Gas
