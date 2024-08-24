@@ -216,14 +216,19 @@ export class ChartsPage implements OnInit {
             const costoLuz = (0.09 * costoIndirecto.cantidadHoras) / this.tproducto;
             this.costosIndirectosList[i].costo = costoLuz;
             break;
-
+  
           case 'agua':
             // Convertir litros a metros cúbicos y cálculo para Agua
-            const metrosCubicos = costoIndirecto.cantidadHoras / 1000;
-            const costoAgua = (0.72 * metrosCubicos) / this.tproducto;
-            this.costosIndirectosList[i].costo = costoAgua;
+            const litrosAgua = costoIndirecto.litrosAgua; // Usa litrosAgua en lugar de cantidadHoras
+            if (litrosAgua != null && litrosAgua > 0) {
+              const metrosCubicos = litrosAgua / 1000;
+              const costoAgua = (0.72 * metrosCubicos) / this.tproducto;
+              this.costosIndirectosList[i].costo = costoAgua;
+            } else {
+              this.costosIndirectosList[i].costo = 0;
+            }
             break;
-
+  
           case 'gas':
             // Cálculo para Gas
             if (costoIndirecto.produccionGas && costoIndirecto.produccionGas > 0) {
@@ -231,7 +236,7 @@ export class ChartsPage implements OnInit {
               this.costosIndirectosList[i].costo = costoGas;
             }
             break;
-
+  
           case 'telecomunicaciones':
             // Cálculo para Telecomunicaciones
             if (costoIndirecto.valorMensual && costoIndirecto.horasUso) {
@@ -239,7 +244,7 @@ export class ChartsPage implements OnInit {
               this.costosIndirectosList[i].costo = costoTelecom;
             }
             break;
-
+  
           default:
             // Caso por defecto si el nombre no coincide
             this.costosIndirectosList[i].costo = 0;
