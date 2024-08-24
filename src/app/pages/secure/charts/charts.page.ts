@@ -16,8 +16,8 @@ import { NavController } from '@ionic/angular';
 })
 export class ChartsPage implements OnInit {
   codigo: string = "";
-  margenBeneficio: number = 35;
-  impuestos: number = 15;
+  margenBeneficio: number = 35; // Porcentaje
+  impuestos: number = 15; // Porcentaje
   costoProduccion: number | null = null;
   costoFabrica: number | null = null;
   costoDistribucion: number | null = null;
@@ -27,7 +27,15 @@ export class ChartsPage implements OnInit {
   utilidadc: number = 0;
   materiasPrimas: Array<{ nombre: string; costo: number; unidad: string; cantidad?: number; vtotal?: number }> = [{ nombre: '', costo: 0, unidad: '', vtotal: 0 }];
   manoDeObraList: Array<{ nombre: string; costo: number }> = [{ nombre: '', costo: 0 }];
-  costosIndirectosList: Array<{ nombre: string; costo: number; cantidad?: number; litros?: number; produccion?: string }> = [{ nombre: '', costo: 0 }];
+  costosIndirectosList: Array<{
+    nombre: string;
+    costo: number;
+    cantidadHoras?: number;
+    valorMensual?: number;
+    horasUso?: number;
+    litrosAgua?: number;
+    produccionGas?: number;
+  }> = [{ nombre: '', costo: 0 }];
   otrosGastoList: Array<{ nombre: string; costo: number }> = [{ nombre: '', costo: 0 }];
   @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
   tipoRegistro: string = 'unico'; // 'unico' o 'varios'
@@ -347,19 +355,7 @@ export class ChartsPage implements OnInit {
     }
     this.calcular(); // Recalcula después de cambiar la unidad
   }
-  onCostoChange(index: number) {
-    const costoIndirecto = this.costosIndirectosList[index];
-    if (costoIndirecto.nombre === 'luz' || costoIndirecto.nombre === 'telefono' || costoIndirecto.nombre === 'internet') {
-      costoIndirecto.cantidad = undefined; // Limpiar otros campos que no se necesitan
-      costoIndirecto.litros = undefined;
-      costoIndirecto.produccion = undefined;
-    } else if (costoIndirecto.nombre === 'agua') {
-      costoIndirecto.cantidad = undefined;
-      costoIndirecto.produccion = undefined;
-    } else if (costoIndirecto.nombre === 'gas') {
-      costoIndirecto.cantidad = undefined;
-      costoIndirecto.litros = undefined;
-    }
-    this.calcular();
+  onCostoChange(costoIndirecto: any) {
+    // Lógica para manejar el cambio de costo indirecto (ej: si es luz, internet, etc.)
   }
 }
