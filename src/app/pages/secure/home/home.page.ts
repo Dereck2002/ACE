@@ -92,7 +92,7 @@ export class HomePage implements OnInit {
     const userCode = localStorage.getItem('CapacitorStorage.codigo');
     const datos = {
       accion: 'report',
-      id_persona: 210,
+      id_persona: userCode,
       page: 1,
       items_per_page: 1000000000,
       dateFrom: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
