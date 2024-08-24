@@ -115,6 +115,33 @@
     <!-- Mano de Obra -->
     <ion-card color="medium">
       <ion-card-header>
+        <ion-card-title style="font-size: 22px; font-weight: bold;">Mano de Obra</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-card *ngFor="let manoDeObra of manoDeObraList; let i = index" class="bordes-item">
+          <ion-button color="danger" size="small" (click)="quitarManoDeObra(i)" class="remove-button">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+          <ion-item>
+            <ion-label position="floating">Nombre de Mano de Obra</ion-label>
+            <ion-input [(ngModel)]="manoDeObraList[i].nombre" (ionChange)="calcular()"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">Costo</ion-label>
+            <ion-input [(ngModel)]="manoDeObraList[i].costo" type="number" (ionChange)="calcular()"></ion-input>
+          </ion-item>
+        </ion-card>
+        <div class="button-container">
+          <ion-button color="tertiary" expand="small" (click)="agregarManoDeObra()">
+            <ion-icon style="margin-right: 5px;" name="add-circle-outline"></ion-icon>Agregar
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Costos Indirectos de Fabricación -->
+    <ion-card color="medium">
+      <ion-card-header>
         <ion-card-title style="font-size: 22px; font-weight: bold;">Costos Indirectos de Fabricación</ion-card-title>
       </ion-card-header>
       <ion-card-content>
@@ -129,7 +156,7 @@
             <ion-select [(ngModel)]="costosIndirectosList[i].nombre" (ionChange)="onCostoChange(costosIndirectosList[i])">
               <ion-select-option value="agua">Agua</ion-select-option>
               <ion-select-option value="luz">Luz</ion-select-option>
-              <ion-select-option value="telecomunicaciones">Telecomunicaciones</ion-select-option>
+              <ion-select-option value="internet">Internet</ion-select-option>
               <ion-select-option value="gas">Gas</ion-select-option>
             </ion-select>
           </ion-item>
@@ -141,11 +168,11 @@
           </ion-item>
     
           <!-- Campos de texto para Internet -->
-          <ion-item *ngIf="costosIndirectosList[i].nombre === 'telecomunicaciones'">
+          <ion-item *ngIf="costosIndirectosList[i].nombre === 'internet'">
             <ion-label position="floating">Valor Mensual</ion-label>
             <ion-input [(ngModel)]="costosIndirectosList[i].valorMensual" type="number" (ionChange)="calcular()"></ion-input>
           </ion-item>
-          <ion-item *ngIf="costosIndirectosList[i].nombre === 'telecomunicaciones'">
+          <ion-item *ngIf="costosIndirectosList[i].nombre === 'internet'">
             <ion-label position="floating">Horas de Uso</ion-label>
             <ion-input [(ngModel)]="costosIndirectosList[i].horasUso" type="number" (ionChange)="calcular()"></ion-input>
           </ion-item>
@@ -176,6 +203,7 @@
       </ion-card-content>
     </ion-card>
     
+
     <!-- Otros Costos -->
     <ion-card color="medium">
       <ion-card-header>
