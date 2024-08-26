@@ -26,6 +26,7 @@ export class ToastService {
           break;
       }
     }
+    
 
     const toast = await this.toastController.create({
       header: header,
@@ -35,6 +36,7 @@ export class ToastService {
       color: color,
       icon: icon
     });
+    
 
     await toast.present();
   }

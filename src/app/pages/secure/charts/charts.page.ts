@@ -46,7 +46,6 @@ export class ChartsPage implements OnInit {
   @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
   tipoRegistro: string = 'unico'; // 'unico' o 'varios'
   tproducto: number | null = null;
-  vtotal: number | null = null;
   
 
 

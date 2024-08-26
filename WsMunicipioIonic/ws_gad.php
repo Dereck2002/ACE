@@ -431,7 +431,7 @@ if ($post['accion'] == 'guardar_costos_produccion') {
                 $horas = $include_costos_indirectos ? (float)$item['horas'] : null;
                 $cantidadagua = $include_costos_indirectos ? (float)$item['cantidadagua']:null;
                 $cantidadGas = $include_costos_indirectos ? (float)$item['cantidadGas']:null;
-                $cantidadHoras = $include_costos_indirectos ? (float)$item['cantidadHoras']:null;
+                $cantidadHoras = $include_costos_indirectos ? (float)($item['cantidadHoras']?? 0) : null;
 
 
                 if ($include_unidad_cantidad && $include_vtotal) {
@@ -495,16 +495,31 @@ if ($post['accion'] == 'guardar_costos_produccion') {
 
     echo $respuesta;
 }
-
 if ($post['accion'] == 'consultarDatoProductos') {
     $id_producto = (int)$post['id'];
-    $datos_producto = [];
+    $datos_producto = [
+        'codigo' => '',
+        'nombre' => '',
+        'tproducto' => '',
+        'margenBeneficio' => 0,
+        'utilidadDis' => 0,
+        'utilidadVenta' => 0,
+        'impuestos' => 0,
+        'costoProduccion' => 0,
+        'costoFabrica' => 0,
+        'costoDistribucion' => 0,
+        'pvp' => 0,
+        'materiasPrimas' => [],
+        'manoDeObraList' => [],
+        'costosIndirectosList' => [],
+        'otrosCostosList' => [],
+    ];
 
-    // Prepared statement para prevenir inyecciones SQL
     $sentencia = "
     SELECT 
         p.id as codigo,
         p.nombre,
+        p.tproducto,
         p.margen_beneficio as margenBeneficio,
         p.impuestos,
         p.costo_produccion as costoProduccion,
@@ -532,65 +547,58 @@ if ($post['accion'] == 'consultarDatoProductos') {
     ";
 
     if ($stmt = mysqli_prepare($mysqli, $sentencia)) {
-        // Bind parameters
         mysqli_stmt_bind_param($stmt, "i", $id_producto);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
 
         if (mysqli_num_rows($result) > 0) {
-            $datos_producto = null; // Inicializa aquí antes del bucle
-
             while ($row = mysqli_fetch_assoc($result)) {
-                if (is_null($datos_producto)) {
-                    $datos_producto = array(
-                        'codigo' => $row['codigo'],
-                        'nombre' => $row['nombre'],
-                        'margenBeneficio' => $row['margenBeneficio'],
-                        'utilidadDis' => $row['utilidadDis'],
-                        'utilidadVenta' => $row['utilidadVenta'],
-                        'impuestos' => $row['impuestos'],
-                        'costoProduccion' => $row['costoProduccion'],
-                        'costoFabrica' => $row['costoFabrica'],
-                        'costoDistribucion' => $row['costoDistribucion'],
-                        'pvp' => $row['pvp'],
-                        'materiasPrimas' => [],
-                        'manoDeObraList' => [],
-                        'costosIndirectosList' => [],
-                        'otrosCostosList' => [],
-                    );
+                // Inicializar datos del producto si no está ya inicializado
+                if ($datos_producto['codigo'] === '') {
+                    $datos_producto['codigo'] = $row['codigo'];
+                    $datos_producto['nombre'] = $row['nombre'];
+                    $datos_producto['tproducto'] = $row['tproducto'];
+                    $datos_producto['margenBeneficio'] = $row['margenBeneficio'];
+                    $datos_producto['utilidadDis'] = $row['utilidadDis'];
+                    $datos_producto['utilidadVenta'] = $row['utilidadVenta'];
+                    $datos_producto['impuestos'] = $row['impuestos'];
+                    $datos_producto['costoProduccion'] = $row['costoProduccion'];
+                    $datos_producto['costoFabrica'] = $row['costoFabrica'];
+                    $datos_producto['costoDistribucion'] = $row['costoDistribucion'];
+                    $datos_producto['pvp'] = $row['pvp'];
                 }
 
-                // Agregar datos de materias primas
+                // Materia Prima
                 if ($row['mp_nombre']) {
                     $datos_producto['materiasPrimas'][] = array(
-                        'txt_nombre' => $row['mp_nombre'],
-                        'txt_costo' => $row['mp_costo'],
-                        'txt_unidad' => $row['mp_unidad'],
-                        'txt_cantidad' => $row['mp_cantidad']
+                        'nombre' => $row['mp_nombre'],
+                        'costo' => $row['mp_costo'],
+                        'unidad' => $row['mp_unidad'],
+                        'cantidad' => $row['mp_cantidad']
                     );
                 }
 
-                // Agregar datos de mano de obra
+                // Mano de Obra
                 if ($row['mo_nombre']) {
                     $datos_producto['manoDeObraList'][] = array(
-                        'txt_nombre' => $row['mo_nombre'],
-                        'txt_costo' => $row['mo_costo']
+                        'nombre' => $row['mo_nombre'],
+                        'costo' => $row['mo_costo']
                     );
                 }
 
-                // Agregar datos de costos indirectos
+                // Costos Indirectos
                 if ($row['ci_nombre']) {
                     $datos_producto['costosIndirectosList'][] = array(
-                        'txt_nombre' => $row['ci_nombre'],
-                        'txt_costo' => $row['ci_costo']
+                        'nombre' => $row['ci_nombre'],
+                        'costo' => $row['ci_costo']
                     );
                 }
 
-                // Agregar datos de otros gastos
+                // Otros Gastos
                 if ($row['og_nombre']) {
                     $datos_producto['otrosCostosList'][] = array(
-                        'txt_nombre' => $row['og_nombre'],
-                        'txt_costo' => $row['og_costo']
+                        'nombre' => $row['og_nombre'],
+                        'costo' => $row['og_costo']
                     );
                 }
             }
@@ -600,17 +608,14 @@ if ($post['accion'] == 'consultarDatoProductos') {
             $respuesta = json_encode(array('estado' => false, 'mensaje' => "No existe"));
         }
 
-        // Cerrar el statement
         mysqli_stmt_close($stmt);
     } else {
-        $respuesta = json_encode(array('estado' => false, 'mensaje' => "Error en la consulta"));
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => "Error en la preparación de la consulta"));
         error_log("Error en la preparación de la consulta: " . mysqli_error($mysqli));
     }
 
-    // Envía la respuesta
     echo $respuesta;
 }
-
 if ($post['accion'] == 'eliminarProducto') {
     $producto_id = (int)$post['productoId'];
     $codigo_persona = (int)$post['cod_persona'];

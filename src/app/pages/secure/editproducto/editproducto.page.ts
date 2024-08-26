@@ -18,10 +18,11 @@ export class EditproductoPage implements OnInit {
   codigo: string = "";
   productoId: number | null = null;
   txt_producto: string = '';
-  materiasPrimas: { txt_nombre: string, txt_costo: number, txt_unidad: string, txt_cantidad: number }[] = [{ txt_nombre: '', txt_costo: 0, txt_unidad: '', txt_cantidad: 0 }];
-  manoDeObraList: { txt_nombre: string, txt_costo: number }[] = [{ txt_nombre: '', txt_costo: 0 }];
-  costosIndirectosList: { txt_nombre: string, txt_costo: number }[] = [{ txt_nombre: '', txt_costo: 0 }];
-  otrosCostosList: { txt_nombre: string, txt_costo: number }[] = [{ txt_nombre: '', txt_costo: 0 }];
+  tproducto: number = 0;
+  materiasPrimas: { nombre: string, vtotal: number, costo: number, unidad: string, cantidad?: number }[] = [{ nombre: '', vtotal: 0, costo: 0, unidad: '', cantidad: 0 }];
+  manoDeObraList: { nombre: string, sueldoMensual: number, tipoTiempo: string, horasTrabajadas: number, costo: number }[] = [{ nombre: '', sueldoMensual: 0, tipoTiempo: '', horasTrabajadas: 0, costo: 0 }];
+  costosIndirectosList: { nombre: string, cantidadHoras?: number, valorMensual?: number, horas?: number, cantidadagua?: number, cantidadGas?: number, costo: number }[] = [{ nombre: '', cantidadHoras: 0, valorMensual: 0, horas: 0, cantidadagua: 0, cantidadGas: 0, costo: 0 }];
+  otrosCostosList: { nombre: string, vtotal: number, costo: number }[] = [{ nombre: '', vtotal: 0, costo: 0 }];
   txt_margenBeneficio: number = 0;
   txt_utilidadv: number = 0;
   txt_utilidadc: number = 0;
@@ -126,9 +127,9 @@ export class EditproductoPage implements OnInit {
       if (res.estado == true) {
         // Asignar datos generales
         this.productoId = res.productos[0].id;
-        console.log("Producto ID asignado:", this.productoId); // Agrega esta línea para verificar
         this.codigo = res.productos[0].codigo;
         this.txt_producto = res.productos[0].nombre;
+        this.tproducto = res.productos[0].tproducto;
         this.txt_margenBeneficio = res.productos[0].margenBeneficio;
         this.txt_utilidadv = res.productos[0].utilidadVenta;
         this.txt_utilidadc = res.productos[0].utilidadDis;
@@ -138,17 +139,11 @@ export class EditproductoPage implements OnInit {
         this.costoDistribucion = res.productos[0].costoDistribucion;
         this.pvp = res.productos[0].pvp;
 
-        // Filtrar y asignar datos de materias primas sin duplicados
-        this.materiasPrimas = this.filterUniqueItems(res.productos[0].materiasPrimas, 'txt_nombre');
-
-        // Filtrar y asignar datos de mano de obra sin duplicados
-        this.manoDeObraList = this.filterUniqueItems(res.productos[0].manoDeObraList, 'txt_nombre');
-
-        // Filtrar y asignar datos de costos indirectos sin duplicados
-        this.costosIndirectosList = this.filterUniqueItems(res.productos[0].costosIndirectosList, 'txt_nombre');
-
-        // Filtrar y asignar datos de otros costos sin duplicados
-        this.otrosCostosList = this.filterUniqueItems(res.productos[0].otrosCostosList, 'txt_nombre');
+        // Filtrar y asignar datos sin duplicados
+        this.materiasPrimas = this.filterUniqueItems(res.productos[0].materiasPrimas, 'nombre');
+        this.manoDeObraList = this.filterUniqueItems(res.productos[0].manoDeObraList, 'nombre');
+        this.costosIndirectosList = this.filterUniqueItems(res.productos[0].costosIndirectosList, 'nombre');
+        this.otrosCostosList = this.filterUniqueItems(res.productos[0].otrosCostosList, 'nombre');
       } else {
         this.authService.showToast(res.mensaje);
       }
@@ -171,7 +166,7 @@ export class EditproductoPage implements OnInit {
   }
 
   agregarMateriaPrima() {
-    this.materiasPrimas.push({ txt_nombre: '', txt_costo: 0, txt_unidad: '', txt_cantidad: 0 });
+    this.materiasPrimas.push({ nombre: '', vtotal: 0, costo: 0, unidad: '', cantidad: 0 });
   }
 
   quitarMateriaPrima() {
@@ -179,7 +174,7 @@ export class EditproductoPage implements OnInit {
   }
 
   agregarManoDeObra() {
-    this.manoDeObraList.push({ txt_nombre: '', txt_costo: 0 });
+    this.manoDeObraList.push({ nombre: '', sueldoMensual: 0, tipoTiempo: '', horasTrabajadas: 0, costo: 0 });
   }
 
   quitarManoDeObra() {
@@ -187,7 +182,7 @@ export class EditproductoPage implements OnInit {
   }
 
   agregarCostosIndirectos() {
-    this.costosIndirectosList.push({ txt_nombre: '', txt_costo: 0 });
+    this.costosIndirectosList.push({ nombre: '', cantidadHoras: 0, valorMensual: 0, horas: 0, cantidadagua: 0, cantidadGas: 0, costo: 0 });
   }
 
   quitarCostosIndirectos() {
@@ -195,7 +190,7 @@ export class EditproductoPage implements OnInit {
   }
 
   agregarGasto() {
-    this.otrosCostosList.push({ txt_nombre: '', txt_costo: 0 });
+    this.otrosCostosList.push({ nombre: '', vtotal: 0, costo: 0 });
   }
 
   quitarGasto() {
@@ -208,127 +203,47 @@ export class EditproductoPage implements OnInit {
 
   unidadChange(event, index) {
     const selectedUnit = event.detail.value;
-    this.materiasPrimas[index].txt_unidad = selectedUnit;
-    if (selectedUnit === 'unidad') {
-      this.materiasPrimas[index].txt_cantidad = 1;
-    } else {
-      this.materiasPrimas[index].txt_cantidad = null; // or set a default value
-    }
-    this.calcular();
+    this.materiasPrimas[index].unidad = selectedUnit;
   }
 
-  calcular() {
-    // Función para limpiar números
-    const limpiarNumero = (valor: any): number => {
-      if (typeof valor === 'string') {
-        valor = valor.replace(/[^0-9.-]+/g, ''); // Eliminar caracteres no numéricos
-      }
-      return parseFloat(valor) || 0; // Convertir a número y manejar NaN
-    };
-
-    // Calcular el costo de las materias primas
-    const costoMateriasPrimas = this.materiasPrimas.reduce((total, materia) => total + limpiarNumero(materia.txt_costo), 0);
-
-    // Calcular el costo de la mano de obra
-    const totalManoDeObra = this.manoDeObraList.reduce((total, mano) => total + limpiarNumero(mano.txt_costo), 0);
-
-    // Calcular el costo de los costos indirectos
-    const totalCostosIndirectos = this.costosIndirectosList.reduce((total, costo) => total + limpiarNumero(costo.txt_costo), 0);
-
-    // Calcular el costo de otros gastos
-    const totalOtrosGastos = this.otrosCostosList.reduce((total, costo) => total + limpiarNumero(costo.txt_costo), 0);
-
-    // Calcular el costo de producción
-    this.costoProduccion = parseFloat((costoMateriasPrimas + totalManoDeObra + totalCostosIndirectos + totalOtrosGastos - 0.02).toFixed(2));
-
-    // Calcular el costo de fábrica
-    const beneficio = parseFloat((this.costoProduccion * (this.txt_margenBeneficio / 100)).toFixed(2));
-    this.costoFabrica = parseFloat((this.costoProduccion + beneficio).toFixed(2));
-
-    // Calcular el costo de distribución
-    const utilidadVendedor = parseFloat((this.costoFabrica * (this.txt_utilidadv / 100)).toFixed(2));
-    this.costoDistribucion = parseFloat((this.costoFabrica + utilidadVendedor).toFixed(2));
-
-    // Calcular el precio de venta al público (PVP)
-    const utilidadComercial = parseFloat((this.costoDistribucion * (this.txt_utilidadc / 100)).toFixed(2));
-    const impuestosCalculados = parseFloat((this.costoDistribucion * (this.txt_impuestos / 100)).toFixed(2));
-    this.pvp = parseFloat((this.costoDistribucion + utilidadComercial + impuestosCalculados).toFixed(2));
-
-    console.log('Costo de materias primas:', costoMateriasPrimas);
-    console.log('Total de mano de obra:', totalManoDeObra);
-    console.log('Total de costos indirectos:', totalCostosIndirectos);
-    console.log('Total de otros gastos:', totalOtrosGastos);
-    console.log('Costo de producción:', this.costoProduccion);
-    console.log('Costo de fábrica:', this.costoFabrica);
-    console.log('Costo de distribución:', this.costoDistribucion);
-    console.log('PVP:', this.pvp);
-  }
-
-  createBarChart() {
-    let helperService = this.helperService;
-    let rand_numbers = [...Array(12)].map(e => Math.random() * 100 | 0);
-
-    this.barChartData.labels = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
-    this.barChartData.datasets = [
-      {
-        data: rand_numbers,
-        backgroundColor: function (context) {
-          const chart = context.chart;
-          const { ctx, chartArea } = chart;
-
-          if (!chartArea) {
-            return null;
-          }
-
-          return helperService.createGradientChart(ctx, 'tertiary', 'tertiary');
-        },
-        barThickness: 10,
-        borderRadius: 4,
-        borderColor: helperService.getColorVariable('secondary'),
-        hoverBackgroundColor: helperService.getColorVariable('secondary'),
-        pointStyle: 'circle',
-      }
-    ];
-  }
-
-
-  async editarProducto() {
+  async guardarCambios() {
     const datos = {
-      accion: "editarProducto",
-      codigo: this.codigo,
+      accion: "guardarProducto",
+      productoId: this.productoId,
       nombre: this.txt_producto,
+      tproducto: this.tproducto,
       margenBeneficio: this.txt_margenBeneficio,
-      utilidad_venta: this.txt_utilidadv,
-      utilidad_dis: this.txt_utilidadc,
+      utilidadVenta: this.txt_utilidadv,
+      utilidadDis: this.txt_utilidadc,
       impuestos: this.txt_impuestos,
       costoProduccion: this.costoProduccion,
       costoFabrica: this.costoFabrica,
       costoDistribucion: this.costoDistribucion,
       pvp: this.pvp,
       materiasPrimas: this.materiasPrimas,
-      manoDeObraList: this.manoDeObraList,
-      costosIndirectosList: this.costosIndirectosList,
-      otrosCostosList: this.otrosCostosList
+      manoDeObra: this.manoDeObraList,
+      costosIndirectos: this.costosIndirectosList,
+      otrosCostos: this.otrosCostosList
     };
 
-    try {
-      const res: any = await this.authService.postData(datos).toPromise();
-      if (res.estado) {
-        this.mostrarMensajeRegistroExitoso();
-        this.navCtrl.navigateRoot(['/listacostos']);
+    this.authService.postData(datos).subscribe((res: any) => {
+      if (res.estado == true) {
+        this.navCtrl.navigateRoot('producto');
       } else {
         this.authService.showToast(res.mensaje);
       }
-    } catch (error) {
-      this.authService.showToast('Error al guardar los datos. Por favor, intenta de nuevo.');
+    });
+  }
+
+  private createBarChart() {
+    const data = [65, 59, 80, 81, 56, 55, 40];
+    this.barChartData.datasets = [{
+      data: data,
+      label: 'Series A'
+    }];
+    this.barChartData.labels = ['01', '02', '03', '04', '05', '06', '07'];
+    if (this.chart) {
+      this.chart.update();
     }
-  }
-
-  regresar() {
-    this.navCtrl.back();
-  }
-
-  async mostrarMensajeRegistroExitoso() {
-    this.authService.showToast2('Éxito, Datos registrados correctamente');
   }
 }
