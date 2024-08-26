@@ -1,18 +1,19 @@
 <ion-header collapse="fade" [translucent]="true">
   <ion-toolbar color="dark">
-    <ion-buttons slot="start">
-      <ion-button color="light" routerLink="/listacostos">
-        <ion-icon name="arrow-back-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title color="light" style="text-align: center; flex: 1;">Editar Producción</ion-title>
     <ion-buttons slot="end">
       <ion-button color="light" routerLink="/ajustes">
         <ion-icon slot="icon-only" name="cog"></ion-icon>
       </ion-button>
     </ion-buttons>
+    <ion-title color="light" style="text-align: center; flex: 1;">Editar Producto</ion-title>
+    <ion-buttons slot="start">
+      <ion-button color="light" (click)="regresar()">
+        <ion-icon name="arrow-back-outline"></ion-icon> 
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
+
 
 <ion-content [fullscreen]="true">
   <div class="ion-padding">
@@ -305,6 +306,6 @@
       </ion-card-content>
     </ion-card>
 
-    <ion-button class="button-container" color="danger" expand="small" (click)="guardarDatos()">Guardar</ion-button>
+    <ion-button class="button-container" color="danger" expand="small" (click)="guardarCambios()">Guardar</ion-button>
   </div>
 </ion-content>

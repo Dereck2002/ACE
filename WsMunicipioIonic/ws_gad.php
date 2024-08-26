@@ -595,7 +595,7 @@ if ($post['accion'] == 'consultarDatoProductos') {
                     $datos_producto['costosIndirectosList'][] = array(
                         'nombre' => $row['ci_nombre'],
                         'costo' => $row['ci_costo'],
-                        'pgmensual' => $row['ci_pgmensual'],
+                        'valorMensual' => $row['ci_pgmensual'],
                         'horas' => $row['ci_horas'],
                         'cantidadagua' => $row['ci_cantidadagua'],
                         'cantidadGas' => $row['ci_cantidadGas'],
@@ -605,7 +605,7 @@ if ($post['accion'] == 'consultarDatoProductos') {
 
                 // Otros Gastos
                 if ($row['og_nombre']) {
-                    $datos_producto['otrosCostosList'][] = array(
+                    $datos_producto['otrosGastoList'][] = array(
                         'nombre' => $row['og_nombre'],
                         'costo' => $row['og_costo'],
                         'vtotal' => $row['og_vtotal']
@@ -704,12 +704,13 @@ if ($post['accion'] == 'eliminarProductoInventario') {
 }
 
 if ($post['accion'] == 'editarProducto') {
-    $producto_id = (int)$post['codigo'];
-    $producto = mysqli_real_escape_string($mysqli, $post['nombre']);
+    $producto_id = isset($post['codigo']) ? (int)$post['codigo'] : 0;
+    $producto = isset($post['nombre']) ? mysqli_real_escape_string($mysqli, $post['nombre']) : '';
+    $tproducto = isset($post['tproducto']) ? (float)$post['tproducto'] : 0;
     $materias_primas = isset($post['materiasPrimas']) ? $post['materiasPrimas'] : [];
     $mano_de_obra = isset($post['manoDeObraList']) ? $post['manoDeObraList'] : [];
     $costos_indirectos = isset($post['costosIndirectosList']) ? $post['costosIndirectosList'] : [];
-    $otros_gastos = isset($post['otrosCostosList']) ? $post['otrosCostosList'] : [];
+    $otros_gastos = isset($post['otrosGastoList']) ? $post['otrosGastoList'] : [];
     $margen_beneficio = isset($post['margenBeneficio']) ? (float)$post['margenBeneficio'] : 0;
     $utilidad_dis = isset($post['utilidad_dis']) ? (float)$post['utilidad_dis'] : 0;
     $utilidad_venta = isset($post['utilidad_venta']) ? (float)$post['utilidad_venta'] : 0;
@@ -725,6 +726,7 @@ if ($post['accion'] == 'editarProducto') {
     // Actualiza el producto en la tabla productos
     $query = "UPDATE productos SET 
                 nombre = '$producto', 
+                tproducto = $tproducto,
                 margen_beneficio = $margen_beneficio, 
                 utilidad_dis = $utilidad_dis,
                 utilidad_venta = $utilidad_venta,
@@ -739,29 +741,59 @@ if ($post['accion'] == 'editarProducto') {
         $error_occurred = false;
 
         // Función para actualizar y agregar datos a la tabla
-        function update_data($mysqli, $producto_id, $data, $table, $include_unidad_cantidad = false)
+        function update_data($mysqli, $producto_id, $data, $table, $include_unidad_cantidad = false, $include_vtotal = false, $include_mano_de_obra = false, $include_costos_indirectos = false)
         {
+            // Verifica si la tabla existe
+            $result = mysqli_query($mysqli, "SHOW TABLES LIKE '$table'");
+            if (mysqli_num_rows($result) == 0) {
+                return false; // La tabla no existe
+            }
+
             $ids = [];
             foreach ($data as $item) {
-                $nombre = mysqli_real_escape_string($mysqli, $item['txt_nombre']);
-                $costo = (float)$item['txt_costo'];
-                $unidad = $include_unidad_cantidad ? mysqli_real_escape_string($mysqli, $item['txt_unidad']) : null;
-                $cantidad = $include_unidad_cantidad ? (float)$item['txt_cantidad'] : null;
+                $nombre = mysqli_real_escape_string($mysqli, $item['nombre']);
+                $costo = (float)$item['costo'];
+                $unidad = $include_unidad_cantidad ? mysqli_real_escape_string($mysqli, $item['unidad']) : null;
+                $cantidad = $include_unidad_cantidad ? (float)$item['cantidad'] : null;
+                $vtotal = $include_vtotal ? (float)$item['vtotal'] : null;
+                $sueldoMensual = $include_mano_de_obra ? (float)$item['sueldoMensual'] : null;
+                $tipoTiempo = $include_mano_de_obra ? mysqli_real_escape_string($mysqli, $item['tipoTiempo']) : null;
+                $horasTrabajadas = $include_mano_de_obra ? (float)$item['horasTrabajadas'] : null;
+                $pgmensual = $include_costos_indirectos ? (float)($item['valorMensual'] ?? 0) : null;
+                $horas = $include_costos_indirectos ? (float)$item['horas'] : null;
+                $cantidadagua = $include_costos_indirectos ? (float)$item['cantidadagua']:null;
+                $cantidadGas = $include_costos_indirectos ? (float)$item['cantidadGas']:null;
+                $cantidadHoras = $include_costos_indirectos ? (float)($item['cantidadHoras']?? 0) : null;
 
                 if (isset($item['id']) && !empty($item['id'])) {
                     // Actualiza el registro existente
                     $id = (int)$item['id'];
                     $ids[] = $id;
                     $query_update = $include_unidad_cantidad
-                        ? "UPDATE $table SET nombre = '$nombre', costo = $costo, unidad = '$unidad', cantidad = $cantidad WHERE id = $id"
-                        : "UPDATE $table SET nombre = '$nombre', costo = $costo WHERE id = $id";
+                        ? ($include_vtotal
+                            ? "UPDATE $table SET nombre = '$nombre', vtotal = $vtotal, costo = $costo, unidad = '$unidad', cantidad = $cantidad WHERE id = $id"
+                            : "UPDATE $table SET nombre = '$nombre', costo = $costo, unidad = '$unidad', cantidad = $cantidad WHERE id = $id")
+                        : ($include_mano_de_obra
+                            ? "UPDATE $table SET nombre = '$nombre', costo = $costo, sueldoMensual = $sueldoMensual, tipoTiempo = '$tipoTiempo', horasTrabajadas = $horasTrabajadas WHERE id = $id"
+                            : ($include_costos_indirectos
+                                ? "UPDATE $table SET nombre = '$nombre', costo = $costo, pgmensual = $pgmensual, horas = $horas, cantidadagua = $cantidadagua, cantidadGas = $cantidadGas, cantidadHoras = $cantidadHoras WHERE id = $id"
+                                : "UPDATE $table SET nombre = '$nombre', costo = $costo WHERE id = $id"));
                 } else {
                     // Inserta un nuevo registro
                     $query_update = $include_unidad_cantidad
-                        ? "INSERT INTO $table (producto_id, nombre, costo, unidad, cantidad) VALUES ($producto_id, '$nombre', $costo, '$unidad', $cantidad)"
-                        : "INSERT INTO $table (producto_id, nombre, costo) VALUES ($producto_id, '$nombre', $costo)";
+                        ? ($include_vtotal
+                            ? "INSERT INTO $table (producto_id, nombre, vtotal, costo, unidad, cantidad) VALUES ($producto_id, '$nombre', $vtotal, $costo, '$unidad', $cantidad)"
+                            : "INSERT INTO $table (producto_id, nombre, costo, unidad, cantidad) VALUES ($producto_id, '$nombre', $costo, '$unidad', $cantidad)")
+                        : ($include_mano_de_obra
+                            ? "INSERT INTO $table (producto_id, nombre, costo, sueldoMensual, tipoTiempo, horasTrabajadas) VALUES ($producto_id, '$nombre', $costo, $sueldoMensual, '$tipoTiempo', $horasTrabajadas)"
+                            : ($include_costos_indirectos
+                                ? "INSERT INTO $table (producto_id, nombre, costo, pgmensual, horas, cantidadagua, cantidadGas, cantidadHoras) VALUES ($producto_id, '$nombre', $costo, $pgmensual, $horas, $cantidadagua, $cantidadGas, $cantidadHoras)"
+                                : "INSERT INTO $table (producto_id, nombre, costo) VALUES ($producto_id, '$nombre', $costo)"));
+
                     if (mysqli_query($mysqli, $query_update)) {
                         $ids[] = mysqli_insert_id($mysqli);
+                    } else {
+                        return false;
                     }
                 }
 
@@ -782,32 +814,30 @@ if ($post['accion'] == 'editarProducto') {
         }
 
         // Actualiza las materias primas
-        if (!update_data($mysqli, $producto_id, $materias_primas, 'materias_primas', true)) $error_occurred = true;
+        if (!update_data($mysqli, $producto_id, $materias_primas, 'materias_primas', true, true)) $error_occurred = true;
 
         // Actualiza la mano de obra
-        if (!$error_occurred && !update_data($mysqli, $producto_id, $mano_de_obra, 'mano_de_obra')) $error_occurred = true;
+        if (!$error_occurred && !update_data($mysqli, $producto_id, $mano_de_obra, 'mano_de_obra', false, false, true)) $error_occurred = true;
 
         // Actualiza los costos indirectos
-        if (!$error_occurred && !update_data($mysqli, $producto_id, $costos_indirectos, 'costos_indirectos')) $error_occurred = true;
+        if (!$error_occurred && !update_data($mysqli, $producto_id, $costos_indirectos, 'costos_indirectos', false, false, false, true)) $error_occurred = true;
 
-        // Actualiza los otros gastos
+        // Actualiza otros costos
         if (!$error_occurred && !update_data($mysqli, $producto_id, $otros_gastos, 'otros_gastos')) $error_occurred = true;
 
+        // Verifica si hubo un error
         if ($error_occurred) {
-            mysqli_rollback($mysqli);
-            $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al actualizar algunos de los datos.'));
+            mysqli_rollback($mysqli); // Revierte los cambios en caso de error
+            echo json_encode(['success' => false, 'message' => 'Ocurrió un error durante la actualización.']);
         } else {
-            mysqli_commit($mysqli);
-            $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Producto actualizado correctamente.'));
+            mysqli_commit($mysqli); // Confirma los cambios
+            echo json_encode(['success' => true, 'message' => 'Producto actualizado correctamente.']);
         }
     } else {
-        mysqli_rollback($mysqli);
-        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al actualizar el producto.'));
+        echo json_encode(['success' => false, 'message' => 'No se pudo actualizar el producto.']);
     }
-
-    // Envía la respuesta
-    echo $respuesta;
 }
+
 
 // Consultar datos de la tabla registro inicial
 /* if ($post['accion'] == 'obtenerProductosInventario') {
