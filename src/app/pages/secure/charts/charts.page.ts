@@ -37,8 +37,8 @@ export class ChartsPage implements OnInit {
     cantidadHoras?: number;
     valorMensual?: number;
     horasUso?: number;
-    litrosAgua?: number;
-    produccionGas?: number;
+    cantidadagua?: number;
+    cantidadGas?: number;
   }> = [
     { nombre: '', costo: 0 }
   ];
@@ -242,10 +242,9 @@ export class ChartsPage implements OnInit {
             break;
   
           case 'agua':
-            const litrosAgua = costoIndirecto.litrosAgua; 
-            if (litrosAgua != null && litrosAgua > 0) {
-              const metrosCubicos = litrosAgua / 1000;
-              const costoAgua = (0.72 * metrosCubicos) / this.tproducto;
+            const cantidadagua = costoIndirecto.cantidadagua; 
+            if (cantidadagua != null && cantidadagua > 0) {
+              const costoAgua = cantidadagua / this.tproducto;
               this.costosIndirectosList[i].costo = costoAgua;
             } else {
               this.costosIndirectosList[i].costo = 0;
@@ -253,8 +252,8 @@ export class ChartsPage implements OnInit {
             break;
   
           case 'gas':
-            if (costoIndirecto.produccionGas && costoIndirecto.produccionGas > 0) {
-              const costoGas = 3 / costoIndirecto.produccionGas;
+            if (costoIndirecto.cantidadGas && costoIndirecto.cantidadGas > 0) {
+              const costoGas =  costoIndirecto.cantidadGas / this.tproducto;
               this.costosIndirectosList[i].costo = costoGas;
             }
             break;

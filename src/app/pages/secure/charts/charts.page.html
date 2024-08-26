@@ -192,13 +192,13 @@
           <!-- Campo de texto para Agua -->
           <ion-item *ngIf="costosIndirectosList[i].nombre === 'agua'">
             <ion-label position="floating">Litros de Agua</ion-label>
-            <ion-input [(ngModel)]="costosIndirectosList[i].litrosAgua" type="number" (ionChange)="calcular()"></ion-input>
+            <ion-input [(ngModel)]="costosIndirectosList[i].cantidadagua" type="number" (ionChange)="calcular()"></ion-input>
           </ion-item>
     
           <!-- Campo de texto para Gas -->
           <ion-item *ngIf="costosIndirectosList[i].nombre === 'gas'">
             <ion-label position="floating">Producción con Gas</ion-label>
-            <ion-input [(ngModel)]="costosIndirectosList[i].produccionGas" type="number" (ionChange)="calcular()"></ion-input>
+            <ion-input [(ngModel)]="costosIndirectosList[i].cantidadGas" type="number" (ionChange)="calcular()"></ion-input>
           </ion-item>
     
           <ion-item>
