@@ -427,8 +427,10 @@ if ($post['accion'] == 'guardar_costos_produccion') {
                 $sueldoMensual = $include_mano_de_obra ? (float)$item['sueldoMensual'] : null;
                 $tipoTiempo = $include_mano_de_obra ? mysqli_real_escape_string($mysqli, $item['tipoTiempo']) : null;
                 $horasTrabajadas = $include_mano_de_obra ? (float)$item['horasTrabajadas'] : null;
-                $pgmensual = $include_costos_indirectos ? (float)$item['valorMensual'] : null;
+                $pgmensual = $include_costos_indirectos ? (float)($item['valorMensual'] ?? 0) : null;
                 $horas = $include_costos_indirectos ? (float)$item['horas'] : null;
+                $cantidadagua = $include_costos_indirectos ? (float)$item['cantidadagua']:null;
+                $cantidadGas = $include_costos_indirectos ? (float)$item['cantidadGas']:null;
 
 
                 if ($include_unidad_cantidad && $include_vtotal) {
@@ -438,7 +440,7 @@ if ($post['accion'] == 'guardar_costos_produccion') {
                 } elseif ($include_mano_de_obra) {
                     $query = "INSERT INTO $table (producto_id, nombre, costo, sueldoMensual, tipoTiempo, horasTrabajadas) VALUES ($producto_id, '$nombre', $costo, $sueldoMensual, '$tipoTiempo', $horasTrabajadas)";
                 } elseif ($include_costos_indirectos) {
-                    $query = "INSERT INTO $table (producto_id, nombre, costo, pgmensual, horas) VALUES ($producto_id, '$nombre', $costo, $pgmensual, $horas)";
+                    $query = "INSERT INTO $table (producto_id, nombre, costo, pgmensual, horas,cantidadagua,cantidadGas ) VALUES ($producto_id, '$nombre', $costo, $pgmensual, $horas, $cantidadagua, $cantidadGas )";
                 } elseif ($include_vtotal) {
                     $query = "INSERT INTO $table (producto_id, nombre, vtotal, costo) VALUES ($producto_id, '$nombre', $vtotal, $costo)";
                 } else {
