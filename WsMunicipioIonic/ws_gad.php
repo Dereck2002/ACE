@@ -417,7 +417,7 @@ if ($post['accion'] == 'guardar_costos_produccion') {
         $error_occurred = false;
 
         // Función para ejecutar las inserciones
-        function insert_data($mysqli, $producto_id, $data, $table, $include_unidad_cantidad = false, $include_vtotal = false, $include_mano_de_obra = false) {
+        function insert_data($mysqli, $producto_id, $data, $table, $include_unidad_cantidad = false, $include_vtotal = false, $include_mano_de_obra = false, $include_costos_indirectos= false) {
             foreach ($data as $item) {
                 $nombre = mysqli_real_escape_string($mysqli, $item['nombre']);
                 $costo = (float)$item['costo'];
@@ -427,11 +427,20 @@ if ($post['accion'] == 'guardar_costos_produccion') {
                 $sueldoMensual = $include_mano_de_obra ? (float)$item['sueldoMensual'] : null;
                 $tipoTiempo = $include_mano_de_obra ? mysqli_real_escape_string($mysqli, $item['tipoTiempo']) : null;
                 $horasTrabajadas = $include_mano_de_obra ? (float)$item['horasTrabajadas'] : null;
+                $pgmensual = $include_costos_indirectos ? (float)$item['valorMensual'] : null;
+                $horas = $include_costos_indirectos ? (float)$item['horas'] : null;
 
-                if ($include_unidad_cantidad) {
+
+                if ($include_unidad_cantidad && $include_vtotal) {
                     $query = "INSERT INTO $table (producto_id, nombre, vtotal, costo, unidad, cantidad) VALUES ($producto_id, '$nombre', $vtotal, $costo, '$unidad', $cantidad)";
+                } elseif ($include_unidad_cantidad) {
+                    $query = "INSERT INTO $table (producto_id, nombre, costo, unidad, cantidad) VALUES ($producto_id, '$nombre', $costo, '$unidad', $cantidad)";
                 } elseif ($include_mano_de_obra) {
                     $query = "INSERT INTO $table (producto_id, nombre, costo, sueldoMensual, tipoTiempo, horasTrabajadas) VALUES ($producto_id, '$nombre', $costo, $sueldoMensual, '$tipoTiempo', $horasTrabajadas)";
+                } elseif ($include_costos_indirectos) {
+                    $query = "INSERT INTO $table (producto_id, nombre, costo, pgmensual, horas) VALUES ($producto_id, '$nombre', $costo, $pgmensual, $horas)";
+                } elseif ($include_vtotal) {
+                    $query = "INSERT INTO $table (producto_id, nombre, vtotal, costo) VALUES ($producto_id, '$nombre', $vtotal, $costo)";
                 } else {
                     $query = "INSERT INTO $table (producto_id, nombre, costo) VALUES ($producto_id, '$nombre', $costo)";
                 }
@@ -457,13 +466,13 @@ if ($post['accion'] == 'guardar_costos_produccion') {
         }
 
         // Inserta los costos indirectos
-        if (!$error_occurred && !insert_data($mysqli, $producto_id, $costos_indirectos, 'costos_indirectos')) {
+        if (!$error_occurred && !insert_data($mysqli, $producto_id, $costos_indirectos, 'costos_indirectos', false, false, false, true)) {
             $error_occurred = true;
             error_log("Error al insertar costos indirectos");
         }
 
         // Inserta los otros gastos
-        if (!$error_occurred && !insert_data($mysqli, $producto_id, $otros_gastos, 'otros_gastos')) {
+        if (!$error_occurred && !insert_data($mysqli, $producto_id, $otros_gastos, 'otros_gastos', false, true)) {
             $error_occurred = true;
             error_log("Error al insertar otros gastos");
         }

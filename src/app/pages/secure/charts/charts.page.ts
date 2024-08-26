@@ -36,17 +36,18 @@ export class ChartsPage implements OnInit {
     costo: number;
     cantidadHoras?: number;
     valorMensual?: number;
-    horasUso?: number;
+    horas?: number;
     cantidadagua?: number;
     cantidadGas?: number;
   }> = [
-    { nombre: '', costo: 0 }
+    { nombre: '', costo: 0,horas: 0, cantidadagua: 0,cantidadGas: 0 }
   ];
   otrosGastoList: Array<{ nombre: string; costo: number; vtotal: number }> = [{ nombre: '', costo: 0, vtotal: 0 }];
   @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
   tipoRegistro: string = 'unico'; // 'unico' o 'varios'
   tproducto: number | null = null;
   vtotal: number | null = null;
+  
 
 
   public barChartOptions: ChartConfiguration['options'] = {
@@ -260,8 +261,8 @@ export class ChartsPage implements OnInit {
             break;
   
           case 'telecomunicaciones':
-            if (costoIndirecto.valorMensual && costoIndirecto.horasUso) {
-              const costoTelecom = ((costoIndirecto.valorMensual / 720) * costoIndirecto.horasUso) / this.tproducto;
+            if (costoIndirecto.valorMensual && costoIndirecto.horas) {
+              const costoTelecom = ((costoIndirecto.valorMensual / 720) * costoIndirecto.horas) / this.tproducto;
               this.costosIndirectosList[i].costo = costoTelecom;
             }
             break;

@@ -186,7 +186,7 @@
           </ion-item>
           <ion-item *ngIf="costosIndirectosList[i].nombre === 'telecomunicaciones'">
             <ion-label position="floating">Horas de Uso</ion-label>
-            <ion-input [(ngModel)]="costosIndirectosList[i].horasUso" type="number" (ionChange)="calcular()"></ion-input>
+            <ion-input [(ngModel)]="costosIndirectosList[i].horas" type="number" (ionChange)="calcular()"></ion-input>
           </ion-item>
     
           <!-- Campo de texto para Agua -->
