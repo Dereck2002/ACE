@@ -49,7 +49,7 @@ if ($post['accion'] == 'report') {
     $total_pages = ceil($total_items / $items_per_page);
 
     // Modify main query to include date range
-    $sentencia = "SELECT p., i., f.*
+    $sentencia = "SELECT p.*, i.*, f.*
                   FROM productos p
                   LEFT JOIN inventario_registro_inicial i ON p.id = i.PROD_CODIGO
                   LEFT JOIN inventario_registro_final f ON i.RI_CODIGO = f.RI_CODIGO
