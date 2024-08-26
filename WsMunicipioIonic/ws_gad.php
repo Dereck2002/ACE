@@ -381,11 +381,11 @@ if ($post['accion'] == 'lprovincia') {
 if ($post['accion'] == 'guardar_costos_produccion') {
     $codigo_persona = ($post['codigo']);
     $producto = mysqli_real_escape_string($mysqli, $post['nombre']);
-    $tproducto = (float)$post['tproducto'];  // Nuevo campo tproducto
+    $tproducto = (float)$post['tproducto'];
     $materias_primas = $post['materiasPrimas'];
     $mano_de_obra = $post['manoDeObraList'];
     $costos_indirectos = $post['costosIndirectosList'];
-    $otros_gastos = $post['otrosGastoList']; // Cambiado de otrosCostosList a otrosGastoList
+    $otros_gastos = $post['otrosGastoList'];
     $margen_beneficio = (float)$post['margenBeneficio'];
     $utilidad_venta = (float)$post['utilidad_venta'];
     $utilidad_dis = (float)$post['utilidad_dis'];
@@ -417,19 +417,24 @@ if ($post['accion'] == 'guardar_costos_produccion') {
         $error_occurred = false;
 
         // Función para ejecutar las inserciones
-        function insert_data($mysqli, $producto_id, $data, $table, $include_unidad_cantidad = false, $include_vtotal = false)
-        {
+        function insert_data($mysqli, $producto_id, $data, $table, $include_unidad_cantidad = false, $include_vtotal = false, $include_mano_de_obra = false) {
             foreach ($data as $item) {
                 $nombre = mysqli_real_escape_string($mysqli, $item['nombre']);
                 $costo = (float)$item['costo'];
                 $unidad = $include_unidad_cantidad ? mysqli_real_escape_string($mysqli, $item['unidad']) : null;
                 $cantidad = $include_unidad_cantidad ? (float)$item['cantidad'] : null;
-                $vtotal = $include_vtotal ? (float)$item['vtotal'] : null;  // Nuevo campo vtotal
-                
+                $vtotal = $include_vtotal ? (float)$item['vtotal'] : null;
+                $sueldoMensual = $include_mano_de_obra ? (float)$item['sueldoMensual'] : null;
+                $tipoTiempo = $include_mano_de_obra ? mysqli_real_escape_string($mysqli, $item['tipoTiempo']) : null;
+                $horasTrabajadas = $include_mano_de_obra ? (float)$item['horasTrabajadas'] : null;
 
-                $query = $include_unidad_cantidad
-                    ? "INSERT INTO $table (producto_id, nombre, vtotal, costo, unidad, cantidad) VALUES ($producto_id, '$nombre', $vtotal, $costo, '$unidad', $cantidad)"
-                    : "INSERT INTO $table (producto_id, nombre, costo) VALUES ($producto_id, '$nombre', $costo)";
+                if ($include_unidad_cantidad) {
+                    $query = "INSERT INTO $table (producto_id, nombre, vtotal, costo, unidad, cantidad) VALUES ($producto_id, '$nombre', $vtotal, $costo, '$unidad', $cantidad)";
+                } elseif ($include_mano_de_obra) {
+                    $query = "INSERT INTO $table (producto_id, nombre, costo, sueldoMensual, tipoTiempo, horasTrabajadas) VALUES ($producto_id, '$nombre', $costo, $sueldoMensual, '$tipoTiempo', $horasTrabajadas)";
+                } else {
+                    $query = "INSERT INTO $table (producto_id, nombre, costo) VALUES ($producto_id, '$nombre', $costo)";
+                }
 
                 if (!mysqli_query($mysqli, $query)) {
                     error_log("Error al insertar en $table: " . mysqli_error($mysqli));
@@ -445,8 +450,8 @@ if ($post['accion'] == 'guardar_costos_produccion') {
             error_log("Error al insertar materias primas");
         }
 
-        // Inserta la mano de obra
-        if (!$error_occurred && !insert_data($mysqli, $producto_id, $mano_de_obra, 'mano_de_obra')) {
+        // Inserta la mano de obra con los nuevos campos: sueldoMensual, tipoTiempo, horasTrabajadas
+        if (!$error_occurred && !insert_data($mysqli, $producto_id, $mano_de_obra, 'mano_de_obra', false, false, true)) {
             $error_occurred = true;
             error_log("Error al insertar mano de obra");
         }

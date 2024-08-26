@@ -29,7 +29,7 @@ export class ChartsPage implements OnInit {
     { nombre: '', costo: 0, unidad: '', vtotal: 0 }
   ];
   manoDeObraList: Array<{ nombre: string; costo: number; sueldoMensual?: number; tipoTiempo?: string; horasTrabajadas?: number }> = [
-    { nombre: '', costo: 0 }
+    {  nombre: '', costo: 0, sueldoMensual: 0, tipoTiempo: '', horasTrabajadas: 0 }
   ];
   costosIndirectosList: Array<{
     nombre: string;
@@ -47,6 +47,7 @@ export class ChartsPage implements OnInit {
   tipoRegistro: string = 'unico'; // 'unico' o 'varios'
   tproducto: number | null = null;
   vtotal: number | null = null;
+
 
   public barChartOptions: ChartConfiguration['options'] = {
     elements: {
