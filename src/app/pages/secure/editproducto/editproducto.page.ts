@@ -208,7 +208,7 @@ export class EditproductoPage implements OnInit {
 
   async guardarCambios() {
     const datos = {
-      accion: "guardarProducto",
+      accion: "editarProducto",
       productoId: this.productoId,
       nombre: this.txt_producto,
       tproducto: this.tproducto,

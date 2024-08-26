@@ -521,17 +521,17 @@ if ($post['accion'] == 'consultarDatoProductos') {
         p.nombre,
         p.tproducto,
         p.margen_beneficio as margenBeneficio,
+        p.utilidad_dis as utilidadDis,
+        p.utilidad_venta as utilidadVenta,
         p.impuestos,
         p.costo_produccion as costoProduccion,
         p.costo_fabrica as costoFabrica,
         p.costo_distribucion as costoDistribucion,
-        p.utilidad_dis as utilidadDis,
-        p.utilidad_venta as utilidadVenta,
         p.pvp,
-        mp.nombre as mp_nombre, mp.costo as mp_costo, mp.unidad as mp_unidad, mp.cantidad as mp_cantidad,
-        mo.nombre as mo_nombre, mo.costo as mo_costo,
-        ci.nombre as ci_nombre, ci.costo as ci_costo,
-        og.nombre as og_nombre, og.costo as og_costo
+        mp.nombre as mp_nombre, mp.costo as mp_costo, mp.unidad as mp_unidad, mp.cantidad as mp_cantidad, mp.vtotal as mp_vtotal,
+        mo.nombre as mo_nombre, mo.costo as mo_costo, mo.sueldoMensual as mo_sueldoMensual, mo.tipoTiempo as mo_tipoTiempo, mo.horasTrabajadas as mo_horasTrabajadas,
+        ci.nombre as ci_nombre, ci.costo as ci_costo, ci.pgmensual as ci_pgmensual, ci.horas as ci_horas, ci.cantidadagua as ci_cantidadagua, ci.cantidadGas as ci_cantidadGas, ci.cantidadHoras as ci_cantidadHoras,
+        og.nombre as og_nombre, og.costo as og_costo, og.vtotal as og_vtotal
     FROM 
         productos p
     LEFT JOIN 
@@ -574,7 +574,8 @@ if ($post['accion'] == 'consultarDatoProductos') {
                         'nombre' => $row['mp_nombre'],
                         'costo' => $row['mp_costo'],
                         'unidad' => $row['mp_unidad'],
-                        'cantidad' => $row['mp_cantidad']
+                        'cantidad' => $row['mp_cantidad'],
+                        'vtotal' => $row['mp_vtotal']
                     );
                 }
 
@@ -582,7 +583,10 @@ if ($post['accion'] == 'consultarDatoProductos') {
                 if ($row['mo_nombre']) {
                     $datos_producto['manoDeObraList'][] = array(
                         'nombre' => $row['mo_nombre'],
-                        'costo' => $row['mo_costo']
+                        'costo' => $row['mo_costo'],
+                        'sueldoMensual' => $row['mo_sueldoMensual'],
+                        'tipoTiempo' => $row['mo_tipoTiempo'],
+                        'horasTrabajadas' => $row['mo_horasTrabajadas']
                     );
                 }
 
@@ -590,7 +594,12 @@ if ($post['accion'] == 'consultarDatoProductos') {
                 if ($row['ci_nombre']) {
                     $datos_producto['costosIndirectosList'][] = array(
                         'nombre' => $row['ci_nombre'],
-                        'costo' => $row['ci_costo']
+                        'costo' => $row['ci_costo'],
+                        'pgmensual' => $row['ci_pgmensual'],
+                        'horas' => $row['ci_horas'],
+                        'cantidadagua' => $row['ci_cantidadagua'],
+                        'cantidadGas' => $row['ci_cantidadGas'],
+                        'cantidadHoras' => $row['ci_cantidadHoras']
                     );
                 }
 
@@ -598,7 +607,8 @@ if ($post['accion'] == 'consultarDatoProductos') {
                 if ($row['og_nombre']) {
                     $datos_producto['otrosCostosList'][] = array(
                         'nombre' => $row['og_nombre'],
-                        'costo' => $row['og_costo']
+                        'costo' => $row['og_costo'],
+                        'vtotal' => $row['og_vtotal']
                     );
                 }
             }
