@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ReportService } from 'src/app/services/report/report.service';
+import { Chart } from 'chart.js';
 
 @Component({
   selector: 'app-report',
@@ -9,32 +10,85 @@ import { ReportService } from 'src/app/services/report/report.service';
 export class ReportPage {
   dateFrom: string;
   dateTo: string;
-  reportType: string = 'daily_sales';
+  reportType = 'daily_sales';
   reportData: any = [];
-  exportFormat: string = '';
+  exportFormat = '';
+
+  currentPage = 1;
+  totalPages = 1;
+  isAccordionOpen = true;
+  isShowChart = false;
 
   constructor(private reportService: ReportService) {}
 
-  generateReport() {
-    const userCode = localStorage.getItem('CapacitorStorage.codigo');
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.generateReport(this.currentPage);
+    }
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.generateReport(this.currentPage);
+    }
+  }
+
+  toggleAccordion() {
+    this.isAccordionOpen = !this.isAccordionOpen;
+  }
+
+  loadChart() {
+    const ctx = document.getElementById('barChart') as HTMLCanvasElement;
+
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: this.reportData.map((item) => item.nombre), // Ajusta según tus datos
+          datasets: [
+            {
+              label: 'Ganancias',
+              data: this.reportData.map((item) => item.RF_CANTIDAD_VENDIDA), // Ajusta según tus datos
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
+          },
+        },
+      });
+    }
+  }
+
+  generateReport(page?: number) {
     const requestBody = {
       accion: 'report',
-      id_persona: userCode, // Suponiendo un id_persona estático, puede ser dinámico
+      id_persona: localStorage.get('user_code'),
       dateFrom: this.dateFrom,
       dateTo: this.dateTo,
-      report_type: this.reportType,
-      export_format: this.exportFormat,
+      items_per_page: 10,
+      page: page || 1,
     };
 
     this.reportService.getDataReport(requestBody).subscribe((response: any) => {
       if (response.estado) {
         this.reportData = response.productos;
-        if (this.exportFormat === 'pdf' || this.exportFormat === 'excel') {
-          // Iniciar descarga del archivo generado
-          const blob = new Blob([response], { type: 'application/octet-stream' });
-          const url = window.URL.createObjectURL(blob);
-          window.open(url);
-        }
+
+        this.currentPage = response.pagination.current_page;
+        this.totalPages = response.pagination.total_pages;
+        this.isAccordionOpen = false;
+
+        setTimeout(() => {
+          this.loadChart();
+        }, 500);
       } else {
         console.error('Error al generar el reporte', response.mensaje);
       }

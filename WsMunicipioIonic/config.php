@@ -1,7 +1,7 @@
 <?php
 define('db','appemp');
 define('usuario','root');
-define('clave','');
+define('clave','root');
 define('host','localhost');
 $mysqli=new mysqli(host,usuario,clave,db);
 
