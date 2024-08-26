@@ -1,34 +1,20 @@
 import { Injectable } from '@angular/core';
-import { HttpHeaders } from '@angular/common/http';
-import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular';
-import { NavController } from '@ionic/angular';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ReportService {
-  server = 'http://localhost/ACE/WsMunicipioIonic/reports';
+  private serverUrl = 'http://localhost/ACE/WsMunicipioIonic/reports/ws_reports.php';
 
-  constructor(
-    public http: HttpClient,
-    public toastCtrl: ToastController,
-    private router: Router,
-    public navCtrl: NavController
-  ) { }
+  constructor(private http: HttpClient) {}
 
-  getDataReport(body: {}) {
-    const head = new HttpHeaders({
-      'Content-Type': 'application/json, charset:utf-8',
+  getDataReport(body: any): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
     });
-    const options = {
-      headers: head,
-    };
-    return this.http.post(
-      `${this.server}/ws_reports.php`,
-      JSON.stringify(body),
-      options
-    );
+
+    return this.http.post(this.serverUrl, JSON.stringify(body), { headers });
   }
 }

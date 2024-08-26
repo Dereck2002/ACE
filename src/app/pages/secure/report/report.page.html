@@ -1,0 +1,59 @@
+<ion-header collapse="fade" [translucent]="true">
+  <ion-toolbar color="dark">
+    <ion-title color="light" class="ion-text-center">Reportes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="filter" slot="start"></ion-icon>
+        Filtros de Reporte
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label>Desde</ion-label>
+        <ion-datetime displayFormat="YYYY-MM-DD" [(ngModel)]="dateFrom"></ion-datetime>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Hasta</ion-label>
+        <ion-datetime displayFormat="YYYY-MM-DD" [(ngModel)]="dateTo"></ion-datetime>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Tipo de Reporte</ion-label>
+        <ion-select [(ngModel)]="reportType">
+          <ion-select-option value="daily_sales">Ventas Diarias</ion-select-option>
+          <ion-select-option value="profits">Ganancias</ion-select-option>
+          <ion-select-option value="best_selling">Productos Más Vendidos</ion-select-option>
+          <ion-select-option value="low_stock">Productos por Terminar el Stock</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Formato</ion-label>
+        <ion-select [(ngModel)]="exportFormat">
+          <ion-select-option value="">Ver en Pantalla</ion-select-option>
+          <ion-select-option value="pdf">Exportar a PDF</ion-select-option>
+          <ion-select-option value="excel">Exportar a Excel</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-button expand="block" color="danger" (click)="generateReport()">Generar Reporte</ion-button>
+
+  <ion-list *ngIf="reportData && reportData.length > 0">
+    <ion-item-divider color="light">
+      <ion-label>Resultados del Reporte</ion-label>
+    </ion-item-divider>
+    <ion-item *ngFor="let item of reportData">
+      <ion-label>
+        {{ item.nombre_producto }} - {{ item.cuanto_gana | currency }}
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
