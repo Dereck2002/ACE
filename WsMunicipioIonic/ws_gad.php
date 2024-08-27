@@ -143,7 +143,7 @@ if ($post['accion'] == 'recuperar_contrasena') {
             $stmt->bind_param('ss', $email, $token);
             $stmt->execute();
 
-            $resetLink = "http://localhost:8100/password-form?token=" . $token;
+            $resetLink = "http://admin.fonlescompany.com:3306/password-form?token=" . $token;
 
             $mail = new PHPMailer(true);
 
