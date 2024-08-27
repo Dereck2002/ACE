@@ -286,17 +286,15 @@ export class EditproductoPage implements OnInit {
       return total + (costoUnitario * cantidadMateria);
     }, 0);
   
-    console.log('Antes del cálculo:', this.otrosGastoList);
-
-this.otrosGastoList.forEach(otroCosto => {
-  if (cantidadProductos === 1) {
-    otroCosto.costo = limpiarNumero(otroCosto.costo);
-  } else {
-    const valorTotalOtroCosto = limpiarNumero(otroCosto.vtotal) || 0;
-    otroCosto.costo = cantidadProductos > 0 ? valorTotalOtroCosto / cantidadProductos : 0;
-  }
-});
-console.log('Después del cálculo:', this.otrosGastoList);
+    // Costo de otros gastos
+    this.otrosGastoList.forEach(otroCosto => {
+      if (cantidadProductos === 1) {
+        otroCosto.costo = limpiarNumero(otroCosto.costo);
+      } else {
+        const valorTotalOtroCosto = limpiarNumero(otroCosto.vtotal) || 0;
+        otroCosto.costo = cantidadProductos > 0 ? valorTotalOtroCosto / cantidadProductos : 0;
+      }
+    });
   
     const totalManoDeObra = this.manoDeObraList.reduce((total, mano) => total + limpiarNumero(mano.costo), 0);
     const totalCostosIndirectos = this.costosIndirectosList.reduce((total, costo) => total + limpiarNumero(costo.costo), 0);
@@ -350,15 +348,17 @@ console.log('Después del cálculo:', this.otrosGastoList);
       materiasPrimas: this.materiasPrimas,
       manoDeObraList: this.manoDeObraList,
       costosIndirectosList: this.costosIndirectosList,
-      otrosGastoList: this.otrosGastoList,
+      otrosGastoList: this.otrosGastoList
     };
-
-    this.authService.postData(datos).subscribe(async (res: any) => {
-      if (res.success) {
-        await this.mostrarMensajeRegistroExitoso();
+  
+    try {
+      const res: any = await this.authService.postData(datos).toPromise();
+  
+      if (res.estado) {
+        await this.authService.showToast('Éxito: Producto actualizado correctamente');
         this.navCtrl.navigateRoot('/listacostos');
       } else {
-        this.authService.showToast(res.mensaje);
+        await this.authService.showToast(`Error: ${res.mensaje}`);
       }
     } catch (error) {
       await this.authService.showToast('Error: No se pudo completar la solicitud. Inténtalo de nuevo.');
