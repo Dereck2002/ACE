@@ -354,11 +354,11 @@ export class EditproductoPage implements OnInit {
     try {
       const res: any = await this.authService.postData(datos).toPromise();
   
-      if (res.estado) {
+      if (res.success) {
         await this.authService.showToast('Éxito: Producto actualizado correctamente');
         this.navCtrl.navigateRoot('/listacostos');
       } else {
-        await this.authService.showToast(`Error: ${res.mensaje}`);
+        await this.authService.showToast(`Error: ${res.message}`);
       }
     } catch (error) {
       await this.authService.showToast('Error: No se pudo completar la solicitud. Inténtalo de nuevo.');
