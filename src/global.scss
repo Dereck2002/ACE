@@ -31,75 +31,130 @@
 /* Animation */
 @import "~animate.css/animate.min.css";
 
-
-body {
-  background-color: var(--ion-color-dark);
+body.light-theme {
+  --ion-background-color: #ffffff; /* Fondo del cuerpo para el tema claro */
+  --ion-text-color: #000000; /* Color del texto para el tema claro */
+  
+  /* Colores primarios */
+  --ion-color-primary: #6e6d6dad;
+  --ion-color-primary-contrast: #dfdcdc;
+  --ion-color-primary-shade: #272983;
+  --ion-color-primary-tint: #5457B1;
+  
+  /* Colores secundarios */
+  --ion-color-secondary: #1b1b1b;
+  --ion-color-secondary-contrast: #ED2225;
+  --ion-color-secondary-shade: #4B4EB6;
+  --ion-color-secondary-tint: #787CE4;
+  
+  /* Colores terciarios */
+  --ion-color-tertiary: #66a3e9;
+  --ion-color-tertiary-contrast: #000000;
+  --ion-color-tertiary-shade: #80ade0;
+  --ion-color-tertiary-tint: #9ccbff;
+  
+  /* Colores de éxito, advertencia y peligro */
+  --ion-color-success: #10dc60;
+  --ion-color-warning: #ffce00;
+  --ion-color-danger: #eb1111;
+  
+  /* Colores de otros estados */
+  --ion-color-dark: #000000;
+  --ion-color-medium: #ccd1e1;
+  --ion-color-light: #f4f4f4;
 }
 
+/* Tema oscuro */
+body.dark-theme {
+  --ion-background-color: #121212; /* Fondo del cuerpo para el tema oscuro */
+  --ion-text-color: #ffffff; /* Color del texto para el tema oscuro */
+  
+  /* Colores primarios */
+  --ion-color-primary: #6e6d6dad;
+  --ion-color-primary-contrast: #dfdcdc;
+  --ion-color-primary-shade: #272983;
+  --ion-color-primary-tint: #5457B1;
+  
+  /* Colores secundarios */
+  --ion-color-secondary: #1b1b1b;
+  --ion-color-secondary-contrast: #ED2225;
+  --ion-color-secondary-shade: #4B4EB6;
+  --ion-color-secondary-tint: #787CE4;
+  
+  /* Colores terciarios */
+  --ion-color-tertiary: #66a3e9;
+  --ion-color-tertiary-contrast: #000000;
+  --ion-color-tertiary-shade: #80ade0;
+  --ion-color-tertiary-tint: #9ccbff;
+  
+  /* Colores de éxito, advertencia y peligro */
+  --ion-color-success: #10dc60;
+  --ion-color-warning: #ffce00;
+  --ion-color-danger: #eb1111;
+  
+  /* Colores de otros estados */
+  --ion-color-dark: #000000;
+  --ion-color-medium: #ccd1e1;
+  --ion-color-light: #f4f4f4;
+}
+
+/* Estilos para el contenido */
 ion-content {
   --background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),url('../src/assets/escudo.png') no-repeat center center;
-  background-color: white;
-
+  background-color: white; /* Usar color de fondo del tema */
 }
 
-
+/* Estilos para listas */
 ion-list {
   border-radius: 8px;
   margin-bottom: 8px;
   background-color: var(--ion-color-primary);
 }
 
+/* Estilos para etiquetas */
 ion-label {
   font-size: 16px;
   font-weight: 700;
 }
 
-// Action Sheet styles
-ion-action-sheet {
-  &.custom-action-sheet {
-    ion-backdrop {
-      background-color: #000000;
-      opacity: 0.6;
-    }
+/* Estilos personalizados para Action Sheet */
+ion-action-sheet.custom-action-sheet {
+  ion-backdrop {
+    background-color: #000000;
+    opacity: 0.6;
+  }
 
-    .action-sheet-group {
-      background: var(--ion-color-dark);
-    }
+  .action-sheet-group {
+    background: var(--ion-background-color);
+  }
 
-    .action-sheet-title {
-      color: var(--ion-color-tertiary);
-      font-weight: 700;
-    }
+  .action-sheet-title {
+    color: var(--ion-color-tertiary);
+    font-weight: 700;
+  }
 
-    .action-sheet-button,
-    .action-sheet-button.ion-focused {
-      color: #fff;
+  .action-sheet-button,
+  .action-sheet-button.ion-focused {
+    color: var(--ion-text-color);
 
-      &:hover {
-        color: var(--ion-color-tertiary);
-      }
-    }
-
-    .action-sheet-icon {
+    &:hover {
       color: var(--ion-color-tertiary);
     }
   }
-}
 
-/* Searchbar */
-ion-searchbar.sc-ion-searchbar-ios-h {
-  --cancel-button-color: var(--ion-color-medium);
-  --background: var(--ion-color-dark-tint);
-  --border-radius: 8px;
-}
-
-@media (any-hover: hover) {
-  ion-action-sheet.custom-action-sheet.action-sheet-button:hover {
+  .action-sheet-icon {
     color: var(--ion-color-tertiary);
   }
 }
 
-/* Hero */
+/* Estilos para Searchbar */
+ion-searchbar {
+  --cancel-button-color: var(--ion-color-medium);
+  --background: var(--ion-background-color);
+  --border-radius: 8px;
+}
+
+/* Estilos para el Hero */
 .hero {
   width: 100%;
   display: flex;
@@ -118,7 +173,7 @@ ion-searchbar.sc-ion-searchbar-ios-h {
   }
 }
 
-// HR
+/* Estilos para HR */
 hr {
   background: var(--ion-color-danger);
   margin: 22px 0;
@@ -127,6 +182,7 @@ hr {
     margin: 32px 0;
   }
 }
+
 .avatar-center {
   display: flex;
   justify-content: center;

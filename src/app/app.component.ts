@@ -4,6 +4,7 @@ import { StatusBar, Style } from '@capacitor/status-bar';
 import { Capacitor } from '@capacitor/core';
 import { Platform } from '@ionic/angular';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
+import { ThemeService } from './services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -13,33 +14,23 @@ import { defineCustomElements } from '@ionic/pwa-elements/loader';
 export class AppComponent {
 
   constructor(
-    private platform: Platform
+    private platform: Platform,
+    private themeService: ThemeService
   ) {
     this.initializeApp();
     defineCustomElements(window);
-
   }
 
-  // Initialize app
   initializeApp() {
-
-    // Wait until platform is ready
     this.platform.ready().then(async () => {
-
-      // If we're on a mobile platform (iOS / Android), not web
       if (Capacitor.getPlatform() !== 'web') {
-
-        // Set StatusBar style (dark / light)
-        // await StatusBar.setStyle({ style: Style.Dark });
+        // Optional: Manage status bar appearance
       }
 
-      // ...
-      // do some more config and setup if necessary
-      // ...
+      // Load the saved theme or default to system theme
+      this.themeService.loadSavedTheme();
 
-      // Fake timeout since we do not load any data
       setTimeout(async () => {
-        // Hide SplashScreen
         await SplashScreen.hide();
       }, 2000);
     });
