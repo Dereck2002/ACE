@@ -754,6 +754,7 @@ if ($post['accion'] == 'editarProducto') {
                 $unidad = $include_unidad_cantidad ? mysqli_real_escape_string($mysqli, $item['unidad']) : null;
                 $cantidad = $include_unidad_cantidad ? (float)$item['cantidad'] : null;
                 $vtotal = $include_vtotal ? (float)($item['vtotal'] ?? 0) : null;
+                $vtotal = $include_vtotal ? (float)($item['vtotal'] ?? 0) : null;
                 $sueldoMensual = $include_mano_de_obra ? (float)$item['sueldoMensual'] : null;
                 $tipoTiempo = $include_mano_de_obra ? mysqli_real_escape_string($mysqli, $item['tipoTiempo']) : null;
                 $horasTrabajadas = $include_mano_de_obra ? (float)$item['horasTrabajadas'] : null;
@@ -838,6 +839,8 @@ if ($post['accion'] == 'editarProducto') {
         echo json_encode(['success' => false, 'message' => 'No se pudo actualizar el producto.']);
     }
 }
+
+
 // Consultar datos de la tabla registro inicial
 /* if ($post['accion'] == 'obtenerProductosInventario') {
     $query = "SELECT * FROM registropr_inicial";

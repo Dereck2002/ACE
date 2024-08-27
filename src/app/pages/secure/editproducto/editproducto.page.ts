@@ -358,11 +358,13 @@ console.log('Después del cálculo:', this.otrosGastoList);
         await this.mostrarMensajeRegistroExitoso();
         this.navCtrl.navigateRoot('/listacostos');
       } else {
-        this.authService.showToast(res.message);
+        this.authService.showToast(res.mensaje);
       }
-    });
+    } catch (error) {
+      await this.authService.showToast('Error: No se pudo completar la solicitud. Inténtalo de nuevo.');
+    }
   }
-
+  
   private createBarChart() {
     const data = [65, 59, 80, 81, 56, 55, 40];
     this.barChartData.datasets = [{
@@ -373,16 +375,17 @@ console.log('Después del cálculo:', this.otrosGastoList);
     if (this.chart) {
       this.chart.update();
     }
-    
   }
+  
   onCostoChange(costoIndirecto: any) {
     // Lógica para manejar el cambio de costo indirecto (ej: si es luz, internet, etc.)
   }
+  
   regresar() {
     this.navCtrl.back();
   }
-
+  
   async mostrarMensajeRegistroExitoso() {
-    this.authService.showToast2('Éxito, Datos registrados correctamente');
+    await this.authService.showToast('Éxito: Datos registrados correctamente');
   }
 }
