@@ -286,15 +286,17 @@ export class EditproductoPage implements OnInit {
       return total + (costoUnitario * cantidadMateria);
     }, 0);
   
-    // Costo de otros gastos
-    this.otrosGastoList.forEach(otroCosto => {
-      if (cantidadProductos === 1) {
-        otroCosto.costo = limpiarNumero(otroCosto.costo);
-      } else {
-        const valorTotalOtroCosto = limpiarNumero(otroCosto.vtotal) || 0;
-        otroCosto.costo = cantidadProductos > 0 ? valorTotalOtroCosto / cantidadProductos : 0;
-      }
-    });
+    console.log('Antes del cálculo:', this.otrosGastoList);
+
+this.otrosGastoList.forEach(otroCosto => {
+  if (cantidadProductos === 1) {
+    otroCosto.costo = limpiarNumero(otroCosto.costo);
+  } else {
+    const valorTotalOtroCosto = limpiarNumero(otroCosto.vtotal) || 0;
+    otroCosto.costo = cantidadProductos > 0 ? valorTotalOtroCosto / cantidadProductos : 0;
+  }
+});
+console.log('Después del cálculo:', this.otrosGastoList);
   
     const totalManoDeObra = this.manoDeObraList.reduce((total, mano) => total + limpiarNumero(mano.costo), 0);
     const totalCostosIndirectos = this.costosIndirectosList.reduce((total, costo) => total + limpiarNumero(costo.costo), 0);
@@ -348,14 +350,15 @@ export class EditproductoPage implements OnInit {
       materiasPrimas: this.materiasPrimas,
       manoDeObraList: this.manoDeObraList,
       costosIndirectosList: this.costosIndirectosList,
-      otrosGastoList: this.otrosGastoList
+      otrosGastoList: this.otrosGastoList,
     };
 
-    this.authService.postData(datos).subscribe((res: any) => {
-      if (res.estado == true) {
+    this.authService.postData(datos).subscribe(async (res: any) => {
+      if (res.success) {
+        await this.mostrarMensajeRegistroExitoso();
         this.navCtrl.navigateRoot('/listacostos');
       } else {
-        this.authService.showToast(res.mensaje);
+        this.authService.showToast(res.message);
       }
     });
   }

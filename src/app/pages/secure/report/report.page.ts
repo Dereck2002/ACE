@@ -71,7 +71,7 @@ export class ReportPage {
   generateReport(page?: number) {
     const requestBody = {
       accion: 'report',
-      id_persona: localStorage.get('user_code'),
+      id_persona: localStorage.getItem('CapacitorStorage.codigo'),
       dateFrom: this.dateFrom,
       dateTo: this.dateTo,
       items_per_page: 10,
