@@ -350,16 +350,21 @@ export class EditproductoPage implements OnInit {
       costosIndirectosList: this.costosIndirectosList,
       otrosGastoList: this.otrosGastoList
     };
-
-    this.authService.postData(datos).subscribe((res: any) => {
-      if (res.estado == true) {
+  
+    try {
+      const res: any = await this.authService.postData(datos).toPromise();
+  
+      if (res.estado) {
+        await this.authService.showToast('Éxito: Producto actualizado correctamente');
         this.navCtrl.navigateRoot('/listacostos');
       } else {
-        this.authService.showToast(res.mensaje);
+        await this.authService.showToast(`Error: ${res.mensaje}`);
       }
-    });
+    } catch (error) {
+      await this.authService.showToast('Error: No se pudo completar la solicitud. Inténtalo de nuevo.');
+    }
   }
-
+  
   private createBarChart() {
     const data = [65, 59, 80, 81, 56, 55, 40];
     this.barChartData.datasets = [{
@@ -370,16 +375,17 @@ export class EditproductoPage implements OnInit {
     if (this.chart) {
       this.chart.update();
     }
-    
   }
+  
   onCostoChange(costoIndirecto: any) {
     // Lógica para manejar el cambio de costo indirecto (ej: si es luz, internet, etc.)
   }
+  
   regresar() {
     this.navCtrl.back();
   }
-
+  
   async mostrarMensajeRegistroExitoso() {
-    this.authService.showToast2('Éxito, Datos registrados correctamente');
+    await this.authService.showToast('Éxito: Datos registrados correctamente');
   }
 }

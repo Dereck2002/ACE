@@ -196,4 +196,7 @@ export class RegistroinventarioPage implements OnInit {
       console.warn('Cantidad vendida o precio no válidos.');
     }
   }
+  registerFinal(){
+    
+  }
 }  

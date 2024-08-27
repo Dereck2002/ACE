@@ -755,15 +755,15 @@ if ($post['accion'] == 'editarProducto') {
                 $costo = (float)$item['costo'];
                 $unidad = $include_unidad_cantidad ? mysqli_real_escape_string($mysqli, $item['unidad']) : null;
                 $cantidad = $include_unidad_cantidad ? (float)$item['cantidad'] : null;
-                $vtotal = $include_vtotal ? (float)$item['vtotal'] : null;
+                $vtotal = $include_vtotal ? (float)($item['vtotal'] ?? 0) : null;
                 $sueldoMensual = $include_mano_de_obra ? (float)$item['sueldoMensual'] : null;
                 $tipoTiempo = $include_mano_de_obra ? mysqli_real_escape_string($mysqli, $item['tipoTiempo']) : null;
                 $horasTrabajadas = $include_mano_de_obra ? (float)$item['horasTrabajadas'] : null;
                 $pgmensual = $include_costos_indirectos ? (float)($item['valorMensual'] ?? 0) : null;
                 $horas = $include_costos_indirectos ? (float)$item['horas'] : null;
-                $cantidadagua = $include_costos_indirectos ? (float)$item['cantidadagua']:null;
-                $cantidadGas = $include_costos_indirectos ? (float)$item['cantidadGas']:null;
-                $cantidadHoras = $include_costos_indirectos ? (float)($item['cantidadHoras']?? 0) : null;
+                $cantidadagua = $include_costos_indirectos ? (float)($item['cantidadagua'] ?? 0) : null;
+                $cantidadGas = $include_costos_indirectos ? (float)($item['cantidadGas'] ?? 0) : null;
+                $cantidadHoras = $include_costos_indirectos ? (float)($item['cantidadHoras'] ?? 0) : null;
 
                 if (isset($item['id']) && !empty($item['id'])) {
                     // Actualiza el registro existente
@@ -777,7 +777,8 @@ if ($post['accion'] == 'editarProducto') {
                             ? "UPDATE $table SET nombre = '$nombre', costo = $costo, sueldoMensual = $sueldoMensual, tipoTiempo = '$tipoTiempo', horasTrabajadas = $horasTrabajadas WHERE id = $id"
                             : ($include_costos_indirectos
                                 ? "UPDATE $table SET nombre = '$nombre', costo = $costo, pgmensual = $pgmensual, horas = $horas, cantidadagua = $cantidadagua, cantidadGas = $cantidadGas, cantidadHoras = $cantidadHoras WHERE id = $id"
-                                : "UPDATE $table SET nombre = '$nombre', costo = $costo WHERE id = $id"));
+                                : "UPDATE $table SET nombre = '$nombre', costo = $costo, vtotal = $vtotal WHERE id = $id"));
+
                 } else {
                     // Inserta un nuevo registro
                     $query_update = $include_unidad_cantidad
@@ -788,7 +789,7 @@ if ($post['accion'] == 'editarProducto') {
                             ? "INSERT INTO $table (producto_id, nombre, costo, sueldoMensual, tipoTiempo, horasTrabajadas) VALUES ($producto_id, '$nombre', $costo, $sueldoMensual, '$tipoTiempo', $horasTrabajadas)"
                             : ($include_costos_indirectos
                                 ? "INSERT INTO $table (producto_id, nombre, costo, pgmensual, horas, cantidadagua, cantidadGas, cantidadHoras) VALUES ($producto_id, '$nombre', $costo, $pgmensual, $horas, $cantidadagua, $cantidadGas, $cantidadHoras)"
-                                : "INSERT INTO $table (producto_id, nombre, costo) VALUES ($producto_id, '$nombre', $costo)"));
+                                : "INSERT INTO $table (producto_id, nombre, costo, vtotal) VALUES ($producto_id, '$nombre', $costo, $vtotal)"));
 
                     if (mysqli_query($mysqli, $query_update)) {
                         $ids[] = mysqli_insert_id($mysqli);
@@ -823,8 +824,10 @@ if ($post['accion'] == 'editarProducto') {
         if (!$error_occurred && !update_data($mysqli, $producto_id, $costos_indirectos, 'costos_indirectos', false, false, false, true)) $error_occurred = true;
 
         // Actualiza otros costos
-        if (!$error_occurred && !update_data($mysqli, $producto_id, $otros_gastos, 'otros_gastos')) $error_occurred = true;
-
+        if (!$error_occurred && !update_data($mysqli, $producto_id, $otros_gastos, 'otros_gastos', false, true)) {
+            $error_occurred = true;
+            error_log("Error al insertar o actualizar otros gastos");
+        }
         // Verifica si hubo un error
         if ($error_occurred) {
             mysqli_rollback($mysqli); // Revierte los cambios en caso de error
@@ -837,7 +840,6 @@ if ($post['accion'] == 'editarProducto') {
         echo json_encode(['success' => false, 'message' => 'No se pudo actualizar el producto.']);
     }
 }
-
 
 // Consultar datos de la tabla registro inicial
 /* if ($post['accion'] == 'obtenerProductosInventario') {
