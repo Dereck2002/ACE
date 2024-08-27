@@ -73,34 +73,35 @@ if (isset($post['accion'])) {
             $clave_md5 = md5($post['clave']); // Encriptar la contraseña con MD5
 
             $sentencia = sprintf(
-                "INSERT INTO persona (ci_persona, cod_tipoced_persona, nom_persona, ape_persona, fecha_nacimiento, edad_persona, ecivil_persona, etnia_persona, dis_persona, tipo_dis_persona, porcentaje_dis_persona, ncarnet_dis_persona, ocupacion_persona, cod_nacionalidad_persona, cod_ciudad_persona, cod_provincia_persona, parroquia_persona, barrio_persona, calle1_persona, calle2_persona, neducacion_persona, genero_persona, correo_persona, telefono_persona, clave_persona, cod_rol_persona) 
-                VALUES ('%s', %s, '%s', '%s', '%s', TIMESTAMPDIFF(YEAR, '%s', CURDATE()), '%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', 2);",
-                $post['cedula'],
-                $post['tipoced'],
-                $post['nombre'],
-                $post['apellido'],
-                $post['fecha_nacimiento'],
-                $post['fecha_nacimiento'],
-                $post['ecivil'],
-                $post['etnia'],
-                $post['discapacidad'],
-                $post['tipodis'],
-                $post['porcentajedis'],
-                $post['ncarnetdis'],
-                $post['ocupacion'],
-                $post['nacionalidad'],
-                $post['ciudad'],
-                $post['provincia'],
-                $post['parroquia'],
-                $post['barrio'],
-                $post['calle1'],
-                $post['calle2'],
-                $post['neducacion'],
-                $post['genero'],
-                $post['correo'],
-                $post['telefono'],
-                $clave_md5
-            );
+                
+                    "INSERT INTO persona (ci_persona, cod_tipoced_persona, nom_persona, ape_persona, fecha_nacimiento, edad_persona, ecivil_persona, etnia_persona, dis_persona, tipo_dis_persona, porcentaje_dis_persona, ncarnet_dis_persona, ocupacion_persona, cod_nacionalidad_persona, cod_ciudad_persona, cod_provincia_persona, parroquia_persona, barrio_persona, calle1_persona, calle2_persona, neducacion_persona, genero_persona, correo_persona, telefono_persona, clave_persona, check_terminos, cod_rol_persona, img_perfil) 
+                    VALUES ('%s', %s, '%s', '%s', '%s', TIMESTAMPDIFF(YEAR, '%s', CURDATE()), '%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', 0, 2, '');",
+                    $post['cedula'],
+                    $post['tipoced'],
+                    $post['nombre'],
+                    $post['apellido'],
+                    $post['fecha_nacimiento'],
+                    $post['fecha_nacimiento'],
+                    $post['ecivil'],
+                    $post['etnia'],
+                    $post['discapacidad'],
+                    $post['tipodis'],
+                    $post['porcentajedis'],
+                    $post['ncarnetdis'],
+                    $post['ocupacion'],
+                    $post['nacionalidad'],
+                    $post['ciudad'],
+                    $post['provincia'],
+                    $post['parroquia'],
+                    $post['barrio'],
+                    $post['calle1'],
+                    $post['calle2'],
+                    $post['neducacion'],
+                    $post['genero'],
+                    $post['correo'],
+                    $post['telefono'],
+                    $clave_md5
+                );
 
             $rs = mysqli_query($mysqli, $sentencia);
 
@@ -143,7 +144,7 @@ if ($post['accion'] == 'recuperar_contrasena') {
             $stmt->bind_param('ss', $email, $token);
             $stmt->execute();
 
-            $resetLink = "http://admin.fonlescompany.com:3306/password-form?token=" . $token;
+            $resetLink = "http://localhost:8100/password-form?token=" . $token;
 
             $mail = new PHPMailer(true);
 
@@ -698,9 +699,11 @@ if ($post['accion'] == 'eliminarProductoInventario') {
         mysqli_commit($mysqli);
         $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Producto eliminado correctamente.'));
     }
+
     // Envía la respuesta
     echo $respuesta;
 }
+
 if ($post['accion'] == 'editarProducto') {
     $producto_id = isset($post['codigo']) ? (int)$post['codigo'] : 0;
     $producto = isset($post['nombre']) ? mysqli_real_escape_string($mysqli, $post['nombre']) : '';
@@ -753,7 +756,6 @@ if ($post['accion'] == 'editarProducto') {
                 $costo = (float)$item['costo'];
                 $unidad = $include_unidad_cantidad ? mysqli_real_escape_string($mysqli, $item['unidad']) : null;
                 $cantidad = $include_unidad_cantidad ? (float)$item['cantidad'] : null;
-                $vtotal = $include_vtotal ? (float)($item['vtotal'] ?? 0) : null;
                 $vtotal = $include_vtotal ? (float)($item['vtotal'] ?? 0) : null;
                 $sueldoMensual = $include_mano_de_obra ? (float)$item['sueldoMensual'] : null;
                 $tipoTiempo = $include_mano_de_obra ? mysqli_real_escape_string($mysqli, $item['tipoTiempo']) : null;
@@ -839,8 +841,6 @@ if ($post['accion'] == 'editarProducto') {
         echo json_encode(['success' => false, 'message' => 'No se pudo actualizar el producto.']);
     }
 }
-
-
 // Consultar datos de la tabla registro inicial
 /* if ($post['accion'] == 'obtenerProductosInventario') {
     $query = "SELECT * FROM registropr_inicial";

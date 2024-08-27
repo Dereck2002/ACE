@@ -131,6 +131,10 @@ export class RegistroPage implements OnInit {
       ],
       terminos_condiciones: [false, Validators.requiredTrue],
     });
+    let datos = {
+      // Otros campos...
+      terminos_condiciones: this.registro_form.value.terminos_condiciones
+  };
   }
 
   // Función openModal
