@@ -7,16 +7,16 @@ import { ToastController } from '@ionic/angular';
   selector: 'app-inventario-registro',
   templateUrl: 'inventarioregistro.page.html',
   styleUrls: ['inventarioregistro.page.scss'],
-})
-export class InventarioregistroPage implements OnInit {
+})export class InventarioregistroPage implements OnInit {
   productId: string;
   initialQuantity: number;
   date: string;
   selectedPvp: string;
-  productos: any[] = []; // Arreglo para almacenar los productos
-  initialRecordId: number; // Para almacenar el ID del registro inicial
+  costo_distribucion: string;
+  tipoPrecio: string; // Variable para almacenar el tipo de precio seleccionado
+  productos: any[] = [];
+  initialRecordId: number;
   idPersona: string;
-  isDateModalOpen = false; // Calendario
 
   constructor(
     private http: HttpClient,
@@ -27,96 +27,51 @@ export class InventarioregistroPage implements OnInit {
 
   ngOnInit() {
     this.idPersona = localStorage.getItem('CapacitorStorage.codigo');
-    console.log('ID Persona:', this.idPersona);
     this.loadProducts();
     this.setCurrentDate();
   }
 
   loadProducts() {
-    this.http
-      .post<any>('http://localhost/ACE/WsMunicipioIonic/ws_gad.php', {
-        accion: 'cargar_productos',
-        id_persona: this.idPersona,
-      })
-      .subscribe(
-        (response) => {
-          console.log('Respuesta del servidor:', response); // Depuración
-          if (response.estado) {
-            this.productos = response.datos;
-          } else {
-            console.error('Error al cargar productos:', response.mensaje);
-          }
-        },
-        (error) => {
-          console.error('Error en la solicitud:', error);
+    this.http.post<any>('http://localhost/ACE/WsMunicipioIonic/ws_gad.php', {
+      accion: 'cargar_productos',
+      id_persona: this.idPersona
+    }).subscribe(
+      response => {
+        if (response.estado) {
+          this.productos = response.datos;
         }
-      );
+      },
+      error => console.error('Error en la solicitud:', error)
+    );
   }
-
-  //--------------------------Funciones necesarias para el calendario-------------------------
-  openDateModal() {
-    this.isDateModalOpen = true;
-  }
-
-  closeDateModal() {
-    this.isDateModalOpen = false;
-  }
-
-  onDateModalDismiss(event: any) {
-    const selectedDate = event.detail?.value;
-    if (selectedDate) {
-      this.date = selectedDate.split('T')[0];
-    } else {
-      console.log('Modal cerrado sin seleccionar fecha');
-    }
-    this.closeDateModal();
-  }
-
-  confirmDate(selectedDate: string) {
-    this.date = selectedDate.split('T')[0];
-    this.closeDateModal();
-  }
-
-  //----------------------------------------------------------------------------------------
 
   setCurrentDate() {
-    const today = new Date();
-    const offset = today.getTimezoneOffset(); // Obtener el desfase horario en minutos
-    const localDate = new Date(today.getTime() - offset * 60 * 1000); // Ajustar la fecha para la zona local
-    const formattedDate = localDate.toISOString().split('T')[0]; // Obtener la fecha en formato YYYY-MM-DD
-    this.date = formattedDate;
+    const today = new Date().toISOString().split('T')[0];
+    this.date = today;
   }
 
   onProductChange(event: any) {
     this.productId = event.detail.value;
-    const product = this.productos.find((p) => p.id === this.productId);
+    const product = this.productos.find(p => p.id === this.productId);
     if (product) {
       this.selectedPvp = product.pvp;
-      this.loadInitialQuantity(this.productId); // Nueva función para obtener la cantidad inicial
+      this.costo_distribucion = product.costo_distribucion;
+      this.loadInitialQuantity(this.productId);
     }
   }
 
   loadInitialQuantity(productId: string) {
-    this.http
-      .post<any>('http://localhost/ACE/WsMunicipioIonic/ws_gad.php', {
-        accion: 'obtener_cantidad_inicial',
-        producto_id: productId,
-      })
-      .subscribe(
-        (response) => {
-          if (response.estado) {
-            this.initialQuantity = response.cantidad_inicial;
-          } else {
-            console.error(
-              'Error al obtener la cantidad inicial:',
-              response.mensaje
-            );
-          }
-        },
-        (error) => {
-          console.error('Error en la solicitud:', error);
+    this.http.post<any>('http://localhost/ACE/WsMunicipioIonic/ws_gad.php', {
+      accion: 'obtener_cantidad_inicial',
+      producto_id: productId,
+    }).subscribe(
+      response => {
+        if (response.estado) {
+          this.initialQuantity = response.cantidad_inicial;
         }
-      );
+      },
+      error => console.error('Error en la solicitud:', error)
+    );
   }
 
   saveProduct() {
@@ -125,24 +80,20 @@ export class InventarioregistroPage implements OnInit {
       producto_id: this.productId,
       cantidad_inicial: this.initialQuantity,
       fecha_registro: this.date,
+      tipo_precio: this.tipoPrecio, // Guardar el tipo de precio seleccionado
     };
 
-    this.http
-      .post<any>('http://localhost/ACE/WsMunicipioIonic/ws_gad.php', datos)
+    this.http.post<any>('http://localhost/ACE/WsMunicipioIonic/ws_gad.php', datos)
       .subscribe(
-        async (response) => {
+        async response => {
           if (response.estado) {
             await this.showToast('Producto guardado exitosamente.');
             this.router.navigate(['/inventariomenu']).then(() => {
-              window.location.reload(); // Recargar la página después de redirigir
+              window.location.reload();
             });
-          } else {
-            await this.showToast(response.mensaje); // Mostrar mensaje de error
           }
         },
-        (error) => {
-          console.error('Error en la solicitud:', error);
-        }
+        error => console.error('Error en la solicitud:', error)
       );
   }
 
@@ -151,7 +102,7 @@ export class InventarioregistroPage implements OnInit {
       message,
       duration: 2000,
       position: 'top',
-      color: 'danger', // Cambia el color a rojo para los mensajes de error
+      color: 'success',
     });
     toast.present();
   }
