@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { AlertController, ModalController } from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-inventariomenu',
@@ -13,34 +13,27 @@ export class InventariomenuPage implements OnInit {
   productos: any[] = [];
   productInfoVisible: { [key: number]: boolean } = {};
   idPersona: string;
-  selectedDate: string;
-  modalDate: string;
-  isDateModalOpen = false;
 
   constructor(
     private http: HttpClient,
     private router: Router,
-    private alertController: AlertController,
-    private modalController: ModalController
+    private alertController: AlertController
   ) {}
 
   ngOnInit() {
     this.idPersona = localStorage.getItem('CapacitorStorage.codigo');
     console.log('ID Persona:', this.idPersona);
-    this.setCurrentDate();
-    this.selectedDate = this.currentDate;
+    this.currentDate = this.getCurrentDate();
     this.loadProducts();
   }
 
-  setCurrentDate() {
-    const today = new Date();
-    const offset = today.getTimezoneOffset(); // Obtener el desfase horario en minutos
-    const localDate = new Date(today.getTime() - offset * 60 * 1000); // Ajustar la fecha para la zona local
-    const formattedDate = localDate.toISOString().split('T')[0]; // Obtener la fecha en formato YYYY-MM-DD
-    this.currentDate = formattedDate;
+  getCurrentDate(): string {
+    const now = new Date();
+    return now.toLocaleDateString('es-ES');
   }
 
   loadProducts() {
+    // Verifica que idPersona no sea null o undefined
     if (!this.idPersona) {
       console.error('ID de persona no disponible');
       return;
@@ -49,8 +42,7 @@ export class InventariomenuPage implements OnInit {
     this.http
       .post<any>('http://localhost/ACE/WsMunicipioIonic/ws_gad.php', {
         accion: 'cargar_productos2',
-        id_persona: this.idPersona,
-        fecha: this.selectedDate,
+        id_persona: this.idPersona, // Incluye el id_persona aquí
       })
       .subscribe(
         (response) => {
@@ -70,16 +62,8 @@ export class InventariomenuPage implements OnInit {
   }
 
   toggleProductInfo(producto: any) {
-    // Alternar visibilidad del producto seleccionado
     this.productInfoVisible[producto.id] =
       !this.productInfoVisible[producto.id];
-
-    // Cerrar la información de los otros productos
-    for (let id in this.productInfoVisible) {
-      if (id !== producto.id.toString()) {
-        this.productInfoVisible[id] = false;
-      }
-    }
   }
 
   editarProducto(riCodigo: string, rfCodigo: string) {
@@ -112,7 +96,8 @@ export class InventariomenuPage implements OnInit {
               .subscribe(
                 (response) => {
                   if (response.estado) {
-                    this.loadProducts(); // Recargar productos después de eliminar
+                    this.loadProducts(); // Recargar los productos después de la eliminación
+                    console.log('Producto eliminado con éxito');
                   } else {
                     console.error(
                       'Error al eliminar producto:',
@@ -130,24 +115,5 @@ export class InventariomenuPage implements OnInit {
     });
 
     await alert.present();
-  }
-
-  openDateModal() {
-    this.modalDate = this.selectedDate; // Inicializar el modal con la fecha seleccionada
-    this.isDateModalOpen = true;
-  }
-
-  async saveDate() {
-    this.isDateModalOpen = false;
-    this.selectedDate = this.modalDate;
-    this.loadProducts();
-  }
-
-  closeDateModal() {
-    this.isDateModalOpen = false;
-  }
-
-  onDateModalDismiss() {
-    this.closeDateModal();
   }
 }
