@@ -73,35 +73,35 @@ if (isset($post['accion'])) {
             $clave_md5 = md5($post['clave']); // Encriptar la contraseña con MD5
 
             $sentencia = sprintf(
-                
-                    "INSERT INTO persona (ci_persona, cod_tipoced_persona, nom_persona, ape_persona, fecha_nacimiento, edad_persona, ecivil_persona, etnia_persona, dis_persona, tipo_dis_persona, porcentaje_dis_persona, ncarnet_dis_persona, ocupacion_persona, cod_nacionalidad_persona, cod_ciudad_persona, cod_provincia_persona, parroquia_persona, barrio_persona, calle1_persona, calle2_persona, neducacion_persona, genero_persona, correo_persona, telefono_persona, clave_persona, check_terminos, cod_rol_persona, img_perfil) 
+
+                "INSERT INTO persona (ci_persona, cod_tipoced_persona, nom_persona, ape_persona, fecha_nacimiento, edad_persona, ecivil_persona, etnia_persona, dis_persona, tipo_dis_persona, porcentaje_dis_persona, ncarnet_dis_persona, ocupacion_persona, cod_nacionalidad_persona, cod_ciudad_persona, cod_provincia_persona, parroquia_persona, barrio_persona, calle1_persona, calle2_persona, neducacion_persona, genero_persona, correo_persona, telefono_persona, clave_persona, check_terminos, cod_rol_persona, img_perfil) 
                     VALUES ('%s', %s, '%s', '%s', '%s', TIMESTAMPDIFF(YEAR, '%s', CURDATE()), '%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', 0, 2, '');",
-                    $post['cedula'],
-                    $post['tipoced'],
-                    $post['nombre'],
-                    $post['apellido'],
-                    $post['fecha_nacimiento'],
-                    $post['fecha_nacimiento'],
-                    $post['ecivil'],
-                    $post['etnia'],
-                    $post['discapacidad'],
-                    $post['tipodis'],
-                    $post['porcentajedis'],
-                    $post['ncarnetdis'],
-                    $post['ocupacion'],
-                    $post['nacionalidad'],
-                    $post['ciudad'],
-                    $post['provincia'],
-                    $post['parroquia'],
-                    $post['barrio'],
-                    $post['calle1'],
-                    $post['calle2'],
-                    $post['neducacion'],
-                    $post['genero'],
-                    $post['correo'],
-                    $post['telefono'],
-                    $clave_md5
-                );
+                $post['cedula'],
+                $post['tipoced'],
+                $post['nombre'],
+                $post['apellido'],
+                $post['fecha_nacimiento'],
+                $post['fecha_nacimiento'],
+                $post['ecivil'],
+                $post['etnia'],
+                $post['discapacidad'],
+                $post['tipodis'],
+                $post['porcentajedis'],
+                $post['ncarnetdis'],
+                $post['ocupacion'],
+                $post['nacionalidad'],
+                $post['ciudad'],
+                $post['provincia'],
+                $post['parroquia'],
+                $post['barrio'],
+                $post['calle1'],
+                $post['calle2'],
+                $post['neducacion'],
+                $post['genero'],
+                $post['correo'],
+                $post['telefono'],
+                $clave_md5
+            );
 
             $rs = mysqli_query($mysqli, $sentencia);
 
@@ -418,7 +418,8 @@ if ($post['accion'] == 'guardar_costos_produccion') {
         $error_occurred = false;
 
         // Función para ejecutar las inserciones
-        function insert_data($mysqli, $producto_id, $data, $table, $include_unidad_cantidad = false, $include_vtotal = false, $include_mano_de_obra = false, $include_costos_indirectos= false) {
+        function insert_data($mysqli, $producto_id, $data, $table, $include_unidad_cantidad = false, $include_vtotal = false, $include_mano_de_obra = false, $include_costos_indirectos = false)
+        {
             foreach ($data as $item) {
                 $nombre = mysqli_real_escape_string($mysqli, $item['nombre']);
                 $costo = (float)$item['costo'];
@@ -430,9 +431,9 @@ if ($post['accion'] == 'guardar_costos_produccion') {
                 $horasTrabajadas = $include_mano_de_obra ? (float)$item['horasTrabajadas'] : null;
                 $pgmensual = $include_costos_indirectos ? (float)($item['valorMensual'] ?? 0) : null;
                 $horas = $include_costos_indirectos ? (float)$item['horas'] : null;
-                $cantidadagua = $include_costos_indirectos ? (float)$item['cantidadagua']:null;
-                $cantidadGas = $include_costos_indirectos ? (float)$item['cantidadGas']:null;
-                $cantidadHoras = $include_costos_indirectos ? (float)($item['cantidadHoras']?? 0) : null;
+                $cantidadagua = $include_costos_indirectos ? (float)$item['cantidadagua'] : null;
+                $cantidadGas = $include_costos_indirectos ? (float)$item['cantidadGas'] : null;
+                $cantidadHoras = $include_costos_indirectos ? (float)($item['cantidadHoras'] ?? 0) : null;
 
 
                 if ($include_unidad_cantidad && $include_vtotal) {
@@ -779,7 +780,6 @@ if ($post['accion'] == 'editarProducto') {
                             : ($include_costos_indirectos
                                 ? "UPDATE $table SET nombre = '$nombre', costo = $costo, pgmensual = $pgmensual, horas = $horas, cantidadagua = $cantidadagua, cantidadGas = $cantidadGas, cantidadHoras = $cantidadHoras WHERE id = $id"
                                 : "UPDATE $table SET nombre = '$nombre', costo = $costo, vtotal = $vtotal WHERE id = $id"));
-
                 } else {
                     // Inserta un nuevo registro
                     $query_update = $include_unidad_cantidad
@@ -940,10 +940,11 @@ if ($post['accion'] == 'guardar_inventario') {
     $producto_id = $post['producto_id'];
     $cantidad_inicial = $post['cantidad_inicial'];
     $fecha_registro = $post['fecha_registro'];
+    $tipo_precio = $post['tipo_precio']; // Obtener el tipo de precio
 
     // Preparar la consulta para insertar en inventario_registro_inicial
-    $stmt_inicial = mysqli_prepare($mysqli, "INSERT INTO inventario_registro_inicial (RI_CANTIDAD_INICIAL, RI_FECHA, PROD_CODIGO) VALUES (?, ?, ?)");
-    mysqli_stmt_bind_param($stmt_inicial, "isi", $cantidad_inicial, $fecha_registro, $producto_id);
+    $stmt_inicial = mysqli_prepare($mysqli, "INSERT INTO inventario_registro_inicial (RI_CANTIDAD_INICIAL, RI_FECHA, RI_TIPOPRECIO, PROD_CODIGO) VALUES (?, ?, ?, ?)");
+    mysqli_stmt_bind_param($stmt_inicial, "issi", $cantidad_inicial, $fecha_registro, $tipo_precio, $producto_id);
 
     // Ejecutar la consulta y verificar si fue exitosa
     if (mysqli_stmt_execute($stmt_inicial)) {
@@ -981,7 +982,6 @@ if ($post['accion'] == 'guardar_inventario') {
     mysqli_stmt_close($stmt_inicial);
     echo $respuesta;
 }
-
 // Cargar productos
 if ($post['accion'] == 'cargar_productos') {
     if (isset($post['id_persona'])) {
@@ -989,7 +989,7 @@ if ($post['accion'] == 'cargar_productos') {
         error_log("ID Persona recibido: " . $id_persona); // Depuración
 
         // Consulta para obtener productos
-        $sentencia = "SELECT id, nombre, pvp FROM productos WHERE id_persona = ?";
+        $sentencia = "SELECT id, nombre, pvp, costo_distribucion FROM productos WHERE id_persona = ?";
         $stmt = $mysqli->prepare($sentencia);
         if (!$stmt) {
             error_log("Error en la preparación de la consulta: " . $mysqli->error);
@@ -1008,7 +1008,9 @@ if ($post['accion'] == 'cargar_productos') {
                 $datos[] = array(
                     'id' => $row['id'],
                     'nombre' => $row['nombre'],
-                    'pvp' => $row['pvp']
+                    'pvp' => $row['pvp'],
+                    'costo_distribucion' => $row['costo_distribucion']
+
                 );
             }
             $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
@@ -1086,21 +1088,23 @@ if ($post['accion'] == 'ultimo_registro_inicial') {
     echo $respuesta;
 }
 if ($post['accion'] == 'cargar_productos2') {
-    // Obtener la fecha proporcionada o usar la fecha actual si no se proporciona
-    $fecha = isset($post['fecha']) ? $post['fecha'] : date('Y-m-d');
+    // Obtener la fecha actual en formato 'Y-m-d'
+    $fecha_actual = date('Y-m-d');
 
     // Obtener el id_persona del post
     $id_persona = isset($post['id_persona']) ? $post['id_persona'] : '';
 
-    // Consulta con INNER JOIN y filtro por la fecha y id_persona
-    $sentencia = "
+    // Consulta para 'Distribuidor'
+    $sentencia_distribuidor = "
         SELECT 
             p.id, 
             p.nombre, 
             p.pvp, 
+            p.costo_distribucion,
             iri.RI_CODIGO, 
             iri.RI_CANTIDAD_INICIAL, 
-            iri.RI_FECHA, 
+            iri.RI_FECHA,
+            iri.RI_TIPOPRECIO,
             irf.RF_CODIGO, 
             irf.RF_CANTIDAD_VENDIDA, 
             irf.RF_DINERO_TOTAL, 
@@ -1118,27 +1122,74 @@ if ($post['accion'] == 'cargar_productos2') {
         INNER JOIN 
             inventario_registro_resultado irr ON irf.RF_CODIGO = irr.RF_CODIGO
         WHERE 
-            iri.RI_FECHA = '$fecha' AND
-            p.id_persona = '$id_persona'
+            iri.RI_FECHA = '$fecha_actual' AND
+            p.id_persona = '$id_persona' AND iri.RI_TIPOPRECIO='Distribuidor'
     ";
 
-    $rs = mysqli_query($mysqli, $sentencia);
+    // Ejecutar la consulta para 'Distribuidor'
+    $rs_distribuidor = mysqli_query($mysqli, $sentencia_distribuidor);
 
-    if (!$rs) {
+    if (!$rs_distribuidor) {
         $error = mysqli_error($mysqli);
         $respuesta = json_encode(array('estado' => false, 'mensaje' => "Error en la consulta: $error"));
         echo $respuesta;
         exit;
     }
 
-    if (mysqli_num_rows($rs) > 0) {
-        $datos = array();
-        while ($row = mysqli_fetch_assoc($rs)) {
+    // Consulta para 'PVP'
+    $sentencia_pvp = "
+        SELECT 
+            p.id, 
+            p.nombre, 
+            p.pvp, 
+            p.costo_distribucion,
+            iri.RI_CODIGO, 
+            iri.RI_CANTIDAD_INICIAL, 
+            iri.RI_FECHA,
+            iri.RI_TIPOPRECIO,
+            irf.RF_CODIGO, 
+            irf.RF_CANTIDAD_VENDIDA, 
+            irf.RF_DINERO_TOTAL, 
+            irf.RF_PRODUCTOS_MUESTRA, 
+            irf.RF_PRODUCTOS_DESECHADOS,
+            irr.RS_CODIGO,
+            irr.RS_GANANCIA_PERDIDA,
+            irr.RS_PERDIDA_REGALADOS + irr.RS_PRODUCTOS_NO_VENDIDOS AS RS_TOTAL_PERDIDA
+        FROM 
+            productos p
+        LEFT JOIN 
+            inventario_registro_inicial iri ON p.id = iri.PROD_CODIGO
+        LEFT JOIN 
+            inventario_registro_final irf ON iri.RI_CODIGO = irf.RI_CODIGO
+        INNER JOIN 
+            inventario_registro_resultado irr ON irf.RF_CODIGO = irr.RF_CODIGO
+        WHERE 
+            iri.RI_FECHA = '$fecha_actual' AND
+            p.id_persona = '$id_persona' AND iri.RI_TIPOPRECIO='PVP'
+    ";
+
+    // Ejecutar la consulta para 'PVP'
+    $rs_pvp = mysqli_query($mysqli, $sentencia_pvp);
+
+    if (!$rs_pvp) {
+        $error = mysqli_error($mysqli);
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => "Error en la consulta: $error"));
+        echo $respuesta;
+        exit;
+    }
+
+    // Procesar resultados de ambas consultas
+    $datos = array();
+
+    // Procesar resultados de 'Distribuidor'
+    if (mysqli_num_rows($rs_distribuidor) > 0) {
+        while ($row = mysqli_fetch_assoc($rs_distribuidor)) {
             $total_muestra_desechados = $row['RF_PRODUCTOS_MUESTRA'] + $row['RF_PRODUCTOS_DESECHADOS'];
             $datos[] = array(
                 'id' => $row['id'],
                 'nombre' => $row['nombre'],
                 'pvp' => $row['pvp'],
+                'costo_distribucion' => $row['costo_distribucion'],
                 'RI_CODIGO' => $row['RI_CODIGO'],
                 'RI_CANTIDAD_INICIAL' => $row['RI_CANTIDAD_INICIAL'],
                 'RI_FECHA' => $row['RI_FECHA'],
@@ -1150,15 +1201,47 @@ if ($post['accion'] == 'cargar_productos2') {
                 'RS_CODIGO' => $row['RS_CODIGO'],
                 'RS_GANANCIA_PERDIDA' => $row['RS_GANANCIA_PERDIDA'],
                 'RS_TOTAL_PERDIDA' => $row['RS_TOTAL_PERDIDA'],
-                'total_muestra_desechados' => $total_muestra_desechados,
+                'RI_TIPOPRECIO' => $row['RI_TIPOPRECIO'],
+                'TOTAL_MUESTRA_DESECHADOS' => $total_muestra_desechados
             );
         }
+    }
+
+    // Procesar resultados de 'PVP'
+    if (mysqli_num_rows($rs_pvp) > 0) {
+        while ($row = mysqli_fetch_assoc($rs_pvp)) {
+            $total_muestra_desechados = $row['RF_PRODUCTOS_MUESTRA'] + $row['RF_PRODUCTOS_DESECHADOS'];
+            $datos[] = array(
+                'id' => $row['id'],
+                'nombre' => $row['nombre'],
+                'pvp' => $row['pvp'],
+                'costo_distribucion' => $row['costo_distribucion'],
+                'RI_CODIGO' => $row['RI_CODIGO'],
+                'RI_CANTIDAD_INICIAL' => $row['RI_CANTIDAD_INICIAL'],
+                'RI_FECHA' => $row['RI_FECHA'],
+                'RF_CODIGO' => $row['RF_CODIGO'],
+                'RF_CANTIDAD_VENDIDA' => $row['RF_CANTIDAD_VENDIDA'],
+                'RF_DINERO_TOTAL' => $row['RF_DINERO_TOTAL'],
+                'RF_PRODUCTOS_MUESTRA' => $row['RF_PRODUCTOS_MUESTRA'],
+                'RF_PRODUCTOS_DESECHADOS' => $row['RF_PRODUCTOS_DESECHADOS'],
+                'RS_CODIGO' => $row['RS_CODIGO'],
+                'RS_GANANCIA_PERDIDA' => $row['RS_GANANCIA_PERDIDA'],
+                'RS_TOTAL_PERDIDA' => $row['RS_TOTAL_PERDIDA'],
+                'RI_TIPOPRECIO' => $row['RI_TIPOPRECIO'],
+                'TOTAL_MUESTRA_DESECHADOS' => $total_muestra_desechados
+            );
+        }
+    }
+
+    if (!empty($datos)) {
         $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
     } else {
-        $respuesta = json_encode(array('estado' => true, 'datos' => array()));
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => "No se encontraron productos para la fecha actual"));
     }
+
     echo $respuesta;
 }
+
 
 
 if ($post['accion'] == 'cargar_productos3') {
