@@ -430,10 +430,10 @@ if ($post['accion'] == 'guardar_costos_produccion') {
                 $tipoTiempo = $include_mano_de_obra ? mysqli_real_escape_string($mysqli, $item['tipoTiempo']) : null;
                 $horasTrabajadas = $include_mano_de_obra ? (float)$item['horasTrabajadas'] : null;
                 $pgmensual = $include_costos_indirectos ? (float)($item['valorMensual'] ?? 0) : null;
-                $horas = $include_costos_indirectos ? (float)$item['horas'] : null;
-                $cantidadagua = $include_costos_indirectos ? (float)$item['cantidadagua'] : null;
-                $cantidadGas = $include_costos_indirectos ? (float)$item['cantidadGas'] : null;
-                $cantidadHoras = $include_costos_indirectos ? (float)($item['cantidadHoras'] ?? 0) : null;
+$horas = $include_costos_indirectos ? (float)($item['horas'] ?? 0) : null;
+$cantidadagua = $include_costos_indirectos ? (float)($item['cantidadagua'] ?? 0) : null;
+$cantidadGas = $include_costos_indirectos ? (float)($item['cantidadGas'] ?? 0) : null;
+$cantidadHoras = $include_costos_indirectos ? (float)($item['cantidadHoras'] ?? 0) : null;
 
 
                 if ($include_unidad_cantidad && $include_vtotal) {
