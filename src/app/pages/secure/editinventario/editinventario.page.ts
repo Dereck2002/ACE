@@ -96,7 +96,7 @@ export class EditinventarioPage implements OnInit {
 
       this.http
         .post<any>(
-          'http://localhost/ACE/WsMunicipioIonic/ws_gad.php',
+          'http://localhost:8101/ACE/WsMunicipioIonic/ws_gad.php',
           updateData
         )
         .subscribe(

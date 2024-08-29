@@ -1,8 +1,8 @@
 <?php
 define('db','appemp');
 define('usuario','root');
-define('clave','vi3C6pzwtjPjrQd0iZtKMhOHUg8X7sstolVBuItkAZXyuWRFAuUJ5bJwv4fLmj3J');
-define('host','admin.fonlescompany.com:3306');
+define('clave','');
+define('host','localhost');
 $mysqli=new mysqli(host,usuario,clave,db);
 
 // Verificar la conexión
