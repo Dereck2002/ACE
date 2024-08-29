@@ -35,13 +35,13 @@
 
     <ion-card color="medium">
       <ion-card-header>
-        <ion-card-title>Seleccione el tipo de registro</ion-card-title>
+        <ion-card-title>Ingrese cantidad de producción</ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <!-- Caja de texto siempre visible -->
         <ion-item>
           <ion-label position="floating">Cantidad de productos</ion-label>
-          <ion-input [(ngModel)]="tproducto" type="number"></ion-input>
+          <ion-input [(ngModel)]="tproducto" type="number" (ionChange)="calcular()"></ion-input>
         </ion-item>
       </ion-card-content>
     </ion-card>
@@ -63,31 +63,47 @@
             <ion-input [(ngModel)]="materiasPrimas[i].nombre" (ionChange)="calcular()"></ion-input>
           </ion-item>
           <ion-item>
-            <ion-label position="floating">Valor Total</ion-label>
+            <ion-label position="floating">Precio Unitario Por Produccion</ion-label>
             <ion-input [(ngModel)]="materiasPrimas[i].vtotal" type="number" (ionChange)="calcular()"></ion-input>
           </ion-item>
           <ion-item>
-            <ion-label position="floating">Costo</ion-label>
+            <ion-label position="floating">Costo Unitario</ion-label>
             <ion-input [(ngModel)]="materiasPrimas[i].costo" type="number" (ionChange)="calcular()"></ion-input>
           </ion-item>
           <ion-item>
             <ion-label position="floating">Unidad de Medida</ion-label>
-            <ion-select [(ngModel)]="materiasPrimas[i].unidad" (ionChange)="unidadChange($event, i)" interface="popover">
-              <ion-select-option value="" disabled selected hidden>Seleccionar</ion-select-option>
-              <ion-select-option value="unidad">Unidad (u)</ion-select-option>
-              <ion-select-option value="kg">Kilogramos (kg)</ion-select-option>
-              <ion-select-option value="g">Gramos (g)</ion-select-option>
-              <ion-select-option value="lb">Libras (lb)</ion-select-option>
-              <ion-select-option value="oz">Onzas (oz)</ion-select-option>
-              <ion-select-option value="L">Litros (L)</ion-select-option>
-              <ion-select-option value="mL">Mililitros (mL)</ion-select-option>
-              <ion-select-option value="m³">Metros cúbicos (m³)</ion-select-option>
-              <ion-select-option value="m">Metros (m)</ion-select-option>
-              <ion-select-option value="cm">Centímetros (cm)</ion-select-option>
-              <ion-select-option value="mm">Milímetros (mm)</ion-select-option>
-              <ion-select-option value="in">Pulgadas (in)</ion-select-option>
-            </ion-select>
-          </ion-item>
+<ion-select [(ngModel)]="materiasPrimas[i].unidad" (ionChange)="unidadChange($event, i)" interface="popover">
+  <ion-select-option value="" disabled selected hidden>Seleccionar</ion-select-option>
+
+  <ion-label *ngIf="materiasPrimas[i].unidad !== 'unidad'">Cantidad:</ion-label>
+  <ion-select-option value="unidad">Unidad (u)</ion-select-option>
+
+  <ion-label>Peso:</ion-label>
+  <ion-select-option disabled value="">--Peso--</ion-select-option>
+  <ion-select-option value="kg">Kilogramos (kg)</ion-select-option>
+  <ion-select-option value="g">Gramos (g)</ion-select-option>
+  <ion-select-option value="lb">Libras (lb)</ion-select-option>
+  <ion-select-option value="oz">Onzas (oz)</ion-select-option>
+
+  <ion-label>Volumen:</ion-label>
+  <ion-select-option disabled value="">--Volumen--</ion-select-option>
+  <ion-select-option value="L">Litros (L)</ion-select-option>
+  <ion-select-option value="mL">Mililitros (mL)</ion-select-option>
+  <ion-select-option value="m³">Metros cúbicos (m³)</ion-select-option>
+
+  <ion-label>Longitud:</ion-label>
+  <ion-select-option disabled value="">--Longitud--</ion-select-option>
+  <ion-select-option value="m">Metros (m)</ion-select-option>
+  <ion-select-option value="cm">Centímetros (cm)</ion-select-option>
+  <ion-select-option value="mm">Milímetros (mm)</ion-select-option>
+  <ion-select-option value="in">Pulgadas (in)</ion-select-option>
+</ion-select>
+</ion-item>
+<ion-item *ngIf="materiasPrimas[i].unidad !== 'unidad'">
+  <ion-label position="floating">Cantidad</ion-label>
+  <ion-input [(ngModel)]="materiasPrimas[i].cantidad" type="number" value="1"></ion-input>
+</ion-item>
+
         </ion-card>
         <div class="button-container">
           <ion-button color="tertiary" expand="small" (click)="agregarMateriaPrima()">
@@ -123,7 +139,7 @@
           <!-- Selección de Tipo de Tiempo -->
           <ion-item>
             <ion-label position="floating" style="font-weight: normal;">Tipo de Tiempo</ion-label>
-            <ion-select [(ngModel)]="manoDeObraList[i].tipoTiempo">
+            <ion-select [(ngModel)]="manoDeObraList[i].tipoTiempo" type="number" (ionChange)="calcular()">
               <ion-select-option value="160">Tiempo Completo</ion-select-option>
               <ion-select-option value="80">Medio Tiempo</ion-select-option>
             </ion-select>
@@ -137,7 +153,7 @@
     
           <!-- Campo para Costo -->
           <ion-item>
-            <ion-label position="floating">Costo</ion-label>
+            <ion-label position="floating">Costo Unitario</ion-label>
             <ion-input [(ngModel)]="manoDeObraList[i].costo" type="number" (ionChange)="calcular()"></ion-input>
           </ion-item>
           
@@ -179,9 +195,9 @@
             <ion-input [(ngModel)]="costosIndirectosList[i].cantidadHoras" type="number" (ionChange)="calcular()"></ion-input>
           </ion-item>
     
-          <!-- Campos de texto para Internet -->
+          <!-- Campos de texto para Telecomunicaciones -->
           <ion-item *ngIf="costosIndirectosList[i].nombre === 'telecomunicaciones'">
-            <ion-label position="floating">Valor Mensual</ion-label>
+            <ion-label position="floating">Pago Mensual</ion-label>
             <ion-input [(ngModel)]="costosIndirectosList[i].valorMensual" type="number" (ionChange)="calcular()"></ion-input>
           </ion-item>
           <ion-item *ngIf="costosIndirectosList[i].nombre === 'telecomunicaciones'">
@@ -191,18 +207,18 @@
     
           <!-- Campo de texto para Agua -->
           <ion-item *ngIf="costosIndirectosList[i].nombre === 'agua'">
-            <ion-label position="floating">Litros de Agua</ion-label>
+            <ion-label position="floating">Pago Mensual</ion-label>
             <ion-input [(ngModel)]="costosIndirectosList[i].cantidadagua" type="number" (ionChange)="calcular()"></ion-input>
           </ion-item>
     
           <!-- Campo de texto para Gas -->
           <ion-item *ngIf="costosIndirectosList[i].nombre === 'gas'">
-            <ion-label position="floating">Producción con Gas</ion-label>
+            <ion-label position="floating">Precio Gas</ion-label>
             <ion-input [(ngModel)]="costosIndirectosList[i].cantidadGas" type="number" (ionChange)="calcular()"></ion-input>
           </ion-item>
     
           <ion-item>
-            <ion-label position="floating">Costo</ion-label>
+            <ion-label position="floating">Costo Unitario</ion-label>
             <ion-input [(ngModel)]="costosIndirectosList[i].costo" type="number" (ionChange)="calcular()"></ion-input>
           </ion-item>
         </ion-card>
@@ -236,7 +252,7 @@
       
       <!-- Campo para el valor total -->
       <ion-item>
-        <ion-label position="floating">Valor Total</ion-label>
+        <ion-label position="floating">Precio Unitario Por Produccion</ion-label>
         <ion-input [(ngModel)]="otrosGastoList[i].vtotal" type="number" (ionChange)="calcular()"></ion-input>
       </ion-item>
       

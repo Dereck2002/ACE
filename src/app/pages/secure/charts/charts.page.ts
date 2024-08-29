@@ -26,7 +26,7 @@ export class ChartsPage implements OnInit {
   utilidadv: number = 0;
   utilidadc: number = 0;
   materiasPrimas: Array<{ nombre: string; costo: number; unidad: string; cantidad?: number; vtotal: number }> = [
-    { nombre: '', costo: 0, unidad: '', vtotal: 0 }
+    { nombre: '', costo: 0, unidad: 'unidad', vtotal: 0 }
   ];
   manoDeObraList: Array<{ nombre: string; costo: number; sueldoMensual?: number; tipoTiempo?: string; horasTrabajadas?: number }> = [
     {  nombre: '', costo: 0, sueldoMensual: 0, tipoTiempo: '', horasTrabajadas: 0 }
@@ -175,7 +175,7 @@ export class ChartsPage implements OnInit {
   }
 
   agregarMateriaPrima() {
-    this.materiasPrimas.push({ nombre: '', costo: 0, unidad: '', vtotal: 0 });
+    this.materiasPrimas.push({ nombre: '', costo: 0, unidad: 'unidad', vtotal: 0 });
   }
 
   quitarMateriaPrima(index: number) {
@@ -421,5 +421,6 @@ export class ChartsPage implements OnInit {
   onCostoChange(costoIndirecto: any) {
     // Lógica para manejar el cambio de costo indirecto (ej: si es luz, internet, etc.)
   }
+  
 
 }
