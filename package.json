@@ -37,6 +37,7 @@
     "chart.js": "^4.2.0",
     "date-fns": "^2.29.3",
     "ng2-charts": "^4.1.1",
+    "ngx-skeleton-loader": "^9.0.0",
     "rxjs": "~7.8.0",
     "sharp": "^0.31.3",
     "swiper": "8.4.7",

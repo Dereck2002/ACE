@@ -46,6 +46,14 @@ const routes: Routes = [
         canActivate: [ReloadGuard], // Aplica el guard aquí
       },
       {
+        path: 'report',
+        loadChildren: () =>
+          import('../pages/secure/report/report.module').then(
+            (m) => m.ReportPageModule
+          ),
+        canActivate: [ReloadGuard], // Aplica el guard aquí
+      },
+      {
         path: 'styleguide',
         loadChildren: () =>
           import('../pages/secure/styleguide/styleguide.module').then(

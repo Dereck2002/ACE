@@ -21,30 +21,40 @@
     <ion-card-content>
       <ion-item>
         <ion-label position="floating">Producto</ion-label>
-        <ion-select
-          [(ngModel)]="productId"
-          (ionChange)="onProductChange($event)"
-        >
-          <ion-select-option
-            *ngFor="let product of productos"
-            [value]="product.id"
-          >
+        <ion-select [(ngModel)]="productId" (ionChange)="onProductChange($event)">
+          <ion-select-option *ngFor="let product of productos" [value]="product.id">
             {{ product.nombre }}
           </ion-select-option>
         </ion-select>
       </ion-item>
+
       <ion-item>
         <ion-label position="floating">Cantidad Inicial</ion-label>
         <ion-input type="number" [(ngModel)]="initialQuantity"></ion-input>
       </ion-item>
-      <ion-item>
-        <ion-label position="floating">PVP</ion-label>
-        <ion-input type="number" [value]="selectedPvp" readonly></ion-input>
-      </ion-item>
+
+      <!-- Radio Buttons para seleccionar PVP o Precio distribuidor -->
+      <ion-radio-group [(ngModel)]="tipoPrecio">
+        <ion-list-header>
+          <ion-label>Seleccionar tipo de precio</ion-label>
+        </ion-list-header>
+
+        <ion-item>
+          <ion-label>PVP: {{ selectedPvp }}</ion-label>
+          <ion-radio slot="start" value="PVP"></ion-radio>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Precio distribuidor: {{ costo_distribucion }}</ion-label>
+          <ion-radio slot="start" value="Distribuidor"></ion-radio>
+        </ion-item>
+      </ion-radio-group>
+
       <ion-item>
         <ion-label position="floating">Fecha (YYYY-MM-DD)</ion-label>
         <ion-input type="text" [value]="date" readonly></ion-input>
       </ion-item>
+
       <ion-button expand="full" (click)="saveProduct()">Guardar</ion-button>
     </ion-card-content>
   </ion-card>

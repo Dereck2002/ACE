@@ -29,7 +29,8 @@ const routes: Routes = [
   {
     path: 'editproducto',
     loadChildren: () => import('./editproducto/editproducto.module').then( m => m.EditproductoPageModule)
-  },  {
+  },
+  {
     path: 'registroinventario',
     loadChildren: () => import('./registroinventario/registroinventario.module').then( m => m.RegistroinventarioPageModule)
   },
@@ -44,7 +45,11 @@ const routes: Routes = [
   {
     path: 'inventarioregistro',
     loadChildren: () => import('./inventarioregistro/inventarioregistro.module').then( m => m.InventarioregistroPageModule)
-  }
+  },
+  {
+    path: 'report',
+    loadChildren: () => import('./report/report.module').then( m => m.ReportPageModule)
+  }
 
 ];
 

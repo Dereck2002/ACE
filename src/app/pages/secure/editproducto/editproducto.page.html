@@ -14,17 +14,17 @@
   </ion-toolbar>
 </ion-header>
 
+
 <ion-content [fullscreen]="true">
   <div class="ion-padding">
     <!-- Formulario para ingresar datos de producción -->
     <ion-card-header style="text-align: center;">
       <ion-card-title style="font-size: 25px; font-weight: bold;">Ingrese los datos de producción</ion-card-title>
     </ion-card-header>
-    
- 
+
     <ion-card color="medium">
       <ion-card-header>
-        <ion-card-title>Ingrese el nombre del producto</ion-card-title>
+        <ion-card-title>Ingrese el nombre del producto <span class="product-size">(Especifique su tamaño)</span></ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <ion-item>
@@ -33,167 +33,276 @@
         </ion-item>
       </ion-card-content>
     </ion-card>
-  
-    
+
     <ion-card color="medium">
+      <ion-card-header>
+        <ion-card-title>Ingrese cantidad de producción</ion-card-title>
+      </ion-card-header>
       <ion-card-content>
-        <ion-card-header>
-          <ion-card-title style="font-size: 22px; font-weight: bold;">Materia Prima</ion-card-title>
-        </ion-card-header>
-        <!-- Registro de materias primas -->
+        <!-- Caja de texto siempre visible -->
+        <ion-item>
+          <ion-label position="floating">Cantidad de productos</ion-label>
+          <ion-input [(ngModel)]="tproducto" type="number" (ionChange)="calcular()"></ion-input>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+    
+    <!-- Materia Prima -->
+    <ion-card color="medium">
+      <ion-card-header>
+        <ion-card-title style="font-size: 22px; font-weight: bold;">Materia Prima</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
         <ion-card *ngFor="let materiaPrima of materiasPrimas; let i = index" class="bordes-item">
           <!-- Botón de eliminar -->
-          <ion-button color="danger" size="small" (click)="quitarMateriaPrima()" class="remove-button">
+          <ion-button color="danger" size="small" (click)="quitarMateriaPrima(i)" class="remove-button">
             <ion-icon name="close-outline"></ion-icon>
           </ion-button>
+          <!-- Campo para valor total siempre visible -->
           <ion-item>
             <ion-label position="floating">Nombre de Materia Prima</ion-label>
-            <ion-input [(ngModel)]="materiasPrimas[i].txt_nombre" (ionChange)="calcular()"></ion-input>
+            <ion-input [(ngModel)]="materiasPrimas[i].nombre" (ionChange)="calcular()"></ion-input>
           </ion-item>
           <ion-item>
-            <ion-label position="floating">Costo</ion-label>
-            <ion-input [(ngModel)]="materiasPrimas[i].txt_costo" type="number"  step="0.00001" (ionChange)="calcular()"></ion-input>
+            <ion-label position="floating">Precio Unitario Por Produccion</ion-label>
+            <ion-input [(ngModel)]="materiasPrimas[i].vtotal" type="number" (ionChange)="calcular()"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">Costo Unitario</ion-label>
+            <ion-input [(ngModel)]="materiasPrimas[i].costo" type="number" (ionChange)="calcular()"></ion-input>
           </ion-item>
           <ion-item>
             <ion-label position="floating">Unidad de Medida</ion-label>
-            <ion-select [(ngModel)]="materiasPrimas[i].txt_unidad" (ionChange)="unidadChange($event, i)" interface="popover">
-              <ion-select-option value="" disabled selected hidden>Seleccionar</ion-select-option>
-              <ion-label *ngIf="materiasPrimas[i].txt_unidad !== 'unidad'">Cantidad:</ion-label>
-              <ion-select-option value="unidad">Unidad (u)</ion-select-option>
-              <ion-label>Peso:</ion-label>
-              <ion-select-option disabled value="">--Peso--</ion-select-option>
-              <ion-select-option value="kg">Kilogramos (kg)</ion-select-option>
-              <ion-select-option value="g">Gramos (g)</ion-select-option>
-              <ion-select-option value="lb">Libras (lb)</ion-select-option>
-              <ion-select-option value="oz">Onzas (oz)</ion-select-option>
-              <ion-label>Volumen:</ion-label>
-              <ion-select-option disabled value="">--Volumen--</ion-select-option>
-              <ion-select-option value="L">Litros (L)</ion-select-option>
-              <ion-select-option value="mL">Mililitros (mL)</ion-select-option>
-              <ion-select-option value="m³">Metros cúbicos (m³)</ion-select-option>
-              <ion-label>Longitud:</ion-label>
-              <ion-select-option disabled value="">--Longitud--</ion-select-option>
-              <ion-select-option value="m">Metros (m)</ion-select-option>
-              <ion-select-option value="cm">Centímetros (cm)</ion-select-option>
-              <ion-select-option value="mm">Milímetros (mm)</ion-select-option>
-              <ion-select-option value="in">Pulgadas (in)</ion-select-option>
-            </ion-select>
-          </ion-item>
-          
-          <ion-item *ngIf="materiasPrimas[i].txt_unidad !== 'unidad' && materiasPrimas[i].txt_unidad !== ''">
-            <ion-label position="floating">Cantidad</ion-label>
-            <ion-input [(ngModel)]="materiasPrimas[i].txt_cantidad" type="number" value="1"></ion-input>
-          </ion-item>
-          <!-- Botón para agregar nueva materia prima -->
-        
+<ion-select [(ngModel)]="materiasPrimas[i].unidad" (ionChange)="unidadChange($event, i)" interface="popover">
+  <ion-select-option value="" disabled selected hidden>Seleccionar</ion-select-option>
+
+  <ion-label *ngIf="materiasPrimas[i].unidad !== 'unidad'">Cantidad:</ion-label>
+  <ion-select-option value="unidad">Unidad (u)</ion-select-option>
+
+  <ion-label>Peso:</ion-label>
+  <ion-select-option disabled value="">--Peso--</ion-select-option>
+  <ion-select-option value="kg">Kilogramos (kg)</ion-select-option>
+  <ion-select-option value="g">Gramos (g)</ion-select-option>
+  <ion-select-option value="lb">Libras (lb)</ion-select-option>
+  <ion-select-option value="oz">Onzas (oz)</ion-select-option>
+
+  <ion-label>Volumen:</ion-label>
+  <ion-select-option disabled value="">--Volumen--</ion-select-option>
+  <ion-select-option value="L">Litros (L)</ion-select-option>
+  <ion-select-option value="mL">Mililitros (mL)</ion-select-option>
+  <ion-select-option value="m³">Metros cúbicos (m³)</ion-select-option>
+
+  <ion-label>Longitud:</ion-label>
+  <ion-select-option disabled value="">--Longitud--</ion-select-option>
+  <ion-select-option value="m">Metros (m)</ion-select-option>
+  <ion-select-option value="cm">Centímetros (cm)</ion-select-option>
+  <ion-select-option value="mm">Milímetros (mm)</ion-select-option>
+  <ion-select-option value="in">Pulgadas (in)</ion-select-option>
+</ion-select>
+</ion-item>
+<ion-item *ngIf="materiasPrimas[i].unidad !== 'unidad'">
+  <ion-label position="floating">Cantidad</ion-label>
+  <ion-input [(ngModel)]="materiasPrimas[i].cantidad" type="number" value="1"></ion-input>
+</ion-item>
+
         </ion-card>
         <div class="button-container">
           <ion-button color="tertiary" expand="small" (click)="agregarMateriaPrima()">
             <ion-icon style="margin-right: 5px;" name="add-circle-outline"></ion-icon>Agregar
           </ion-button>
         </div>
-        
+      </ion-card-content>
+    </ion-card>
+    
 
-        <!-- Mano de Obra -->
-        <ion-card-header>
+    <!-- Mano de Obra -->
+    <ion-card color="medium">
+      <ion-card-header>
         <ion-card-title style="font-size: 22px; font-weight: bold;">Mano de Obra</ion-card-title>
-        </ion-card-header>
+      </ion-card-header>
+      <ion-card-content>
         <ion-card *ngFor="let manoDeObra of manoDeObraList; let i = index" class="bordes-item">
-            <ion-button color="danger" size="small" (click)="quitarManoDeObra()" class="remove-button">
-              <ion-icon name="close-outline"></ion-icon>
-            </ion-button>
-         
-         
+          <ion-button color="danger" size="small" (click)="quitarManoDeObra(i)" class="remove-button">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
           
-              <ion-item>
-                <ion-label position="floating">Nombre de Mano de Obra</ion-label>
-                <ion-input [(ngModel)]="manoDeObraList[i].txt_nombre" (ionChange)="calcular()"></ion-input>
-              </ion-item>
-              <ion-item>
-                <ion-label position="floating">Costo</ion-label>
-                <ion-input [(ngModel)]="manoDeObraList[i].txt_costo" type="number" (ionChange)="calcular()"></ion-input>
-              </ion-item>
-        
-            
-        
+          <ion-item>
+            <ion-label position="floating">Nombre de Mano de Obra</ion-label>
+            <ion-input [(ngModel)]="manoDeObraList[i].nombre" (ionChange)="calcular()"></ion-input>
+          </ion-item>
+    
+          <!-- Campo para Sueldo Mensual -->
+          <ion-item>
+            <ion-label position="floating" style="font-weight: normal;">Sueldo Mensual</ion-label>
+            <ion-input [(ngModel)]="manoDeObraList[i].sueldoMensual" type="number" (ionChange)="calcular()"></ion-input>
+          </ion-item>
+    
+          <!-- Selección de Tipo de Tiempo -->
+          <ion-item>
+            <ion-label position="floating" style="font-weight: normal;">Tipo de Tiempo</ion-label>
+            <ion-select [(ngModel)]="manoDeObraList[i].tipoTiempo" type="number" (ionChange)="calcular()">
+              <ion-select-option value="160">Tiempo Completo</ion-select-option>
+              <ion-select-option value="80">Medio Tiempo</ion-select-option>
+            </ion-select>
+          </ion-item>
+    
+          <!-- Campo para Cantidad de Horas Trabajadas -->
+          <ion-item>
+            <ion-label position="floating" style="font-weight: normal;">Cantidad de Horas Trabajadas</ion-label>
+            <ion-input [(ngModel)]="manoDeObraList[i].horasTrabajadas" type="number" (ionChange)="calcular()"></ion-input>
+          </ion-item>
+    
+          <!-- Campo para Costo -->
+          <ion-item>
+            <ion-label position="floating">Costo Unitario</ion-label>
+            <ion-input [(ngModel)]="manoDeObraList[i].costo" type="number" (ionChange)="calcular()"></ion-input>
+          </ion-item>
+          
         </ion-card>
         <div class="button-container">
           <ion-button color="tertiary" expand="small" (click)="agregarManoDeObra()">
             <ion-icon style="margin-right: 5px;" name="add-circle-outline"></ion-icon>Agregar
           </ion-button>
         </div>
+      </ion-card-content>
+    </ion-card>
+    
+    
 
-        <!-- Costos Indirectos de Fabricación -->
-        <ion-card-header>
-          <ion-card-title style="font-size: 22px; font-weight: bold;">Costos Indirectos de Fabricación</ion-card-title>
-        </ion-card-header>
+    <!-- Costos Indirectos de Fabricación -->
+    <ion-card color="medium">
+      <ion-card-header>
+        <ion-card-title style="font-size: 22px; font-weight: bold;">Costos Indirectos de Fabricación</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
         <ion-card *ngFor="let costoIndirecto of costosIndirectosList; let i = index" class="bordes-item">
-          
-            <ion-button color="danger" size="small" (click)="quitarCostosIndirectos()" class="remove-button">
-              <ion-icon name="close-outline"></ion-icon>
-            </ion-button>
-          
-              <ion-item>
-                <ion-label position="floating">Nombre del Costo Indirecto</ion-label>
-                <ion-input [(ngModel)]="costosIndirectosList[i].txt_nombre" (ionChange)="calcular()"></ion-input>
-              </ion-item>
-              <ion-item>
-                <ion-label position="floating">Costo</ion-label>
-                <ion-input [(ngModel)]="costosIndirectosList[i].txt_costo" type="number" (ionChange)="calcular()"></ion-input>
-              </ion-item>
+          <ion-button color="danger" size="small" (click)="quitarCostosIndirectos(i)" class="remove-button">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button> 
+          <!-- Select para Nombre del Costo Indirecto -->
+          <ion-item>
+            <ion-label position="floating">Nombre del Costo Indirecto</ion-label>
+            <ion-select [(ngModel)]="costosIndirectosList[i].nombre" (ionChange)="onCostoChange(costosIndirectosList[i])">
+              <ion-select-option value="agua">Agua</ion-select-option>
+              <ion-select-option value="luz">Luz</ion-select-option>
+              <ion-select-option value="telecomunicaciones">Telecomunicaciones</ion-select-option>
+              <ion-select-option value="gas">Gas</ion-select-option>
+            </ion-select>
+          </ion-item>
+    
+          <!-- Campo de texto para Luz -->
+          <ion-item *ngIf="costosIndirectosList[i].nombre === 'luz'">
+            <ion-label position="floating">Cantidad de Horas</ion-label>
+            <ion-input [(ngModel)]="costosIndirectosList[i].cantidadHoras" type="number" (ionChange)="calcular()"></ion-input>
+          </ion-item>
+    
+          <!-- Campos de texto para Telecomunicaciones -->
+          <ion-item *ngIf="costosIndirectosList[i].nombre === 'telecomunicaciones'">
+            <ion-label position="floating">Pago Mensual</ion-label>
+            <ion-input [(ngModel)]="costosIndirectosList[i].valorMensual" type="number" (ionChange)="calcular()"></ion-input>
+          </ion-item>
+          <ion-item *ngIf="costosIndirectosList[i].nombre === 'telecomunicaciones'">
+            <ion-label position="floating">Horas de Uso</ion-label>
+            <ion-input [(ngModel)]="costosIndirectosList[i].horas" type="number" (ionChange)="calcular()"></ion-input>
+          </ion-item>
+    
+          <!-- Campo de texto para Agua -->
+          <ion-item *ngIf="costosIndirectosList[i].nombre === 'agua'">
+            <ion-label position="floating">Pago Mensual</ion-label>
+            <ion-input [(ngModel)]="costosIndirectosList[i].cantidadagua" type="number" (ionChange)="calcular()"></ion-input>
+          </ion-item>
+    
+          <!-- Campo de texto para Gas -->
+          <ion-item *ngIf="costosIndirectosList[i].nombre === 'gas'">
+            <ion-label position="floating">Precio Gas</ion-label>
+            <ion-input [(ngModel)]="costosIndirectosList[i].cantidadGas" type="number" (ionChange)="calcular()"></ion-input>
+          </ion-item>
+    
+          <ion-item>
+            <ion-label position="floating">Costo Unitario</ion-label>
+            <ion-input [(ngModel)]="costosIndirectosList[i].costo" type="number" (ionChange)="calcular()"></ion-input>
+          </ion-item>
         </ion-card>
+        
         <div class="button-container">
           <ion-button color="tertiary" expand="small" (click)="agregarCostosIndirectos()">
             <ion-icon style="margin-right: 5px;" name="add-circle-outline"></ion-icon>Agregar
           </ion-button>
         </div>
+      </ion-card-content>
+    </ion-card>
+    
 
-        <!-- Otros Costos -->
-        <ion-card-header>
-          <ion-card-title style="font-size: 22px; font-weight: bold;">Gastos Generales</ion-card-title>
-        </ion-card-header>
-        <ion-card *ngFor="let otroCosto of otrosCostosList; let i = index" class="bordes-item">
-            <ion-button color="danger" size="small" (click)="quitarGasto()" class="remove-button">
-              <ion-icon name="close-outline"></ion-icon>
-            </ion-button>
-  
-              <ion-item>
-                <ion-label position="floating">Nombre de Gasto General</ion-label>
-                <ion-input [(ngModel)]="otrosCostosList[i].txt_nombre" (ionChange)="calcular()"></ion-input>
-              </ion-item>
-              <ion-item>
-                <ion-label position="floating">Costo</ion-label>
-                <ion-input [(ngModel)]="otrosCostosList[i].txt_costo" type="number" (ionChange)="calcular()"></ion-input>
-              </ion-item>
-        </ion-card>
-        <div class="button-container">
-          <ion-button color="tertiary" expand="small" (click)="agregarGasto()">
-            <ion-icon style="margin-right: 5px;" name="add-circle-outline"></ion-icon>Agregar
-          </ion-button>
-        </div>
+    <!-- Otros Costos -->
+<ion-card color="medium">
+  <ion-card-header>
+    <ion-card-title style="font-size: 22px; font-weight: bold;">Otros Costos</ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <ion-card *ngFor="let otroCosto of otrosGastoList; let i = index" class="bordes-item">
+      <!-- Botón para eliminar -->
+      <ion-button color="danger" size="small" (click)="quitarGasto(i)" class="remove-button">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+      
+      <!-- Campo para el nombre del gasto general -->
+      <ion-item>
+        <ion-label position="floating">Nombre de Gasto General</ion-label>
+        <ion-input [(ngModel)]="otrosGastoList[i].nombre" (ionChange)="calcular()"></ion-input>
+      </ion-item>
+      
+      <!-- Campo para el valor total -->
+      <ion-item>
+        <ion-label position="floating">Precio Unitario Por Produccion</ion-label>
+        <ion-input [(ngModel)]="otrosGastoList[i].vtotal" type="number" (ionChange)="calcular()"></ion-input>
+      </ion-item>
+      
+      <!-- Campo para el costo -->
+      <ion-item>
+        <ion-label position="floating">Costo</ion-label>
+        <ion-input [(ngModel)]="otrosGastoList[i].costo" type="number" (ionChange)="calcular()"></ion-input>
+      </ion-item>
+    </ion-card>
+    
+    <div class="button-container">
+      <ion-button color="tertiary" expand="small" (click)="agregarGasto()">
+        <ion-icon style="margin-right: 5px;" name="add-circle-outline"></ion-icon>Agregar
+      </ion-button>
+    </div>
+  </ion-card-content>
+</ion-card>
 
-        <!-- Márgenes y impuestos -->
-        
-        <ion-item >
+    <!-- Márgenes y impuestos -->
+    <ion-card color="medium">
+      <ion-card-header>
+        <ion-card-title style="font-size: 22px; font-weight: bold;">Márgenes y Impuestos</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
           <ion-label position="floating">Margen de Beneficio (%)</ion-label>
-          <ion-input [(ngModel)]="txt_margenBeneficio" type="number" (ionChange)="calcular()"></ion-input>
+          <ion-input [(ngModel)]="margenBeneficio" type="number" (ionChange)="calcular()"></ion-input>
         </ion-item>
 
-        <ion-item >
+        <ion-item>
           <ion-label position="floating">Utilidad Vendedor (%)</ion-label>
-          <ion-input [(ngModel)]="txt_utilidadv" type="number" (ionChange)="calcular()"></ion-input>
+          <ion-input [(ngModel)]="utilidadv" type="number" (ionChange)="calcular()"></ion-input>
         </ion-item>
 
-        <ion-item >
-          <ion-label position="floating">Utilidad Comercial(%)</ion-label>
-          <ion-input [(ngModel)]="txt_utilidadc" type="number" (ionChange)="calcular()"></ion-input>
+        <ion-item>
+          <ion-label position="floating">Utilidad Comercial (%)</ion-label>
+          <ion-input [(ngModel)]="utilidadc" type="number" (ionChange)="calcular()"></ion-input>
         </ion-item>
+
         <ion-item>
           <ion-label position="floating">Impuestos (%)</ion-label>
-          <ion-input [(ngModel)]="txt_impuestos" type="number" (ionChange)="calcular()"></ion-input>
+          <ion-input [(ngModel)]="impuestos" type="number" (ionChange)="calcular()"></ion-input>
         </ion-item>
+      </ion-card-content>
+    </ion-card>
 
-        <!-- Resultados -->
+    <!-- Resultados -->
+    <ion-card color="medium">
+      <ion-card-content>
         <ion-item color="medium" *ngIf="costoProduccion !== null">
           <ion-label>Costo de Producción</ion-label>
           <ion-badge style="color: white;" slot="end">{{ costoProduccion | currency }}</ion-badge>
@@ -207,13 +316,12 @@
           <ion-badge style="color: white;" slot="end">{{ costoDistribucion | currency }}</ion-badge>
         </ion-item>
         <ion-item color="medium" *ngIf="pvp !== null">
-          <ion-label>PVP(recomendado)</ion-label>
+          <ion-label>PVP (recomendado)</ion-label>
           <ion-badge color="success" slot="end">{{ pvp | currency }}</ion-badge>
         </ion-item>
       </ion-card-content>
-
-      <ion-button class="button-container" color="danger" expand="small" (click)="editarProducto()">Editar</ion-button>
     </ion-card>
+
+    <ion-button class="button-container" color="danger" expand="small" (click)="guardarCambios()">Guardar</ion-button>
   </div>
 </ion-content>
-
