@@ -18,14 +18,15 @@ export class EditproductoPage implements OnInit {
   codigo: string = "";
   productoId: number | null = null;
   txt_producto: string = '';
-  materiasPrimas: { txt_nombre: string, txt_costo: number, txt_unidad: string, txt_cantidad: number }[] = [{ txt_nombre: '', txt_costo: 0, txt_unidad: '', txt_cantidad: 0 }];
-  manoDeObraList: { txt_nombre: string, txt_costo: number }[] = [{ txt_nombre: '', txt_costo: 0 }];
-  costosIndirectosList: { txt_nombre: string, txt_costo: number }[] = [{ txt_nombre: '', txt_costo: 0 }];
-  otrosCostosList: { txt_nombre: string, txt_costo: number }[] = [{ txt_nombre: '', txt_costo: 0 }];
-  txt_margenBeneficio: number = 0;
-  txt_utilidadv: number = 0;
-  txt_utilidadc: number = 0;
-  txt_impuestos: number = 0;
+  tproducto: number = 0;
+  materiasPrimas: { nombre: string, vtotal: number, costo: number, unidad: string, cantidad?: number }[] = [{ nombre: '', vtotal: 0, costo: 0, unidad: '', cantidad: 0 }];
+  manoDeObraList: { nombre: string, sueldoMensual: number, tipoTiempo: string, horasTrabajadas: number, costo: number }[] = [{ nombre: '', sueldoMensual: 0, tipoTiempo: '', horasTrabajadas: 0, costo: 0 }];
+  costosIndirectosList: { nombre: string, cantidadHoras?: number, valorMensual?: number, horas?: number, cantidadagua?: number, cantidadGas?: number, costo: number }[] = [{ nombre: '', cantidadHoras: 0, valorMensual: 0, horas: 0, cantidadagua: 0, cantidadGas: 0, costo: 0 }];
+  otrosGastoList: { nombre: string, vtotal: number, costo: number }[] = [{ nombre: '', vtotal: 0, costo: 0 }];
+  margenBeneficio: number = 0;
+  utilidadv: number = 0;
+  utilidadc: number = 0;
+  impuestos: number = 0;
   costoProduccion: number | null = null;
   costoFabrica: number | null = null;
   costoDistribucion: number | null = null;
@@ -41,7 +42,7 @@ export class EditproductoPage implements OnInit {
     scales: {
       x: {
         grid: { color: '#ccc' },
-        ticks: { color: '#666', font: { family: 'Inter', weight: '500' } }
+        ticks: { color: '#666', font: { family: 'Inter', weight: 'bold' } }
       },
       y: {
         position: 'right',
@@ -126,29 +127,23 @@ export class EditproductoPage implements OnInit {
       if (res.estado == true) {
         // Asignar datos generales
         this.productoId = res.productos[0].id;
-        console.log("Producto ID asignado:", this.productoId); // Agrega esta línea para verificar
         this.codigo = res.productos[0].codigo;
         this.txt_producto = res.productos[0].nombre;
-        this.txt_margenBeneficio = res.productos[0].margenBeneficio;
-        this.txt_utilidadv = res.productos[0].utilidadVenta;
-        this.txt_utilidadc = res.productos[0].utilidadDis;
-        this.txt_impuestos = res.productos[0].impuestos;
+        this.tproducto = res.productos[0].tproducto;
+        this.margenBeneficio = res.productos[0].margenBeneficio;
+        this.utilidadv = res.productos[0].utilidadVenta;
+        this.utilidadc = res.productos[0].utilidadDis;
+        this.impuestos = res.productos[0].impuestos;
         this.costoProduccion = res.productos[0].costoProduccion;
         this.costoFabrica = res.productos[0].costoFabrica;
         this.costoDistribucion = res.productos[0].costoDistribucion;
         this.pvp = res.productos[0].pvp;
 
-        // Filtrar y asignar datos de materias primas sin duplicados
-        this.materiasPrimas = this.filterUniqueItems(res.productos[0].materiasPrimas, 'txt_nombre');
-
-        // Filtrar y asignar datos de mano de obra sin duplicados
-        this.manoDeObraList = this.filterUniqueItems(res.productos[0].manoDeObraList, 'txt_nombre');
-
-        // Filtrar y asignar datos de costos indirectos sin duplicados
-        this.costosIndirectosList = this.filterUniqueItems(res.productos[0].costosIndirectosList, 'txt_nombre');
-
-        // Filtrar y asignar datos de otros costos sin duplicados
-        this.otrosCostosList = this.filterUniqueItems(res.productos[0].otrosCostosList, 'txt_nombre');
+        // Filtrar y asignar datos sin duplicados
+        this.materiasPrimas = this.filterUniqueItems(res.productos[0].materiasPrimas, 'nombre');
+        this.manoDeObraList = this.filterUniqueItems(res.productos[0].manoDeObraList, 'nombre');
+        this.costosIndirectosList = this.filterUniqueItems(res.productos[0].costosIndirectosList, 'nombre');
+        this.otrosGastoList = this.filterUniqueItems(res.productos[0].otrosGastoList, 'nombre');
       } else {
         this.authService.showToast(res.mensaje);
       }
@@ -171,54 +166,100 @@ export class EditproductoPage implements OnInit {
   }
 
   agregarMateriaPrima() {
-    this.materiasPrimas.push({ txt_nombre: '', txt_costo: 0, txt_unidad: '', txt_cantidad: 0 });
+    this.materiasPrimas.push({ nombre: '', vtotal: 0, costo: 0, unidad: '', cantidad: 0 });
   }
 
-  quitarMateriaPrima() {
-    this.materiasPrimas.pop();
-  }
+  quitarMateriaPrima(index: number) {
+    this.materiasPrimas.splice(index, 1);
+}
 
   agregarManoDeObra() {
-    this.manoDeObraList.push({ txt_nombre: '', txt_costo: 0 });
+    this.manoDeObraList.push({ nombre: '', sueldoMensual: 0, tipoTiempo: '', horasTrabajadas: 0, costo: 0 });
   }
 
-  quitarManoDeObra() {
-    this.manoDeObraList.pop();
+  quitarManoDeObra(index: number) {
+    this.manoDeObraList.splice(index, 1);
   }
 
   agregarCostosIndirectos() {
-    this.costosIndirectosList.push({ txt_nombre: '', txt_costo: 0 });
+    this.costosIndirectosList.push({ nombre: '', cantidadHoras: 0, valorMensual: 0, horas: 0, cantidadagua: 0, cantidadGas: 0, costo: 0 });
   }
 
-  quitarCostosIndirectos() {
-    this.costosIndirectosList.pop();
-  }
+  quitarCostosIndirectos(index: number) {
+    this.costosIndirectosList.splice(index, 1);
+}
 
   agregarGasto() {
-    this.otrosCostosList.push({ txt_nombre: '', txt_costo: 0 });
+    this.otrosGastoList.push({ nombre: '', vtotal: 0, costo: 0 });
   }
 
-  quitarGasto() {
-    this.otrosCostosList.pop();
+  quitarGasto(index: number) {
+    this.otrosGastoList.splice(index, 1);
   }
 
   shouldShowCantidad(unidad: string): boolean {
     return unidad !== 'unidad' && unidad !== '';
   }
-
-  unidadChange(event, index) {
-    const selectedUnit = event.detail.value;
-    this.materiasPrimas[index].txt_unidad = selectedUnit;
-    if (selectedUnit === 'unidad') {
-      this.materiasPrimas[index].txt_cantidad = 1;
-    } else {
-      this.materiasPrimas[index].txt_cantidad = null; // or set a default value
-    }
-    this.calcular();
-  }
-  
   calcular() {
-    // Función para limpiar números
+    this.manoDeObraList.forEach((manoDeObra, index) => {
+      const sueldoMensual = manoDeObra.sueldoMensual || 0;
+      const tipoTiempo = +manoDeObra.tipoTiempo || 1; // Convertir a número
+      const horasTrabajadas = manoDeObra.horasTrabajadas || 0;
+      const cantidadProductos = this.tproducto || 1;
+  
+      console.log('Mano de obra:', sueldoMensual, tipoTiempo, horasTrabajadas, cantidadProductos);
+      
+      if (cantidadProductos > 0 && tipoTiempo > 0) {
+        const costo = (sueldoMensual / tipoTiempo) * horasTrabajadas / cantidadProductos;
+        this.manoDeObraList[index].costo = costo;
+      } else {
+        this.manoDeObraList[index].costo = 0;
+      }
+    });
+  
+    // Costos indirectos
+    this.costosIndirectosList.forEach((costoIndirecto, i) => {
+      console.log('Costo indirecto:', costoIndirecto.nombre, costoIndirecto);
+  
+      if (this.tproducto > 0) {
+        switch (costoIndirecto.nombre) {
+          case 'luz':
+            const costoLuz = (0.09 * costoIndirecto.cantidadHoras) / this.tproducto;
+            this.costosIndirectosList[i].costo = costoLuz;
+            break;
+  
+          case 'agua':
+            const cantidadagua = costoIndirecto.cantidadagua; 
+            if (cantidadagua != null && cantidadagua > 0) {
+              const costoAgua = cantidadagua / this.tproducto;
+              this.costosIndirectosList[i].costo = costoAgua;
+            } else {
+              this.costosIndirectosList[i].costo = 0;
+            }
+            break;
+  
+          case 'gas':
+            if (costoIndirecto.cantidadGas && costoIndirecto.cantidadGas > 0) {
+              const costoGas =  costoIndirecto.cantidadGas / this.tproducto;
+              this.costosIndirectosList[i].costo = costoGas;
+            }
+            break;
+  
+          case 'telecomunicaciones':
+            if (costoIndirecto.valorMensual && costoIndirecto.horas) {
+              const costoTelecom = ((costoIndirecto.valorMensual / 720) * costoIndirecto.horas) / this.tproducto;
+              this.costosIndirectosList[i].costo = costoTelecom;
+            }
+            break;
+  
+          default:
+            this.costosIndirectosList[i].costo = 0;
+            break;
+        }
+      }
+    });
+  
+    // Función para limpiar números y convertir a float
     const limpiarNumero = (valor: any): number => {
       if (typeof valor === 'string') {
         valor = valor.replace(/[^0-9.-]+/g, ''); // Eliminar caracteres no numéricos
@@ -226,34 +267,53 @@ export class EditproductoPage implements OnInit {
       return parseFloat(valor) || 0; // Convertir a número y manejar NaN
     };
   
-    // Calcular el costo de las materias primas
-    const costoMateriasPrimas = this.materiasPrimas.reduce((total, materia) => total + limpiarNumero(materia.txt_costo), 0);
+    const cantidadProductos = limpiarNumero(this.tproducto) || 1;
   
-    // Calcular el costo de la mano de obra
-    const totalManoDeObra = this.manoDeObraList.reduce((total, mano) => total + limpiarNumero(mano.txt_costo), 0);
+    // Costo unitario para materias primas
+    this.materiasPrimas.forEach(materia => {
+      if (cantidadProductos === 1) {
+        materia.costo = limpiarNumero(materia.costo);
+      } else {
+        const valorTotalMateria = limpiarNumero(materia.vtotal) || 0;
+        materia.costo = cantidadProductos > 0 ? valorTotalMateria / cantidadProductos : 0;
+      }
+    });
   
-    // Calcular el costo de los costos indirectos
-    const totalCostosIndirectos = this.costosIndirectosList.reduce((total, costo) => total + limpiarNumero(costo.txt_costo), 0);
+    // Costo total de materias primas
+    const costoMateriasPrimas = this.materiasPrimas.reduce((total, materia) => {
+      const costoUnitario = limpiarNumero(materia.costo);
+      const cantidadMateria = limpiarNumero(materia.cantidad) || 1;
+      return total + (costoUnitario * cantidadMateria);
+    }, 0);
   
-    // Calcular el costo de otros gastos
-    const totalOtrosGastos = this.otrosCostosList.reduce((total, costo) => total + limpiarNumero(costo.txt_costo), 0);
+    // Costo de otros gastos
+    this.otrosGastoList.forEach(otroCosto => {
+      if (cantidadProductos === 1) {
+        otroCosto.costo = limpiarNumero(otroCosto.costo);
+      } else {
+        const valorTotalOtroCosto = limpiarNumero(otroCosto.vtotal) || 0;
+        otroCosto.costo = cantidadProductos > 0 ? valorTotalOtroCosto / cantidadProductos : 0;
+      }
+    });
   
-    // Calcular el costo de producción
-    this.costoProduccion = parseFloat((costoMateriasPrimas + totalManoDeObra + totalCostosIndirectos + totalOtrosGastos - 0.02).toFixed(2));
+    const totalManoDeObra = this.manoDeObraList.reduce((total, mano) => total + limpiarNumero(mano.costo), 0);
+    const totalCostosIndirectos = this.costosIndirectosList.reduce((total, costo) => total + limpiarNumero(costo.costo), 0);
+    const totalOtrosGastos = this.otrosGastoList.reduce((total, costo) => total + limpiarNumero(costo.costo), 0);
   
-    // Calcular el costo de fábrica
-    const beneficio = parseFloat((this.costoProduccion * (this.txt_margenBeneficio / 100)).toFixed(2));
+    this.costoProduccion = parseFloat((costoMateriasPrimas + totalManoDeObra + totalCostosIndirectos + totalOtrosGastos).toFixed(2));
+  
+    const beneficio = parseFloat((this.costoProduccion * (this.margenBeneficio / 100)).toFixed(2));
     this.costoFabrica = parseFloat((this.costoProduccion + beneficio).toFixed(2));
   
-    // Calcular el costo de distribución
-    const utilidadVendedor = parseFloat((this.costoFabrica * (this.txt_utilidadv / 100)).toFixed(2));
+    const utilidadVendedor = parseFloat((this.costoFabrica * (this.utilidadv / 100)).toFixed(2));
     this.costoDistribucion = parseFloat((this.costoFabrica + utilidadVendedor).toFixed(2));
   
-    // Calcular el precio de venta al público (PVP)
-    const utilidadComercial = parseFloat((this.costoDistribucion * (this.txt_utilidadc / 100)).toFixed(2));
-    const impuestosCalculados = parseFloat((this.costoDistribucion * (this.txt_impuestos / 100)).toFixed(2));
+    const utilidadComercial = parseFloat((this.costoDistribucion * (this.utilidadc / 100)).toFixed(2));
+    const impuestosCalculados = parseFloat((this.costoDistribucion * (this.impuestos / 100)).toFixed(2));
     this.pvp = parseFloat((this.costoDistribucion + utilidadComercial + impuestosCalculados).toFixed(2));
   
+    console.log('Cantidad de productos:', cantidadProductos);
+    console.log('Costo Unitario por materia prima:', this.materiasPrimas.map(m => m.costo));
     console.log('Costo de materias primas:', costoMateriasPrimas);
     console.log('Total de mano de obra:', totalManoDeObra);
     console.log('Total de costos indirectos:', totalCostosIndirectos);
@@ -262,73 +322,70 @@ export class EditproductoPage implements OnInit {
     console.log('Costo de fábrica:', this.costoFabrica);
     console.log('Costo de distribución:', this.costoDistribucion);
     console.log('PVP:', this.pvp);
+    console.log('Valor de tproducto:', this.tproducto);
   }
-  
-  createBarChart() {
-    let helperService = this.helperService;
-    let rand_numbers = [...Array(12)].map(e => Math.random() * 100 | 0);
 
-    this.barChartData.labels = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
-    this.barChartData.datasets = [
-      {
-        data: rand_numbers,
-        backgroundColor: function (context) {
-          const chart = context.chart;
-          const { ctx, chartArea } = chart;
-
-          if (!chartArea) {
-            return null;
-          }
-
-          return helperService.createGradientChart(ctx, 'tertiary', 'tertiary');
-        },
-        barThickness: 10,
-        borderRadius: 4,
-        borderColor: helperService.getColorVariable('secondary'),
-        hoverBackgroundColor: helperService.getColorVariable('secondary'),
-        pointStyle: 'circle',
-      }
-    ];
+  unidadChange(event, index) {
+    const selectedUnit = event.detail.value;
+    this.materiasPrimas[index].unidad = selectedUnit;
   }
- 
 
-  async editarProducto() {
+  async guardarCambios() {
     const datos = {
       accion: "editarProducto",
+      productoId: this.productoId,
       codigo: this.codigo,
       nombre: this.txt_producto,
-      margenBeneficio: this.txt_margenBeneficio,
-      utilidad_venta: this.txt_utilidadv,
-      utilidad_dis: this.txt_utilidadc,
-      impuestos: this.txt_impuestos,
+      tproducto: this.tproducto,
+      margenBeneficio: this.margenBeneficio,
+      impuestos: this.impuestos,
       costoProduccion: this.costoProduccion,
       costoFabrica: this.costoFabrica,
       costoDistribucion: this.costoDistribucion,
+      utilidad_venta: this.utilidadv,
+      utilidad_dis: this.utilidadc,
       pvp: this.pvp,
       materiasPrimas: this.materiasPrimas,
       manoDeObraList: this.manoDeObraList,
       costosIndirectosList: this.costosIndirectosList,
-      otrosCostosList: this.otrosCostosList
+      otrosGastoList: this.otrosGastoList
     };
-
+  
     try {
       const res: any = await this.authService.postData(datos).toPromise();
-      if (res.estado) {
-        this.mostrarMensajeRegistroExitoso();
-        this.navCtrl.navigateRoot(['/listacostos']);
+  
+      if (res.success) {
+        await this.authService.showToast('Éxito: Producto actualizado correctamente');
+        this.navCtrl.navigateRoot('/listacostos');
       } else {
-        this.authService.showToast(res.mensaje);
+        await this.authService.showToast(`Error: ${res.message}`);
       }
     } catch (error) {
-      this.authService.showToast('Error al guardar los datos. Por favor, intenta de nuevo.');
+      await this.authService.showToast('Error: No se pudo completar la solicitud. Inténtalo de nuevo.');
     }
   }
-
+  
+  private createBarChart() {
+    const data = [65, 59, 80, 81, 56, 55, 40];
+    this.barChartData.datasets = [{
+      data: data,
+      label: 'Series A'
+    }];
+    this.barChartData.labels = ['01', '02', '03', '04', '05', '06', '07'];
+    if (this.chart) {
+      this.chart.update();
+    }
+  }
+  
+  onCostoChange(costoIndirecto: any) {
+    // Lógica para manejar el cambio de costo indirecto (ej: si es luz, internet, etc.)
+  }
+  
   regresar() {
     this.navCtrl.back();
   }
-
+  
   async mostrarMensajeRegistroExitoso() {
-    this.authService.showToast2('Éxito, Datos registrados correctamente');
+    await this.authService.showToast('Éxito: Datos registrados correctamente');
   }
 }

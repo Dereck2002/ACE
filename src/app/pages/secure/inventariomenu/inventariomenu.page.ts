@@ -12,6 +12,7 @@ export class InventariomenuPage implements OnInit {
   currentDate: string;
   productos: any[] = [];
   productInfoVisible: { [key: number]: boolean } = {};
+  idPersona: string;
 
   constructor(
     private http: HttpClient,
@@ -20,6 +21,8 @@ export class InventariomenuPage implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.idPersona = localStorage.getItem('CapacitorStorage.codigo');
+    console.log('ID Persona:', this.idPersona);
     this.currentDate = this.getCurrentDate();
     this.loadProducts();
   }
@@ -30,9 +33,16 @@ export class InventariomenuPage implements OnInit {
   }
 
   loadProducts() {
+    // Verifica que idPersona no sea null o undefined
+    if (!this.idPersona) {
+      console.error('ID de persona no disponible');
+      return;
+    }
+
     this.http
       .post<any>('http://localhost/ACE/WsMunicipioIonic/ws_gad.php', {
         accion: 'cargar_productos2',
+        id_persona: this.idPersona, // Incluye el id_persona aquí
       })
       .subscribe(
         (response) => {

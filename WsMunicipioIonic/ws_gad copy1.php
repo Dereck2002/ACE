@@ -157,7 +157,7 @@ if ($post['accion'] == 'recuperar_contrasena') {
                 $mail->Port = 587;
 
                 // Habilita el modo de depuración
-                $mail->SMTPDebug = 2; // 0 = off (producción), 1 = mensajes del cliente, 2 = mensajes del cliente y del servidor
+                $mail->SMTPDebug = 0; // 0 = off (producción), 1 = mensajes del cliente, 2 = mensajes del cliente y del servidor
                 $mail->Debugoutput = 'html'; // Formato de salida de la depuración
 
                 $mail->setFrom('flowltm@gmail.com', 'CAAAAAA');
@@ -273,7 +273,6 @@ if ($post['accion'] == 'nueva_contrasena') {
     echo $respuesta;
 }
 
-
 if ($post['accion'] == 'lproductos') {
     $sentencia = sprintf("SELECT id, nombre, pvp  from productos where id_persona='%s'", $post['cod_persona']);
     //echo $sentencia;
@@ -382,10 +381,11 @@ if ($post['accion'] == 'lprovincia') {
 if ($post['accion'] == 'guardar_costos_produccion') {
     $codigo_persona = ($post['codigo']);
     $producto = mysqli_real_escape_string($mysqli, $post['nombre']);
+    $tproducto = (float)$post['tproducto'];
     $materias_primas = $post['materiasPrimas'];
     $mano_de_obra = $post['manoDeObraList'];
     $costos_indirectos = $post['costosIndirectosList'];
-    $otros_gastos = $post['otrosGastoList']; // Cambiado de otrosCostosList a otrosGastoList
+    $otros_gastos = $post['otrosGastoList'];
     $margen_beneficio = (float)$post['margenBeneficio'];
     $utilidad_venta = (float)$post['utilidad_venta'];
     $utilidad_dis = (float)$post['utilidad_dis'];
@@ -400,7 +400,6 @@ if ($post['accion'] == 'guardar_costos_produccion') {
     $result = mysqli_query($mysqli, $query);
 
     if (mysqli_num_rows($result) > 0) {
-        // Si el producto ya existe, envía una respuesta indicando que ya está registrado
         $respuesta = json_encode(array('estado' => false, 'mensaje' => 'El producto ya existe en la base de datos.'));
         echo $respuesta;
         exit;
@@ -410,24 +409,45 @@ if ($post['accion'] == 'guardar_costos_produccion') {
     mysqli_begin_transaction($mysqli);
 
     // Inserta el producto en la tabla productos
-    $query = "INSERT INTO productos (id_persona, nombre, margen_beneficio, utilidad_dis, utilidad_venta,impuestos, costo_produccion, costo_fabrica, costo_distribucion, pvp)
-              VALUES ('$codigo_persona','$producto', $margen_beneficio, $utilidad_dis, $utilidad_venta, $impuestos, $costo_produccion, $costo_fabrica, $costo_distribucion, $pvp)";
+    $query = "INSERT INTO productos (id_persona, nombre, tproducto, margen_beneficio, utilidad_dis, utilidad_venta, impuestos, costo_produccion, costo_fabrica, costo_distribucion, pvp)
+              VALUES ('$codigo_persona', '$producto', $tproducto, $margen_beneficio, $utilidad_dis, $utilidad_venta, $impuestos, $costo_produccion, $costo_fabrica, $costo_distribucion, $pvp)";
 
     if (mysqli_query($mysqli, $query)) {
         $producto_id = mysqli_insert_id($mysqli);
         $error_occurred = false;
 
         // Función para ejecutar las inserciones
-        function insert_data($mysqli, $producto_id, $data, $table, $include_unidad_cantidad = false)
-        {
+        function insert_data($mysqli, $producto_id, $data, $table, $include_unidad_cantidad = false, $include_vtotal = false, $include_mano_de_obra = false, $include_costos_indirectos= false) {
             foreach ($data as $item) {
                 $nombre = mysqli_real_escape_string($mysqli, $item['nombre']);
                 $costo = (float)$item['costo'];
                 $unidad = $include_unidad_cantidad ? mysqli_real_escape_string($mysqli, $item['unidad']) : null;
                 $cantidad = $include_unidad_cantidad ? (float)$item['cantidad'] : null;
-                $query = $include_unidad_cantidad
-                    ? "INSERT INTO $table (producto_id, nombre, costo, unidad, cantidad) VALUES ($producto_id, '$nombre', $costo, '$unidad', $cantidad)"
-                    : "INSERT INTO $table (producto_id, nombre, costo) VALUES ($producto_id, '$nombre', $costo)";
+                $vtotal = $include_vtotal ? (float)$item['vtotal'] : null;
+                $sueldoMensual = $include_mano_de_obra ? (float)$item['sueldoMensual'] : null;
+                $tipoTiempo = $include_mano_de_obra ? mysqli_real_escape_string($mysqli, $item['tipoTiempo']) : null;
+                $horasTrabajadas = $include_mano_de_obra ? (float)$item['horasTrabajadas'] : null;
+                $pgmensual = $include_costos_indirectos ? (float)($item['valorMensual'] ?? 0) : null;
+                $horas = $include_costos_indirectos ? (float)$item['horas'] : null;
+                $cantidadagua = $include_costos_indirectos ? (float)$item['cantidadagua']:null;
+                $cantidadGas = $include_costos_indirectos ? (float)$item['cantidadGas']:null;
+                $cantidadHoras = $include_costos_indirectos ? (float)($item['cantidadHoras']?? 0) : null;
+
+
+                if ($include_unidad_cantidad && $include_vtotal) {
+                    $query = "INSERT INTO $table (producto_id, nombre, vtotal, costo, unidad, cantidad) VALUES ($producto_id, '$nombre', $vtotal, $costo, '$unidad', $cantidad)";
+                } elseif ($include_unidad_cantidad) {
+                    $query = "INSERT INTO $table (producto_id, nombre, costo, unidad, cantidad) VALUES ($producto_id, '$nombre', $costo, '$unidad', $cantidad)";
+                } elseif ($include_mano_de_obra) {
+                    $query = "INSERT INTO $table (producto_id, nombre, costo, sueldoMensual, tipoTiempo, horasTrabajadas) VALUES ($producto_id, '$nombre', $costo, $sueldoMensual, '$tipoTiempo', $horasTrabajadas)";
+                } elseif ($include_costos_indirectos) {
+                    $query = "INSERT INTO $table (producto_id, nombre, costo, pgmensual, horas,cantidadagua,cantidadGas,cantidadHoras ) VALUES ($producto_id, '$nombre', $costo, $pgmensual, $horas, $cantidadagua, $cantidadGas,$cantidadHoras )";
+                } elseif ($include_vtotal) {
+                    $query = "INSERT INTO $table (producto_id, nombre, vtotal, costo) VALUES ($producto_id, '$nombre', $vtotal, $costo)";
+                } else {
+                    $query = "INSERT INTO $table (producto_id, nombre, costo) VALUES ($producto_id, '$nombre', $costo)";
+                }
+
                 if (!mysqli_query($mysqli, $query)) {
                     error_log("Error al insertar en $table: " . mysqli_error($mysqli));
                     return false;
@@ -436,26 +456,26 @@ if ($post['accion'] == 'guardar_costos_produccion') {
             return true;
         }
 
-        // Inserta las materias primas
-        if (!insert_data($mysqli, $producto_id, $materias_primas, 'materias_primas', true)) {
+        // Inserta las materias primas con el campo vtotal
+        if (!insert_data($mysqli, $producto_id, $materias_primas, 'materias_primas', true, true)) {
             $error_occurred = true;
             error_log("Error al insertar materias primas");
         }
 
-        // Inserta la mano de obra
-        if (!$error_occurred && !insert_data($mysqli, $producto_id, $mano_de_obra, 'mano_de_obra')) {
+        // Inserta la mano de obra con los nuevos campos: sueldoMensual, tipoTiempo, horasTrabajadas
+        if (!$error_occurred && !insert_data($mysqli, $producto_id, $mano_de_obra, 'mano_de_obra', false, false, true)) {
             $error_occurred = true;
             error_log("Error al insertar mano de obra");
         }
 
         // Inserta los costos indirectos
-        if (!$error_occurred && !insert_data($mysqli, $producto_id, $costos_indirectos, 'costos_indirectos')) {
+        if (!$error_occurred && !insert_data($mysqli, $producto_id, $costos_indirectos, 'costos_indirectos', false, false, false, true)) {
             $error_occurred = true;
             error_log("Error al insertar costos indirectos");
         }
 
         // Inserta los otros gastos
-        if (!$error_occurred && !insert_data($mysqli, $producto_id, $otros_gastos, 'otros_gastos')) {
+        if (!$error_occurred && !insert_data($mysqli, $producto_id, $otros_gastos, 'otros_gastos', false, true)) {
             $error_occurred = true;
             error_log("Error al insertar otros gastos");
         }
@@ -473,19 +493,33 @@ if ($post['accion'] == 'guardar_costos_produccion') {
         $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al guardar el producto.'));
     }
 
-    // Envía la respuesta
     echo $respuesta;
 }
-
 if ($post['accion'] == 'consultarDatoProductos') {
     $id_producto = (int)$post['id'];
-    $datos_producto = [];
+    $datos_producto = [
+        'codigo' => '',
+        'nombre' => '',
+        'tproducto' => '',
+        'margenBeneficio' => 0,
+        'utilidadDis' => 0,
+        'utilidadVenta' => 0,
+        'impuestos' => 0,
+        'costoProduccion' => 0,
+        'costoFabrica' => 0,
+        'costoDistribucion' => 0,
+        'pvp' => 0,
+        'materiasPrimas' => [],
+        'manoDeObraList' => [],
+        'costosIndirectosList' => [],
+        'otrosCostosList' => [],
+    ];
 
-    // Prepared statement para prevenir inyecciones SQL
     $sentencia = "
     SELECT 
         p.id as codigo,
         p.nombre,
+        p.tproducto,
         p.margen_beneficio as margenBeneficio,
         p.impuestos,
         p.costo_produccion as costoProduccion,
@@ -513,65 +547,58 @@ if ($post['accion'] == 'consultarDatoProductos') {
     ";
 
     if ($stmt = mysqli_prepare($mysqli, $sentencia)) {
-        // Bind parameters
         mysqli_stmt_bind_param($stmt, "i", $id_producto);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
 
         if (mysqli_num_rows($result) > 0) {
-            $datos_producto = null; // Inicializa aquí antes del bucle
-
             while ($row = mysqli_fetch_assoc($result)) {
-                if (is_null($datos_producto)) {
-                    $datos_producto = array(
-                        'codigo' => $row['codigo'],
-                        'nombre' => $row['nombre'],
-                        'margenBeneficio' => $row['margenBeneficio'],
-                        'utilidadDis' => $row['utilidadDis'],
-                        'utilidadVenta' => $row['utilidadVenta'],
-                        'impuestos' => $row['impuestos'],
-                        'costoProduccion' => $row['costoProduccion'],
-                        'costoFabrica' => $row['costoFabrica'],
-                        'costoDistribucion' => $row['costoDistribucion'],
-                        'pvp' => $row['pvp'],
-                        'materiasPrimas' => [],
-                        'manoDeObraList' => [],
-                        'costosIndirectosList' => [],
-                        'otrosCostosList' => [],
-                    );
+                // Inicializar datos del producto si no está ya inicializado
+                if ($datos_producto['codigo'] === '') {
+                    $datos_producto['codigo'] = $row['codigo'];
+                    $datos_producto['nombre'] = $row['nombre'];
+                    $datos_producto['tproducto'] = $row['tproducto'];
+                    $datos_producto['margenBeneficio'] = $row['margenBeneficio'];
+                    $datos_producto['utilidadDis'] = $row['utilidadDis'];
+                    $datos_producto['utilidadVenta'] = $row['utilidadVenta'];
+                    $datos_producto['impuestos'] = $row['impuestos'];
+                    $datos_producto['costoProduccion'] = $row['costoProduccion'];
+                    $datos_producto['costoFabrica'] = $row['costoFabrica'];
+                    $datos_producto['costoDistribucion'] = $row['costoDistribucion'];
+                    $datos_producto['pvp'] = $row['pvp'];
                 }
 
-                // Agregar datos de materias primas
+                // Materia Prima
                 if ($row['mp_nombre']) {
                     $datos_producto['materiasPrimas'][] = array(
-                        'txt_nombre' => $row['mp_nombre'],
-                        'txt_costo' => $row['mp_costo'],
-                        'txt_unidad' => $row['mp_unidad'],
-                        'txt_cantidad' => $row['mp_cantidad']
+                        'nombre' => $row['mp_nombre'],
+                        'costo' => $row['mp_costo'],
+                        'unidad' => $row['mp_unidad'],
+                        'cantidad' => $row['mp_cantidad']
                     );
                 }
 
-                // Agregar datos de mano de obra
+                // Mano de Obra
                 if ($row['mo_nombre']) {
                     $datos_producto['manoDeObraList'][] = array(
-                        'txt_nombre' => $row['mo_nombre'],
-                        'txt_costo' => $row['mo_costo']
+                        'nombre' => $row['mo_nombre'],
+                        'costo' => $row['mo_costo']
                     );
                 }
 
-                // Agregar datos de costos indirectos
+                // Costos Indirectos
                 if ($row['ci_nombre']) {
                     $datos_producto['costosIndirectosList'][] = array(
-                        'txt_nombre' => $row['ci_nombre'],
-                        'txt_costo' => $row['ci_costo']
+                        'nombre' => $row['ci_nombre'],
+                        'costo' => $row['ci_costo']
                     );
                 }
 
-                // Agregar datos de otros gastos
+                // Otros Gastos
                 if ($row['og_nombre']) {
                     $datos_producto['otrosCostosList'][] = array(
-                        'txt_nombre' => $row['og_nombre'],
-                        'txt_costo' => $row['og_costo']
+                        'nombre' => $row['og_nombre'],
+                        'costo' => $row['og_costo']
                     );
                 }
             }
@@ -581,17 +608,14 @@ if ($post['accion'] == 'consultarDatoProductos') {
             $respuesta = json_encode(array('estado' => false, 'mensaje' => "No existe"));
         }
 
-        // Cerrar el statement
         mysqli_stmt_close($stmt);
     } else {
-        $respuesta = json_encode(array('estado' => false, 'mensaje' => "Error en la consulta"));
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => "Error en la preparación de la consulta"));
         error_log("Error en la preparación de la consulta: " . mysqli_error($mysqli));
     }
 
-    // Envía la respuesta
     echo $respuesta;
 }
-
 if ($post['accion'] == 'eliminarProducto') {
     $producto_id = (int)$post['productoId'];
     $codigo_persona = (int)$post['cod_persona'];
@@ -822,176 +846,487 @@ if ($post['accion'] == 'editarProducto') {
 } */
 
 // Inventario
-if ($post['accion'] == 'registrar_inventario') {
-    $nombre_producto = mysqli_real_escape_string($mysqli, $post['nombre']);
-    $cantidad_inicial = (int)$post['cantidad_inicial'];
-    $precio_venta = (float)$post['precio_venta'];
+if (isset($data['accion'])) {
+    switch ($data['accion']) {
+        case 'guardar_inventario':
+            // Preparar y ejecutar la consulta
+            $stmt = $conn->prepare("
+                INSERT INTO inventario (
+                    producto_id, cantidad_inicial, precio_venta, cantidad_vendida, dinero_total,
+                    muestras, ganancias_perdidas, perdidas_productos_regalados, productos_no_vendidos, fecha_registro
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ");
 
-    $cantidad_vendida = (int)$post['cantidad_vendida'];
-    $dinero_total = (float)$post['dinero_total'];
-    $productos_regalados = (int)$post['productos_regalados'];
-    $fecha = date('Y-m-d'); // Fecha actual del servidor
+            if ($stmt) {
+                $stmt->bind_param(
+                    'iiddddddss',
+                    $data['producto_id'],
+                    $data['cantidad_inicial'],
+                    $data['precio_venta'],
+                    $data['cantidad_vendida'],
+                    $data['dinero_total'],
+                    $data['muestras'],
+                    $data['ganancias_perdidas'],
+                    $data['perdidas_productos_regalados'],
+                    $data['productos_no_vendidos'],
+                    $data['fecha_registro']
+                );
 
-    // Verifica si el producto ya existe en el registro inicial para la misma fecha
-    $query = "SELECT id FROM registropr_inicial WHERE nombre = '$nombre_producto' AND fecha = '$fecha'";
-    $result = mysqli_query($mysqli, $query);
-
-    if (mysqli_num_rows($result) > 0) {
-        $row = mysqli_fetch_assoc($result);
-        $producto_id = $row['id'];
-
-        // Inserta en registros_finales
-        $query = "INSERT INTO registros_finales (producto_id, cantidad_vendida, dinero_total, productos_regalados, fecha) 
-                  VALUES ($producto_id, $cantidad_vendida, $dinero_total, $productos_regalados, '$fecha')";
-
-        if (mysqli_query($mysqli, $query)) {
-            $response = calculateResults($mysqli, $producto_id, $cantidad_vendida, $dinero_total, $productos_regalados, $fecha);
-            echo json_encode($response);
-        } else {
-            echo json_encode(array('estado' => false, 'mensaje' => 'Error al registrar los datos finales.'));
-        }
-    } else {
-        // Inicia una transacción
-        mysqli_begin_transaction($mysqli);
-
-        // Inserta en registropr_inicial
-        $query = "INSERT INTO registropr_inicial (nombre, cantidad_inicial, precio_venta, fecha) 
-                  VALUES ('$nombre_producto', $cantidad_inicial, $precio_venta, '$fecha')";
-
-        if (mysqli_query($mysqli, $query)) {
-            $producto_id = mysqli_insert_id($mysqli);
-
-            // Inserta en registros_finales
-            $query = "INSERT INTO registros_finales (producto_id, cantidad_vendida, dinero_total, productos_regalados, fecha) 
-                      VALUES ($producto_id, $cantidad_vendida, $dinero_total, $productos_regalados, '$fecha')";
-
-            if (mysqli_query($mysqli, $query)) {
-                mysqli_commit($mysqli);
-                $response = calculateResults($mysqli, $producto_id, $cantidad_vendida, $dinero_total, $productos_regalados, $fecha);
-                echo json_encode($response);
-            } else {
-                mysqli_rollback($mysqli);
-                echo json_encode(array('estado' => false, 'mensaje' => 'Error al registrar los datos finales.'));
-            }
-        } else {
-            mysqli_rollback($mysqli);
-            echo json_encode(array('estado' => false, 'mensaje' => 'Error al registrar los datos iniciales.'));
-        }
-    }
-}
-
-function calculateResults($mysqli, $producto_id, $cantidad_vendida, $dinero_total, $productos_regalados, $fecha)
-{
-    $query = "SELECT cantidad_inicial, precio_venta FROM registropr_inicial WHERE id = $producto_id";
-    $result = mysqli_query($mysqli, $query);
-
-    if ($row = mysqli_fetch_assoc($result)) {
-        $cantidad_inicial = (int)$row['cantidad_inicial'];
-        $precio_venta = (float)$row['precio_venta'];
-
-        $total_income = $cantidad_vendida * $precio_venta;
-        $gifted_value = $productos_regalados * $precio_venta;
-
-        $ganancia_perdida = $total_income - $gifted_value;
-        $perdida_regalados = $gifted_value;
-        $productos_no_vendidos = $cantidad_inicial - $cantidad_vendida - $productos_regalados;
-
-        // Inserta en resultados_inventario
-        $query = "INSERT INTO resultados_inventario (producto_id, ganancia_perdida, perdida_regalados, productos_no_vendidos, fecha) 
-                  VALUES ($producto_id, $ganancia_perdida, $perdida_regalados, $productos_no_vendidos, '$fecha')";
-
-        if (mysqli_query($mysqli, $query)) {
-            return array(
-                'estado' => true,
-                'mensaje' => 'Registro exitoso.',
-                'ganancia_perdida' => $ganancia_perdida,
-                'perdida_regalados' => $perdida_regalados,
-                'productos_no_vendidos' => $productos_no_vendidos
-            );
-        } else {
-            return array('estado' => false, 'mensaje' => 'Error al calcular y registrar los resultados.');
-        }
-    } else {
-        return array('estado' => false, 'mensaje' => 'Error al obtener los datos iniciales del producto.');
-    }
-
-    if (isset($_POST['accion'])) {
-        if ($_POST['accion'] == 'guardar_inventario') {
-            if (
-                isset($_POST['producto_id']) && isset($_POST['cantidad_inicial']) && isset($_POST['precio_venta'])
-                && isset($_POST['cantidad_vendida']) && isset($_POST['dinero_total']) && isset($_POST['muestras'])
-                && isset($_POST['ganancias_perdidas']) && isset($_POST['perdidas_productos_regalados']) && isset($_POST['productos_no_vendidos'])
-                && isset($_POST['fecha_registro'])
-                && !empty($_POST['producto_id']) && !empty($_POST['cantidad_inicial']) && !empty($_POST['precio_venta'])
-                && !empty($_POST['cantidad_vendida']) && !empty($_POST['dinero_total']) && !empty($_POST['muestras'])
-                && !empty($_POST['ganancias_perdidas']) && !empty($_POST['perdidas_productos_regalados']) && !empty($_POST['productos_no_vendidos'])
-                && !empty($_POST['fecha_registro'])
-            ) {
-                $producto_id = mysqli_real_escape_string($mysqli, $_POST['producto_id']);
-                $cantidad_inicial = (int)$_POST['cantidad_inicial'];
-                $precio_venta = (float)$_POST['precio_venta'];
-                $cantidad_vendida = (int)$_POST['cantidad_vendida'];
-                $dinero_total = (float)$_POST['dinero_total'];
-                $muestras = (int)$_POST['muestras'];
-                $ganancias_perdidas = (float)$_POST['ganancias_perdidas'];
-                $perdidas_productos_regalados = (float)$_POST['perdidas_productos_regalados'];
-                $productos_no_vendidos = (int)$_POST['productos_no_vendidos'];
-                $fecha_registro = mysqli_real_escape_string($mysqli, $_POST['fecha_registro']);
-    
-                // Inserta el nuevo inventario en la base de datos
-                $query = "INSERT INTO inventarios (producto_id, cantidad_inicial, precio_venta, cantidad_vendida, dinero_total, muestras, ganancias_perdidas, perdidas_productos_regalados, productos_no_vendidos, fecha_registro) VALUES ('$producto_id', $cantidad_inicial, $precio_venta, $cantidad_vendida, $dinero_total, $muestras, $ganancias_perdidas, $perdidas_productos_regalados, $productos_no_vendidos, '$fecha_registro')";
-                $rs = mysqli_query($mysqli, $query);
-    
-                if ($rs) {
-                    $respuesta = json_encode(array('estado' => true, 'mensaje' => "Inventario guardado correctamente."));
+                if ($stmt->execute()) {
+                    echo json_encode(['estado' => true, 'mensaje' => 'Datos guardados exitosamente.']);
                 } else {
-                    $respuesta = json_encode(array('estado' => false, 'mensaje' => "Error al guardar el inventario."));
+                    echo json_encode(['estado' => false, 'mensaje' => 'Error al guardar los datos: ' . $stmt->error]);
                 }
-                echo $respuesta;
+
+                $stmt->close();
             } else {
-                $respuesta = json_encode(array('estado' => false, 'mensaje' => "Datos incompletos para guardar el inventario."));
-                echo $respuesta;
+                echo json_encode(['estado' => false, 'mensaje' => 'Error al preparar la consulta.']);
             }
-        } else {
-            $respuesta = json_encode(array('estado' => false, 'mensaje' => "Acción no especificada o desconocida"));
-            echo $respuesta;
-        }
-    } else {
-        $respuesta = json_encode(array('estado' => false, 'mensaje' => "Acción no especificada"));
-        echo $respuesta;
+            break;
+
+            // Otros casos aquí...
+
+        default:
+            echo json_encode(['estado' => false, 'mensaje' => 'Acción no reconocida.']);
+            break;
     }
-
-// Consulta SQL para obtener el nombre y el pvp del producto
-$query = "SELECT nombre, pvp FROM productos WHERE id = $producto_id";
-$result = mysqli_query($mysqli, $query);
-
-if ($result) {
-    if ($row = mysqli_fetch_assoc($result)) {
-        $nombre_producto = $row['nombre'];
-        $pvp_producto = $row['pvp'];
-
-        // Devuelve el nombre y el pvp como parte de la respuesta
-        $respuesta = array(
-            'estado' => true,
-            'nombre' => $nombre_producto,
-            'pvp' => $pvp_producto
-        );
-    } else {
-        // Producto no encontrado
-        $respuesta = array(
-            'estado' => false,
-            'mensaje' => 'Producto no encontrado'
-        );
-    }
-} else {
-    // Error en la consulta SQL
-    $respuesta = array(
-        'estado' => false,
-        'mensaje' => 'Error en la consulta SQL'
-    );
-    echo json_encode($respuesta);
-exit;
 }
 
-echo json_encode($respuesta);
+
+// INSERTAR PRODUCTO
+if ($post['accion'] == 'guardar_inventario') {
+    $producto_id = $post['producto_id'];
+    $cantidad_inicial = $post['cantidad_inicial'];
+    $fecha_registro = $post['fecha_registro'];
+
+    // Preparar la consulta para insertar en inventario_registro_inicial
+    $stmt_inicial = mysqli_prepare($mysqli, "INSERT INTO inventario_registro_inicial (RI_CANTIDAD_INICIAL, RI_FECHA, PROD_CODIGO) VALUES (?, ?, ?)");
+    mysqli_stmt_bind_param($stmt_inicial, "isi", $cantidad_inicial, $fecha_registro, $producto_id);
+
+    // Ejecutar la consulta y verificar si fue exitosa
+    if (mysqli_stmt_execute($stmt_inicial)) {
+        // Obtener el ID autoincremental de la fila recién insertada
+        $ri_codigo = mysqli_insert_id($mysqli);
+
+        // Preparar la consulta para insertar en inventario_registro_final
+        $stmt_final = mysqli_prepare($mysqli, "INSERT INTO inventario_registro_final (RF_CODIGO, RF_CANTIDAD_VENDIDA, RF_DINERO_TOTAL, RF_PRODUCTOS_MUESTRA, RF_PRODUCTOS_DESECHADOS, RI_CODIGO) VALUES (NULL, 0, 0, 0, 0, ?)");
+        mysqli_stmt_bind_param($stmt_final, "i", $ri_codigo);
+
+        // Ejecutar la consulta y verificar si fue exitosa
+        if (mysqli_stmt_execute($stmt_final)) {
+            // Obtener el ID autoincremental de la fila recién insertada en inventario_registro_final
+            $rf_codigo = mysqli_insert_id($mysqli);
+
+            // Preparar la consulta para insertar en inventario_registro_resultado
+            $stmt_resultado = mysqli_prepare($mysqli, "INSERT INTO inventario_registro_resultado (RS_CODIGO, RS_GANANCIA_PERDIDA, RS_PERDIDA_REGALADOS, RS_PRODUCTOS_NO_VENDIDOS, RF_CODIGO) VALUES (NULL, 0, 0, 0, ?)");
+            mysqli_stmt_bind_param($stmt_resultado, "i", $rf_codigo);
+
+            // Ejecutar la consulta y verificar si fue exitosa
+            if (mysqli_stmt_execute($stmt_resultado)) {
+                $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Datos guardados exitosamente'));
+            } else {
+                $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al guardar los datos en inventario_registro_resultado: ' . mysqli_stmt_error($stmt_resultado)));
+            }
+            mysqli_stmt_close($stmt_resultado);
+        } else {
+            $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al guardar los datos en inventario_registro_final: ' . mysqli_stmt_error($stmt_final)));
+        }
+        mysqli_stmt_close($stmt_final);
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al guardar los datos en inventario_registro_inicial: ' . mysqli_stmt_error($stmt_inicial)));
+    }
+
+    mysqli_stmt_close($stmt_inicial);
+    echo $respuesta;
+}
+
+// Cargar productos
+if ($post['accion'] == 'cargar_productos') {
+    if (isset($post['id_persona'])) {
+        $id_persona = $post['id_persona'];
+        error_log("ID Persona recibido: " . $id_persona); // Depuración
+
+        // Consulta para obtener productos
+        $sentencia = "SELECT id, nombre, pvp FROM productos WHERE id_persona = ?";
+        $stmt = $mysqli->prepare($sentencia);
+        if (!$stmt) {
+            error_log("Error en la preparación de la consulta: " . $mysqli->error);
+        }
+        $stmt->bind_param('i', $id_persona);
+
+        if (!$stmt->execute()) {
+            error_log("Error en la ejecución de la consulta: " . $stmt->error);
+        }
+
+        $rs = $stmt->get_result();
+
+        if ($rs->num_rows > 0) {
+            $datos = array();
+            while ($row = $rs->fetch_assoc()) {
+                $datos[] = array(
+                    'id' => $row['id'],
+                    'nombre' => $row['nombre'],
+                    'pvp' => $row['pvp']
+                );
+            }
+            $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
+        } else {
+            $respuesta = json_encode(array('estado' => false, 'mensaje' => "No se encontraron productos"));
+        }
+        echo $respuesta;
+
+        $stmt->close();
+    } else {
+        echo json_encode(array('estado' => false, 'mensaje' => "ID de persona no proporcionado."));
+    }
+}
+if ($post['accion'] == 'obtener_cantidad_inicial') {
+    $producto_id = $post['producto_id'];
+
+    $sentencia = "
+        SELECT 
+            iri.RI_CANTIDAD_INICIAL,
+            (irf.RF_CANTIDAD_VENDIDA + irf.RF_PRODUCTOS_MUESTRA + irf.RF_PRODUCTOS_DESECHADOS) AS total_vendido,
+            (iri.RI_CANTIDAD_INICIAL - (irf.RF_CANTIDAD_VENDIDA + irf.RF_PRODUCTOS_MUESTRA + irf.RF_PRODUCTOS_DESECHADOS)) AS cantidad_actual
+        FROM inventario_registro_inicial iri
+        INNER JOIN inventario_registro_final irf ON iri.RI_CODIGO = irf.RI_CODIGO
+        WHERE iri.PROD_CODIGO = '$producto_id'
+        ORDER BY iri.RI_FECHA DESC
+        LIMIT 1";
+
+    $rs = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($rs) > 0) {
+        $row = mysqli_fetch_assoc($rs);
+        $respuesta = json_encode(array(
+            'estado' => true,
+            'cantidad_inicial' => $row['cantidad_actual']
+        ));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => "No se encontró cantidad inicial para este producto"));
+    }
+
+    echo $respuesta;
+}
+// Guardar registro final
+if ($post['accion'] == 'guardar_registro_final') {
+    $registro_inicial_id = $post['registro_inicial_id'];
+    $cantidad_vendida = $post['cantidad_vendida'];
+    $productos_muestra = $post['productos_muestra'];
+    $productos_desechados = $post['productos_desechados'];
+    $dinero_total = $post['dinero_total']; // Recibe el dinero total calculado
+
+    // Preparar la consulta
+    $stmt = mysqli_prepare($mysqli, "INSERT INTO inventario_registro_final (RF_CANTIDAD_VENDIDA, RF_DINERO_TOTAL, RF_PRODUCTOS_MUESTRA, RF_PRODUCTOS_DESECHADOS, RI_CODIGO) VALUES (?, ?, ?, ?, ?)");
+    mysqli_stmt_bind_param($stmt, "idiii", $cantidad_vendida, $dinero_total, $productos_muestra, $productos_desechados, $registro_inicial_id);
+
+    // Ejecutar la consulta y verificar si fue exitosa
+    if (mysqli_stmt_execute($stmt)) {
+        $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Datos del registro final guardados exitosamente'));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al guardar los datos del registro final: ' . mysqli_stmt_error($stmt)));
+    }
+
+    mysqli_stmt_close($stmt);
+    echo $respuesta;
+}
+
+// Obtener el último registro inicial
+if ($post['accion'] == 'ultimo_registro_inicial') {
+    $sentencia = "SELECT RI_CODIGO AS id FROM inventario_registro_inicial ORDER BY RI_CODIGO DESC LIMIT 1";
+    $rs = mysqli_query($mysqli, $sentencia);
+
+    if ($row = mysqli_fetch_assoc($rs)) {
+        $respuesta = json_encode(array('estado' => true, 'datos' => $row));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => "No se encontró el último registro inicial"));
+    }
+    echo $respuesta;
+}
+if ($post['accion'] == 'cargar_productos2') {
+    // Obtener la fecha proporcionada o usar la fecha actual si no se proporciona
+    $fecha = isset($post['fecha']) ? $post['fecha'] : date('Y-m-d');
+
+    // Obtener el id_persona del post
+    $id_persona = isset($post['id_persona']) ? $post['id_persona'] : '';
+
+    // Consulta con INNER JOIN y filtro por la fecha y id_persona
+    $sentencia = "
+        SELECT 
+            p.id, 
+            p.nombre, 
+            p.pvp, 
+            iri.RI_CODIGO, 
+            iri.RI_CANTIDAD_INICIAL, 
+            iri.RI_FECHA, 
+            irf.RF_CODIGO, 
+            irf.RF_CANTIDAD_VENDIDA, 
+            irf.RF_DINERO_TOTAL, 
+            irf.RF_PRODUCTOS_MUESTRA, 
+            irf.RF_PRODUCTOS_DESECHADOS,
+            irr.RS_CODIGO,
+            irr.RS_GANANCIA_PERDIDA,
+            irr.RS_PERDIDA_REGALADOS + irr.RS_PRODUCTOS_NO_VENDIDOS AS RS_TOTAL_PERDIDA
+        FROM 
+            productos p
+        LEFT JOIN 
+            inventario_registro_inicial iri ON p.id = iri.PROD_CODIGO
+        LEFT JOIN 
+            inventario_registro_final irf ON iri.RI_CODIGO = irf.RI_CODIGO
+        INNER JOIN 
+            inventario_registro_resultado irr ON irf.RF_CODIGO = irr.RF_CODIGO
+        WHERE 
+            iri.RI_FECHA = '$fecha' AND
+            p.id_persona = '$id_persona'
+    ";
+
+    $rs = mysqli_query($mysqli, $sentencia);
+
+    if (!$rs) {
+        $error = mysqli_error($mysqli);
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => "Error en la consulta: $error"));
+        echo $respuesta;
+        exit;
+    }
+
+    if (mysqli_num_rows($rs) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_assoc($rs)) {
+            $total_muestra_desechados = $row['RF_PRODUCTOS_MUESTRA'] + $row['RF_PRODUCTOS_DESECHADOS'];
+            $datos[] = array(
+                'id' => $row['id'],
+                'nombre' => $row['nombre'],
+                'pvp' => $row['pvp'],
+                'RI_CODIGO' => $row['RI_CODIGO'],
+                'RI_CANTIDAD_INICIAL' => $row['RI_CANTIDAD_INICIAL'],
+                'RI_FECHA' => $row['RI_FECHA'],
+                'RF_CODIGO' => $row['RF_CODIGO'],
+                'RF_CANTIDAD_VENDIDA' => $row['RF_CANTIDAD_VENDIDA'],
+                'RF_DINERO_TOTAL' => $row['RF_DINERO_TOTAL'],
+                'RF_PRODUCTOS_MUESTRA' => $row['RF_PRODUCTOS_MUESTRA'],
+                'RF_PRODUCTOS_DESECHADOS' => $row['RF_PRODUCTOS_DESECHADOS'],
+                'RS_CODIGO' => $row['RS_CODIGO'],
+                'RS_GANANCIA_PERDIDA' => $row['RS_GANANCIA_PERDIDA'],
+                'RS_TOTAL_PERDIDA' => $row['RS_TOTAL_PERDIDA'],
+                'total_muestra_desechados' => $total_muestra_desechados,
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => true, 'datos' => array()));
+    }
+    echo $respuesta;
+}
+
+
+if ($post['accion'] == 'cargar_productos3') {
+    $ri_codigo = $post['ri_codigo'];
+    $rf_codigo = isset($post['rf_codigo']) && $post['rf_codigo'] !== '' ? $post['rf_codigo'] : null;
+
+    if ($rf_codigo === null) {
+        // Si RF_CODIGO es null o vacío, solo filtramos por RI_CODIGO
+        $sentencia = "
+            SELECT 
+                p.id, 
+                p.nombre, 
+                p.pvp, 
+                iri.RI_CODIGO, 
+                iri.RI_CANTIDAD_INICIAL, 
+                iri.RI_FECHA
+            FROM 
+                inventario_registro_inicial iri
+            INNER JOIN 
+                productos p ON p.id = iri.PROD_CODIGO
+            WHERE 
+                iri.RI_CODIGO = ?
+        ";
+
+        $stmt = mysqli_prepare($mysqli, $sentencia);
+        mysqli_stmt_bind_param($stmt, "i", $ri_codigo);
+    } else {
+        // Si RF_CODIGO tiene un valor, filtrar por ambos códigos
+        $sentencia = "
+            SELECT 
+                p.id, 
+                p.nombre, 
+                p.pvp, 
+                iri.RI_CODIGO, 
+                iri.RI_CANTIDAD_INICIAL, 
+                iri.RI_FECHA, 
+                irf.RF_CODIGO, 
+                irf.RF_CANTIDAD_VENDIDA, 
+                irf.RF_DINERO_TOTAL, 
+                irf.RF_PRODUCTOS_MUESTRA, 
+                irf.RF_PRODUCTOS_DESECHADOS
+            FROM 
+                inventario_registro_inicial iri
+            INNER JOIN 
+                productos p ON p.id = iri.PROD_CODIGO
+            LEFT JOIN 
+                inventario_registro_final irf ON iri.RI_CODIGO = irf.RI_CODIGO
+            WHERE 
+                iri.RI_CODIGO = ? AND (irf.RF_CODIGO = ? OR irf.RF_CODIGO IS NULL)
+        ";
+
+        $stmt = mysqli_prepare($mysqli, $sentencia);
+        mysqli_stmt_bind_param($stmt, "ii", $ri_codigo, $rf_codigo);
+    }
+
+    if (mysqli_stmt_execute($stmt)) {
+        $result = mysqli_stmt_get_result($stmt);
+        if (mysqli_num_rows($result) > 0) {
+            $datos = array();
+            while ($row = mysqli_fetch_assoc($result)) {
+                $datos[] = array(
+                    'id' => $row['id'],
+                    'nombre' => $row['nombre'],
+                    'pvp' => $row['pvp'],
+                    'RI_CODIGO' => $row['RI_CODIGO'],
+                    'RI_CANTIDAD_INICIAL' => $row['RI_CANTIDAD_INICIAL'],
+                    'RI_FECHA' => $row['RI_FECHA'],
+                    'RF_CODIGO' => isset($row['RF_CODIGO']) ? $row['RF_CODIGO'] : null,
+                    'RF_CANTIDAD_VENDIDA' => isset($row['RF_CANTIDAD_VENDIDA']) ? $row['RF_CANTIDAD_VENDIDA'] : 0,
+                    'RF_DINERO_TOTAL' => isset($row['RF_DINERO_TOTAL']) ? $row['RF_DINERO_TOTAL'] : 0,
+                    'RF_PRODUCTOS_MUESTRA' => isset($row['RF_PRODUCTOS_MUESTRA']) ? $row['RF_PRODUCTOS_MUESTRA'] : 0,
+                    'RF_PRODUCTOS_DESECHADOS' => isset($row['RF_PRODUCTOS_DESECHADOS']) ? $row['RF_PRODUCTOS_DESECHADOS'] : 0
+                );
+            }
+            $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
+        } else {
+            $respuesta = json_encode(array('estado' => false, 'mensaje' => "No se encontraron registros con los códigos proporcionados"));
+        }
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error en la consulta: ' . mysqli_stmt_error($stmt)));
+    }
+
+    mysqli_stmt_close($stmt);
+    echo $respuesta;
+}
+
+if ($post['accion'] == 'actualizar_cantidad_inicial') {
+    $ri_codigo = $post['ri_codigo'];
+    $nueva_cantidad = $post['nueva_cantidad'];
+
+    $sentencia = "
+        UPDATE inventario_registro_inicial
+        SET RI_CANTIDAD_INICIAL = ?
+        WHERE RI_CODIGO = ?
+    ";
+
+    $stmt = mysqli_prepare($mysqli, $sentencia);
+    mysqli_stmt_bind_param($stmt, "ii", $nueva_cantidad, $ri_codigo);
+
+    if (mysqli_stmt_execute($stmt)) {
+        $respuesta = json_encode(array('estado' => true));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al actualizar la cantidad inicial: ' . mysqli_stmt_error($stmt)));
+    }
+
+    mysqli_stmt_close($stmt);
+    echo $respuesta;
+}
+
+if ($post['accion'] == 'actualizar_registro_final') {
+    $rf_codigo = $post['rf_codigo'];
+    $ri_codigo = $post['ri_codigo'];
+    $cantidad_vendida = $post['cantidad_vendida'];
+    $productos_muestra = $post['productos_muestra'];
+    $productos_desechados = $post['productos_desechados'];
+    $dinero_total = $post['dinero_total'];
+
+    $sentencia = "
+        UPDATE inventario_registro_final
+        SET 
+            RF_CANTIDAD_VENDIDA = ?, 
+            RF_DINERO_TOTAL = ?, 
+            RF_PRODUCTOS_MUESTRA = ?, 
+            RF_PRODUCTOS_DESECHADOS = ?
+        WHERE 
+            RF_CODIGO = ? AND RI_CODIGO = ?
+    ";
+
+    $stmt = mysqli_prepare($mysqli, $sentencia);
+    mysqli_stmt_bind_param($stmt, "idiiii", $cantidad_vendida, $dinero_total, $productos_muestra, $productos_desechados, $rf_codigo, $ri_codigo);
+
+    if (mysqli_stmt_execute($stmt)) {
+        // Obtener el costo_fabrica y costo_produccion del producto
+        $query = "
+            SELECT  p.costo_fabrica, p.costo_produccion, p.pvp
+            FROM inventario_registro_inicial ri
+            JOIN productos p ON ri.PROD_CODIGO = p.id
+            WHERE ri.RI_CODIGO = ?
+        ";
+        $stmt = mysqli_prepare($mysqli, $query);
+        mysqli_stmt_bind_param($stmt, "i", $ri_codigo);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_bind_result($stmt, $costo_fabrica, $costo_produccion, $pvp);
+        mysqli_stmt_fetch($stmt);
+        mysqli_stmt_close($stmt);
+
+        // Calcular la ganancia/perdida
+        $ganancia_perdida = ($costo_fabrica - $costo_produccion) * $cantidad_vendida;
+
+        $perdida_regalados = $productos_muestra * $pvp;
+        $productos_no_vendidos = $productos_desechados * $pvp;
+
+        // Actualizar en inventario_registro_resultado
+        $update_query = "
+            UPDATE inventario_registro_resultado
+            SET RS_GANANCIA_PERDIDA = ?, RS_PERDIDA_REGALADOS = ?, RS_PRODUCTOS_NO_VENDIDOS = ?
+            WHERE RF_CODIGO = ?
+        ";
+        $stmt = mysqli_prepare($mysqli, $update_query);
+        mysqli_stmt_bind_param($stmt, "dddi", $ganancia_perdida, $perdida_regalados, $productos_no_vendidos, $rf_codigo);
+
+        if (mysqli_stmt_execute($stmt)) {
+            $respuesta = json_encode(array('estado' => true));
+        } else {
+            $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al actualizar en inventario_registro_resultado: ' . mysqli_stmt_error($stmt)));
+        }
+
+        mysqli_stmt_close($stmt);
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al actualizar el registro final: ' . mysqli_stmt_error($stmt)));
+    }
+
+    echo $respuesta;
+}
+
+
+
+if ($post['accion'] == 'eliminar') {
+    $ri_codigo = $post['RI_CODIGO'];
+
+    // Primero, obtenemos el RF_CODIGO relacionado con el RI_CODIGO
+    $consulta_rf_codigo = "SELECT RF_CODIGO FROM inventario_registro_final WHERE RI_CODIGO = '$ri_codigo'";
+    $resultado_rf_codigo = mysqli_query($mysqli, $consulta_rf_codigo);
+
+    if (!$resultado_rf_codigo) {
+        $error = mysqli_error($mysqli);
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => "Error en la consulta: $error"));
+        echo $respuesta;
+        exit;
+    }
+
+    $rf_codigo = mysqli_fetch_assoc($resultado_rf_codigo)['RF_CODIGO'];
+
+    // Eliminar registros en inventario_registro_resultado
+    $sentencia_resultado = "DELETE FROM inventario_registro_resultado WHERE RF_CODIGO = '$rf_codigo'";
+    mysqli_query($mysqli, $sentencia_resultado);
+
+    // Eliminar registros en inventario_registro_final
+    $sentencia_final = "DELETE FROM inventario_registro_final WHERE RF_CODIGO = '$rf_codigo'";
+    mysqli_query($mysqli, $sentencia_final);
+
+    // Eliminar registros en inventario_registro_inicial
+    $sentencia_inicial = "DELETE FROM inventario_registro_inicial WHERE RI_CODIGO = '$ri_codigo'";
+    mysqli_query($mysqli, $sentencia_inicial);
+
+    if (mysqli_affected_rows($mysqli) > 0) {
+        $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Producto eliminado con éxito'));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No se encontró el producto para eliminar'));
+    }
+
+    echo $respuesta;
 }
